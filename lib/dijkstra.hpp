@@ -29,8 +29,7 @@ namespace Algorithm {
         using LocationsVisited = std::unordered_set<Location>;
         using Path = std::vector<Location>;
 
-        [[nodiscard]]
-        static auto dijkstra(Graph const& graph, Location const& start, Location const& goal)
+        [[nodiscard]] static auto dijkstra(Graph const& graph, Location const& start, Location const& goal)
         {
             auto locations_to_visit{make_empty_locations_to_visit(start)};
             auto locations_visited{make_empty_locations_visited(graph)};

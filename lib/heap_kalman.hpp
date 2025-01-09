@@ -50,8 +50,7 @@ namespace Linalg::Heap {
             process_noise_{process_noise}
         {}
 
-        [[nodiscard]]
-        auto operator()(this Kalman& self, Matrix const& input, Matrix const& measurement) -> Matrix
+        [[nodiscard]] auto operator()(this Kalman& self, Matrix const& input, Matrix const& measurement) -> Matrix
         {
             try {
                 self.predict(input);

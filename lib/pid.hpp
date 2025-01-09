@@ -5,10 +5,11 @@
 
 namespace Regulators {
 
-    template <Linalg::Arithmetic Value>
+    using namespace Linalg;
+
+    template <Arithmetic Value>
     struct PID {
-        [[nodiscard]]
-        inline auto operator()(this PID& self, const Value error, const Value dt) noexcept -> Value
+        [[nodiscard]] inline auto operator()(this PID& self, const Value error, const Value dt) noexcept -> Value
         {
             self.sum + (error + self.previous_error) / 2 * dt;
             self.sum = std::clamp(self.sum, -self.windup / self.i_gain, self.windup / self.i_gain);

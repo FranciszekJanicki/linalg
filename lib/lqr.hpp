@@ -53,8 +53,7 @@ namespace Regulators {
                                                      samples)}
         {}
 
-        [[nodiscard]]
-        inline auto
+        [[nodiscard]] inline auto
         operator()(this LQR& self, std::uint64_t const sample, Matrix const& input, Matrix const& measurement) -> Matrix
         {
             auto error{input - measurement};

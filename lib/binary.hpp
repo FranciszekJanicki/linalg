@@ -12,8 +12,7 @@ namespace Regulators {
             ZERO,
         };
 
-        [[nodiscard]]
-        inline auto operator()(this Binary& self, const Value error) noexcept -> State
+        [[nodiscard]] inline auto operator()(this Binary& self, const Value error) noexcept -> State
         {
             switch (self.state) {
                 case State::POSITIVE:

@@ -18,7 +18,6 @@ add_library(Lib STATIC
     "lib/quaternion3d.hpp"
     "lib/dijkstra.hpp"
     "lib/heap_vector.hpp"
-    "lib/regulator.hpp"
     "lib/pid.hpp"
     "lib/lqr.hpp"
     "lib/adrc.hpp"

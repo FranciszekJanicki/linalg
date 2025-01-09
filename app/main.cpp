@@ -6,7 +6,7 @@
 #include <fmt/core.h>
 #include <functional>
 
-auto main([[maybe_unused]] int const argc, [[maybe_unused]] char const* argv[]) -> int
+auto main([[maybe_unused]] int const argc, [[maybe_unused]] char const* const argv[]) -> int
 {
     using namespace Linalg::Stack;
     using Kalman = Kalman<double, 2>;

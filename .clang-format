@@ -45,7 +45,7 @@ AllowShortLoopsOnASingleLine: false
 AlwaysBreakBeforeMultilineStrings: false
 AlwaysBreakTemplateDeclarations: Yes
 AlwaysBreakAfterReturnType: None
-BreakAfterAttributes: Always
+BreakAfterAttributes: Never
 ContinuationIndentWidth: 4
 
 BreakBeforeBraces: Custom

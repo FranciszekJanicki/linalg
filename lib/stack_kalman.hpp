@@ -33,10 +33,9 @@ namespace Linalg::Stack {
             process_noise_{process_noise}
         {}
 
-        [[nodiscard]]
-        auto operator()(this Kalman& self,
-                        Matrix<1, INPUTS> const& input,
-                        Matrix<1, MEASUREMENTS> const& measurement) -> Matrix<STATES, 1>
+        [[nodiscard]] auto operator()(this Kalman& self,
+                                      Matrix<1, INPUTS> const& input,
+                                      Matrix<1, MEASUREMENTS> const& measurement) -> Matrix<STATES, 1>
         {
             try {
                 self.predict(input);
