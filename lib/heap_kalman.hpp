@@ -50,7 +50,8 @@ namespace Linalg::Heap {
             process_noise_{process_noise}
         {}
 
-        [[nodiscard]] Matrix operator()(this Kalman& self, Matrix const& input, Matrix const& measurement)
+        [[nodiscard]]
+        auto operator()(this Kalman& self, Matrix const& input, Matrix const& measurement) -> Matrix
         {
             try {
                 self.predict(input);
@@ -62,7 +63,7 @@ namespace Linalg::Heap {
         }
 
     private:
-        void predict(this Kalman& self, Matrix const& input)
+        auto predict(this Kalman& self, Matrix const& input) -> void
         {
             try {
                 self.state_ = (self.state_transition_ * self.state_) + (self.input_transition_ * input);
@@ -75,7 +76,7 @@ namespace Linalg::Heap {
             }
         }
 
-        void correct(this Kalman& self, Matrix const& measurement)
+        auto correct(this Kalman& self, Matrix const& measurement) -> void
         {
             try {
                 auto const innovation{measurement - (self.measurement_transition_ * self.state_)};
@@ -96,7 +97,7 @@ namespace Linalg::Heap {
             }
         }
 
-        void initialize(this Kalman const& self)
+        auto initialize(this Kalman const& self) -> void
         {
             auto const states{self.state_transition_.rows()};
             auto const inputs{self.input_transition_.cols()};

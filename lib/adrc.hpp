@@ -6,17 +6,7 @@
 namespace Regulators {
 
     template <Linalg::Arithmetic Value>
-    struct ADRC
-#ifdef REGULATOR_PTR
-        : public Base<Value>
-#endif
-    {
-        Value operator()(this ADRC& self, const Value error, const Value) noexcept
-        {
-            // implement adrc algorithm here
-            return error;
-        }
-    };
+    struct ADRC {};
 
 }; // namespace Regulators
 

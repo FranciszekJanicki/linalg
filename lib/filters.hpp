@@ -6,26 +6,30 @@
 #include <queue>
 #include <utility>
 
+using namespace Linalg;
+
 namespace Filters {
-    template <typename Value>
+    template <Arithmetic Value>
     using Filter = std::function<Value(Value)>;
 
-    template <typename Value>
-    [[nodiscard]] constexpr auto make_recursive_average(Value const start_condition = 0) noexcept
+    template <Arithmetic Value>
+    [[nodiscard]]
+    constexpr auto make_recursive_average(Value const start_condition = 0) noexcept -> auto
     {
-        return [estimate = start_condition, samples = Value{1}](Value const measurement) mutable {
-            estimate = (estimate * (samples - 1) + measurement) / samples;
-            samples += Value{1};
+        return [estimate = start_condition, samples = 1UL](Value const measurement) mutable {
+            estimate = (estimate * (samples - 1UL) + measurement) / samples;
+            samples += 1UL;
             return estimate;
         };
     }
 
-    template <typename Value>
-    [[nodiscard]] constexpr auto make_moving_average(Value const start_condition = 0, Value const last_samples = 10)
+    template <Arithmetic Value>
+    [[nodiscard]]
+    constexpr auto make_moving_average(Value const start_condition = 0, Size const last_samples = 10UL) -> auto
     {
         assert(last_samples > 0);
         std::queue<Value> measurements{};
-        for (Value i{}; i < last_samples; ++i) {
+        for (auto i{0UL}; i < last_samples; ++i) {
             measurements.push(start_condition);
         }
         return [estimate = start_condition, last_samples, measurements = std::move(measurements)](
@@ -39,8 +43,9 @@ namespace Filters {
         };
     }
 
-    template <typename Value>
-    [[nodiscard]] constexpr auto make_low_pass(Value const start_condition = 0, Value const alpha = 0.5) noexcept
+    template <Arithmetic Value>
+    [[nodiscard]]
+    constexpr auto make_low_pass(Value const start_condition = 0, Value const alpha = 0.5) noexcept -> auto
     {
         assert(alpha >= 0 && alpha <= 1);
         return [estimate = start_condition, alpha](Value const measurement) mutable {

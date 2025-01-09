@@ -2,10 +2,10 @@
 #define VECTOR3D_HPP
 
 #include "common.hpp"
+#include "quaternion3d.hpp"
 #include <cmath>
 #include <compare>
 #include <exception>
-#include <quaternion3d.hpp>
 #include <stdexcept>
 #include <utility>
 
@@ -15,19 +15,21 @@ namespace Linalg {
 
     template <Arithmetic Value>
     struct Vector3D {
-        [[nodiscard]] constexpr auto distance(this Vector3D const& self, Vector3D const& other) noexcept
+        [[nodiscard]]
+        inline auto distance(this Vector3D const& self, Vector3D const& other) noexcept -> Value
         {
             return std::sqrt(std::pow(self.x - other.x, 2) + std::pow(self.y - other.y, 2) +
                              std::pow(self.z - other.z, 2));
         }
 
-        [[nodiscard]] constexpr auto magnitude(this Vector3D const& self) noexcept
+        [[nodiscard]]
+        inline auto magnitude(this Vector3D const& self) noexcept -> Value
         {
             return std::sqrt(std::pow(self.x, 2) + std::pow(self.y, 2) + std::pow(self.z, 2));
         }
 
-        [[nodiscard]] constexpr Vector3D rotated(this Vector3D const& self,
-                                                 Quaternion3D<Value> const& quaternion) noexcept
+        [[nodiscard]]
+        inline auto rotated(this Vector3D const& self, Quaternion3D<Value> const& quaternion) noexcept -> Vector3D
         {
             Quaternion3D p(0, self.x, self.y, self.z);
             p *= quaternion;
@@ -35,7 +37,7 @@ namespace Linalg {
             return Vector3D{p.x, p.y, p.z};
         }
 
-        constexpr void rotate(this Vector3D& self, Quaternion3D<Value> const& quaternion) noexcept
+        inline auto rotate(this Vector3D& self, Quaternion3D<Value> const& quaternion) noexcept -> void
         {
             Quaternion3D p(0, self.x, self.y, self.z);
             p *= quaternion;
@@ -45,19 +47,21 @@ namespace Linalg {
             self.z = p.z;
         }
 
-        [[nodiscard]] constexpr Vector3D normalized(this Vector3D const& self) noexcept
+        [[nodiscard]]
+        inline auto normalized(this Vector3D const& self) noexcept -> Vector3D
         {
             const auto im{Value{1} / self.magnitude()};
             return Vector3D{self.x * im, self.y * im, self.z * im};
         }
 
-        constexpr void normalize(this Vector3D& self) noexcept
+        inline auto normalize(this Vector3D& self) noexcept -> void
         {
             const auto im{Value{1} / self.magnitude()};
             self *= im;
         }
 
-        constexpr Vector3D& operator+=(this Vector3D& self, Vector3D const& other) noexcept
+        [[nodiscard]]
+        inline auto operator+=(this Vector3D& self, Vector3D const& other) noexcept -> Vector3D&
         {
             self.x += other.x;
             self.y += other.y;
@@ -65,7 +69,8 @@ namespace Linalg {
             return self;
         }
 
-        constexpr Vector3D& operator-=(this Vector3D& self, Vector3D const& other) noexcept
+        [[nodiscard]]
+        inline auto operator-=(this Vector3D& self, Vector3D const& other) noexcept -> Vector3D&
         {
             self.x -= other.x;
             self.y -= other.y;
@@ -73,7 +78,8 @@ namespace Linalg {
             return self;
         }
 
-        constexpr Vector3D& operator*=(this Vector3D& self, Value const factor)
+        [[nodiscard]]
+        inline auto operator*=(this Vector3D& self, Value const factor) -> Vector3D&
         {
             if (factor == std::numeric_limits<Value>::max()) {
                 throw Error{"Multiplication by inf\n"};
@@ -85,7 +91,8 @@ namespace Linalg {
             return self;
         }
 
-        constexpr Vector3D& operator/=(this Vector3D& self, Value const factor)
+        [[nodiscard]]
+        inline auto operator/=(this Vector3D& self, Value const factor) -> Vector3D&
         {
             if (factor == 0) {
                 throw Error{"Disivion by 0\n"};
@@ -98,14 +105,16 @@ namespace Linalg {
         }
 
         template <Arithmetic Converted>
-        [[nodiscard]] explicit constexpr operator Vector3D<Converted>(this Vector3D const& self) noexcept
+        [[nodiscard]]
+        explicit inline operator Vector3D<Converted>(this Vector3D const& self) noexcept
         {
             return Vector3D<Converted>{static_cast<Converted>(self.x),
                                        static_cast<Converted>(self.y),
                                        static_cast<Converted>(self.z)};
         }
 
-        [[nodiscard]] constexpr bool operator<=>(this Vector3D const& self, Vector3D const& other) noexcept = default;
+        [[nodiscard]]
+        constexpr bool operator<=>(this Vector3D const& self, Vector3D const& other) noexcept = default;
 
         Value x{};
         Value y{};
@@ -113,19 +122,22 @@ namespace Linalg {
     };
 
     template <Arithmetic Value>
-    constexpr auto operator+(Vector3D<Value> const& left, Vector3D<Value> const& right) noexcept
+    [[nodiscard]]
+    inline auto operator+(Vector3D<Value> const& left, Vector3D<Value> const& right) noexcept
     {
         return Vector3D<Value>{left.x + right.x, left.y + right.y, left.z + right.z};
     }
 
     template <Arithmetic Value>
-    constexpr auto operator-(Vector3D<Value> const& left, Vector3D<Value> const& right) noexcept
+    [[nodiscard]]
+    inline auto operator-(Vector3D<Value> const& left, Vector3D<Value> const& right) noexcept
     {
         return Vector3D<Value>{left.x - right.x, left.y - right.y, left.z - right.z};
     }
 
     template <Arithmetic Value>
-    constexpr auto operator*(Value const factor, Vector3D<Value> const& vector)
+    [[nodiscard]]
+    inline auto operator*(Value const factor, Vector3D<Value> const& vector)
     {
         if (factor == std::numeric_limits<Value>::max()) {
             throw Error{"Multiplication by inf\n"};
@@ -135,7 +147,8 @@ namespace Linalg {
     }
 
     template <Arithmetic Value>
-    constexpr auto operator*(Vector3D<Value> const& vector, Value const factor)
+    [[nodiscard]]
+    inline auto operator*(Vector3D<Value> const& vector, Value const factor)
     {
         try {
             return factor * vector;
@@ -145,7 +158,8 @@ namespace Linalg {
     }
 
     template <Arithmetic Value>
-    constexpr auto operator/(Vector3D<Value> const& vector, Value const factor)
+    [[nodiscard]]
+    inline auto operator/(Vector3D<Value> const& vector, Value const factor)
     {
         if (factor == 0) {
             throw Error{"Division by zero\n"};

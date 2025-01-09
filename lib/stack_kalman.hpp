@@ -33,8 +33,10 @@ namespace Linalg::Stack {
             process_noise_{process_noise}
         {}
 
-        [[nodiscard]] Matrix<STATES, 1>
-        operator()(this Kalman& self, Matrix<1, INPUTS> const& input, Matrix<1, MEASUREMENTS> const& measurement)
+        [[nodiscard]]
+        auto operator()(this Kalman& self,
+                        Matrix<1, INPUTS> const& input,
+                        Matrix<1, MEASUREMENTS> const& measurement) -> Matrix<STATES, 1>
         {
             try {
                 self.predict(input);
@@ -46,7 +48,7 @@ namespace Linalg::Stack {
         }
 
     private:
-        void predict(this Kalman& self, Matrix<1, INPUTS> const& input)
+        auto predict(this Kalman& self, Matrix<1, INPUTS> const& input) -> void
         {
             try {
                 self.state_ = (self.state_transition_ * self.state_) + (self.input_transition_ * input);
@@ -59,7 +61,7 @@ namespace Linalg::Stack {
             }
         }
 
-        void correct(this Kalman& self, Matrix<1, MEASUREMENTS> const& measurement)
+        auto correct(this Kalman& self, Matrix<1, MEASUREMENTS> const& measurement) -> void
         {
             try {
                 auto const innovation{measurement - (self.measurement_transition_ * self.state_)};

@@ -22,7 +22,8 @@ namespace Linalg {
             using Data = std::vector<Value>;
             using Init = std::initializer_list<Value>;
 
-            [[nodiscard]] static Data make_data(Init const init)
+            [[nodiscard]]
+            static inline auto make_data(Init const init) -> Data
             {
                 // Data data{};
 
@@ -35,7 +36,8 @@ namespace Linalg {
                 return Data{init};
             }
 
-            [[nodiscard]] static Data make_data(Size const elems)
+            [[nodiscard]]
+            static inline auto make_data(Size const elems) -> Data
             {
                 // Data data{};
 
@@ -48,13 +50,15 @@ namespace Linalg {
                 return Data(elems, Value{0});
             }
 
-            [[nodiscard]] Vector zeros(Size const elems)
+            [[nodiscard]]
+            inline auto zeros(Size const elems) -> Vector
             {
                 // return Vector{make_data(elems)};
                 return Data(elems, Value{0});
             }
 
-            [[nodiscard]] Vector ones(Size const elems)
+            [[nodiscard]]
+            inline auto ones(Size const elems) -> Vector
             {
                 // Vector result{make_data(elems)};
 
@@ -66,33 +70,47 @@ namespace Linalg {
                 return Data(elems, Value{1});
             }
 
-            constexpr Vector() noexcept = default;
+            [[nodiscard]]
+            inline Vector() noexcept = default;
 
-            constexpr Vector(Data&& data) : data{std::forward<Data>(data)}
+            [[nodiscard]]
+            inline Vector(Data&& data) :
+                data{std::forward<Data>(data)}
             {}
 
-            constexpr Vector(Init const init) : data{init}
+            [[nodiscard]]
+            inline Vector(Init const init) :
+                data{init}
             {}
 
-            constexpr Vector(Size const elems) : data{make_data(elems)}
+            [[nodiscard]]
+            inline Vector(Size const elems) :
+                data{make_data(elems)}
             {}
 
-            constexpr Vector(Vector const& other) = default;
+            [[nodiscard]]
+            inline Vector(Vector const& other) = default;
 
-            constexpr Vector(Vector&& other) noexcept = default;
+            [[nodiscard]]
+            inline Vector(Vector&& other) noexcept = default;
 
-            constexpr ~Vector() noexcept = default;
+            [[nodiscard]]
+            inline ~Vector() noexcept = default;
 
-            constexpr Vector& operator=(Vector const& other) = default;
+            [[nodiscard]]
+            inline auto operator=(Vector const& other) -> Vector& = default;
 
-            constexpr Vector& operator=(Vector&& other) noexcept = default;
+            [[nodiscard]]
+            inline auto operator=(Vector&& other) noexcept -> Vector& = default;
 
-            constexpr void operator=(this Vector& self, Init const init)
+            inline auto operator=(this Vector& self, Init const init) -> Vector&
             {
                 self.data = data;
+                return self;
             }
 
-            constexpr Vector& operator+=(this Vector& self, Vector const& other)
+            [[nodiscard]]
+            inline auto operator+=(this Vector& self, Vector const& other) -> Vector&
             {
                 try {
                     self = vector_sum(self, other);
@@ -102,7 +120,8 @@ namespace Linalg {
                 }
             }
 
-            constexpr Vector& operator-=(this Vector& self, Vector const& other)
+            [[nodiscard]]
+            inline auto operator-=(this Vector& self, Vector const& other) -> Vector&
             {
                 try {
                     self = vector_difference(self, other);
@@ -112,7 +131,8 @@ namespace Linalg {
                 }
             }
 
-            constexpr Vector& operator*=(this Vector& self, Value const scale)
+            [[nodiscard]]
+            inline auto operator*=(this Vector& self, Value const scale) -> Vector&
             {
                 try {
                     self = vector_scale(self, scale);
@@ -122,7 +142,8 @@ namespace Linalg {
                 }
             }
 
-            constexpr Vector& operator/=(this Vector& self, Value const scale)
+            [[nodiscard]]
+            inline auto operator/=(this Vector& self, Value const scale) -> Vector&
             {
                 try {
                     self = vector_scale(self, 1 / scale);
@@ -132,7 +153,9 @@ namespace Linalg {
                 }
             }
 
-            [[nodiscard]] constexpr Value& operator[](this Vector& self, Size const elem)
+            [[nodiscard]]
+            inline Valueauto operator[](this Vector& self, Size const elem)
+                ->&
             {
                 if (elem > self.elems()) {
                     throw Error{"Wrong dimensions\n"};
@@ -140,7 +163,8 @@ namespace Linalg {
                 return self.data[elem];
             }
 
-            [[nodiscard]] constexpr Value const& operator[](this Vector const& self, Size const elem) noexcept
+            [[nodiscard]]
+            inline Value auto operator[](this Vector const& self, Size const elem) noexcept -> const&
             {
                 if (elem > self.elems()) {
                     throw Error{"Wrong dimensions\n"};
@@ -148,9 +172,10 @@ namespace Linalg {
                 return self.data[elem];
             }
 
-            [[nodiscard]] constexpr bool operator<=>(this Vector const& self, Vector const& other) noexcept = default;
+            [[nodiscard]]
+            inline bool operator<=>(this Vector const& self, Vector const& other) noexcept = default;
 
-            constexpr void print(this Vector const& self) noexcept
+            inline auto print(this Vector const& self) noexcept -> void
             {
                 fmt::print("[");
                 for (auto& elem : self.data) {
@@ -162,7 +187,8 @@ namespace Linalg {
                 fmt::print("]\n");
             }
 
-            [[nodiscard]] constexpr Size elems(this Vector const& self) noexcept
+            [[nodiscard]]
+            inline auto elems(this Vector const& self) noexcept -> Size
             {
                 return self.data.size();
             }
@@ -171,7 +197,8 @@ namespace Linalg {
         };
 
         template <typename Value>
-        [[nodiscard]] Vector<Value> vector_sum(Vector<Value> const& left, Vector<Value> const& right)
+        [[nodiscard]]
+        inline auto vector_sum(Vector<Value> const& left, Vector<Value> const& right) -> Vector<Value>
         {
             if (left.elems() != right.elems()) {
                 throw Error{"Incorrect dimensions!\n"};
@@ -185,7 +212,8 @@ namespace Linalg {
         }
 
         template <typename Value>
-        [[nodiscard]] Vector<Value> vector_difference(Vector<Value> const& left, Vector<Value> const& right)
+        [[nodiscard]]
+        inline auto vector_difference(Vector<Value> const& left, Vector<Value> const& right) -> Vector<Value>
         {
             if (left.elems() != right.elems()) {
                 throw Error{"Incorrect dimensions!\n"};
@@ -199,7 +227,8 @@ namespace Linalg {
         }
 
         template <typename Value>
-        [[nodiscard]] Vector<Value> vector_scale(Vector<Value> const& vector, Value const scale)
+        [[nodiscard]]
+        inline auto vector_scale(Vector<Value> const& vector, Value const scale) -> Vector<Value>
         {
             if (scale == std::numeric_limits<Value>::max()) {
                 throw Error{"Multiplication by inf!\n"};
@@ -213,7 +242,8 @@ namespace Linalg {
         }
 
         template <typename Value>
-        Vector<Value> operator+(Vector<Value> const& left, Vector<Value> const& right)
+        [[nodiscard]]
+        inline auto operator+(Vector<Value> const& left, Vector<Value> const& right) -> Vector<Value>
         {
             try {
                 return vector_sum(left, right);
@@ -223,7 +253,8 @@ namespace Linalg {
         }
 
         template <typename Value>
-        Vector<Value> operator-(Vector<Value> const& left, Vector<Value> const& right)
+        [[nodiscard]]
+        inline auto operator-(Vector<Value> const& left, Vector<Value> const& right) -> Vector<Value>
         {
             try {
                 return vector_difference(left, right);
@@ -233,7 +264,8 @@ namespace Linalg {
         }
 
         template <typename Value>
-        Vector<Value> operator*(Value const scale, Vector<Value> const& vector)
+        [[nodiscard]]
+        inline auto operator*(Value const scale, Vector<Value> const& vector) -> Vector<Value>
         {
             try {
                 return vector_scale(vector, scale);
@@ -243,7 +275,8 @@ namespace Linalg {
         }
 
         template <typename Value>
-        Vector<Value> operator*(Vector<Value> const& vector, Value const scale)
+        [[nodiscard]]
+        inline auto operator*(Vector<Value> const& vector, Value const scale) -> Vector<Value>
         {
             try {
                 return vector_scale(vector, scale);
@@ -253,7 +286,8 @@ namespace Linalg {
         }
 
         template <typename Value>
-        Vector<Value> operator/(Vector<Value> const& vector, Value const scale)
+        [[nodiscard]]
+        inline auto operator/(Vector<Value> const& vector, Value const scale) -> Vector<Value>
         {
             try {
                 return vector_scale(vector, 1 / scale);

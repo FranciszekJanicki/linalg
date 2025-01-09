@@ -25,7 +25,8 @@ namespace Linalg {
             using VectorInit = std::initializer_list<Value>;
             using Init = std::initializer_list<std::initializer_list<Value>>;
 
-            [[nodiscard]] static Data make_data(Size const rows, Size const cols)
+            [[nodiscard]]
+            static inline auto make_data(Size const rows, Size const cols) -> Data
             {
                 Data data{};
                 data.reserve(rows);
@@ -39,7 +40,8 @@ namespace Linalg {
                 return data;
             }
 
-            [[nodiscard]] static Data make_data(Init const init)
+            [[nodiscard]]
+            static inline auto make_data(Init const init) -> Data
             {
                 Data data{};
                 data.reserve(init.size());
@@ -53,12 +55,14 @@ namespace Linalg {
                 return data;
             }
 
-            [[nodiscard]] static Matrix zeros(Size const rows, Size const cols)
+            [[nodiscard]]
+            static inline auto zeros(Size const rows, Size const cols) -> Matrix
             {
                 return Matrix{make_data(rows, cols)};
             }
 
-            [[nodiscard]] static Matrix ones(Size const rows, Size const cols)
+            [[nodiscard]]
+            static inline auto ones(Size const rows, Size const cols) -> Matrix
             {
                 Matrix result{make_data(rows, cols)};
                 for (Size i{}; i < rows; ++i) {
@@ -69,7 +73,8 @@ namespace Linalg {
                 return result;
             }
 
-            [[nodiscard]] static Matrix diagonal(VectorInit const init)
+            [[nodiscard]]
+            static inline auto diagonal(VectorInit const init) -> Matrix
             {
                 Matrix result{make_data(init.size(), init.size())};
                 for (Size i{}; i < init.size(); ++i) {
@@ -80,7 +85,8 @@ namespace Linalg {
                 return result;
             }
 
-            [[nodiscard]] static Matrix eye(Size const dimensions)
+            [[nodiscard]]
+            static inline auto eye(Size const dimensions) -> Matrix
             {
                 Matrix result{make_data(dimensions, dimensions)};
                 for (Size i{}; i < dimensions; ++i) {
@@ -91,12 +97,14 @@ namespace Linalg {
                 return result;
             }
 
-            [[nodiscard]] static Matrix row(Size const rows)
+            [[nodiscard]]
+            static inline auto row(Size const rows) -> Matrix
             {
                 return Matrix{make_data(rows, 1)};
             }
 
-            [[nodiscard]] static Matrix row(VectorInit const init)
+            [[nodiscard]]
+            static inline auto row(VectorInit const init) -> Matrix
             {
                 Matrix result{make_data(init.size(), 1)};
                 for (Size i{}; i < init.size(); ++i) {
@@ -105,12 +113,14 @@ namespace Linalg {
                 return result;
             }
 
-            [[nodiscard]] static Matrix column(Size const cols)
+            [[nodiscard]]
+            static inline auto column(Size const cols) -> Matrix
             {
                 return Matrix{make_data(1, cols)};
             }
 
-            [[nodiscard]] static Matrix column(VectorInit const init)
+            [[nodiscard]]
+            static inline auto column(VectorInit const init) -> Matrix
             {
                 Matrix result{make_data(1, init.size())};
                 for (Size i{}; i < init.size(); ++i) {
@@ -119,33 +129,47 @@ namespace Linalg {
                 return result;
             }
 
-            constexpr Matrix() noexcept = default;
+            [[nodiscard]]
+            inline Matrix() noexcept = default;
 
-            constexpr Matrix(Init const init) : data{make_data(init)}
+            [[nodiscard]]
+            inline Matrix(Init const init) :
+                data{make_data(init)}
             {}
 
-            constexpr Matrix(Data&& data) : data{std::forward<Data>(data)}
+            [[nodiscard]]
+            inline Matrix(Data&& data) :
+                data{std::forward<Data>(data)}
             {}
 
-            constexpr Matrix(Size const rows, Size const cols) : data{make_data(rows, cols)}
+            [[nodiscard]]
+            inline Matrix(Size const rows, Size const cols) :
+                data{make_data(rows, cols)}
             {}
 
-            constexpr Matrix(Matrix const& other) = default;
+            [[nodiscard]]
+            inline Matrix(Matrix const& other) = default;
 
-            constexpr Matrix(Matrix&& other) noexcept = default;
+            [[nodiscard]]
+            inline Matrix(Matrix&& other) noexcept = default;
 
-            constexpr ~Matrix() noexcept = default;
+            [[nodiscard]]
+            inline ~Matrix() noexcept = default;
 
-            constexpr Matrix& operator=(Matrix const& other) = default;
+            [[nodiscard]]
+            inline auto operator=(Matrix const& other) -> Matrix& = default;
 
-            constexpr Matrix& operator=(Matrix&& other) noexcept = default;
+            [[nodiscard]]
+            inline auto operator=(Matrix&& other) noexcept -> Matrix& = default;
 
-            constexpr void operator=(this Matrix& self, Init const init) noexcept
+            [[nodiscard]]
+            inline auto operator=(this Matrix& self, Init const init) noexcept
             {
                 self.data = make_data(init);
             }
 
-            constexpr Matrix& operator+=(this Matrix& self, Matrix const& other)
+            [[nodiscard]]
+            inline auto operator+=(this Matrix& self, Matrix const& other) -> Matrix&
             {
                 try {
                     self = matrix_sum(self, other);
@@ -155,7 +179,8 @@ namespace Linalg {
                 }
             }
 
-            constexpr Matrix& operator-=(this Matrix& self, Matrix const& other)
+            [[nodiscard]]
+            inline auto operator-=(this Matrix& self, Matrix const& other) -> Matrix&
             {
                 try {
                     self = matrix_difference(self, other);
@@ -165,7 +190,8 @@ namespace Linalg {
                 }
             }
 
-            constexpr Matrix& operator*=(this Matrix& self, Value const scale)
+            [[nodiscard]]
+            inline auto operator*=(this Matrix& self, Value const scale) -> Matrix&
             {
                 try {
                     self = matrix_scale(self, scale);
@@ -175,7 +201,8 @@ namespace Linalg {
                 }
             }
 
-            constexpr Matrix& operator*=(this Matrix& self, Matrix const& other)
+            [[nodiscard]]
+            inline auto operator*=(this Matrix& self, Matrix const& other) -> Matrix&
             {
                 try {
                     self = matrix_product(self, other);
@@ -185,7 +212,8 @@ namespace Linalg {
                 }
             }
 
-            constexpr Matrix& operator/=(this Matrix& self, Value const scale)
+            [[nodiscard]]
+            inline auto operator/=(this Matrix& self, Value const scale) -> Matrix&
             {
                 try {
                     self = matrix_scale(self, 1 / scale);
@@ -195,7 +223,8 @@ namespace Linalg {
                 }
             }
 
-            constexpr Matrix& operator/=(this Matrix& self, Matrix const& other)
+            [[nodiscard]]
+            inline auto operator/=(this Matrix& self, Matrix const& other) -> Matrix&
             {
                 try {
                     self = matrix_product(self, matrix_inverse(other));
@@ -205,7 +234,8 @@ namespace Linalg {
                 }
             }
 
-            constexpr Matrix& operator^=(this Matrix& self, Value const scale)
+            [[nodiscard]]
+            inline auto operator^=(this Matrix& self, Value const scale) -> Matrix&
             {
                 try {
                     self = matrix_power(self, scale);
@@ -215,7 +245,8 @@ namespace Linalg {
                 }
             }
 
-            [[nodiscard]] constexpr Vector const& operator[](this Matrix const& self, Size const row)
+            [[nodiscard]]
+            inline Vector auto operator[](this Matrix const& self, Size const row) -> const&
             {
                 if (row >= self.rows()) {
                     throw Error{"Wrong dimensions\n"};
@@ -223,7 +254,9 @@ namespace Linalg {
                 return self.data[row];
             }
 
-            [[nodiscard]] constexpr Vector& operator[](this Matrix& self, Size const row)
+            [[nodiscard]]
+            inline Vectorauto operator[](this Matrix& self, Size const row)
+                ->&
             {
                 if (row >= self.rows()) {
                     throw Error{"Wrong dimensions\n"};
@@ -231,7 +264,9 @@ namespace Linalg {
                 return self.data[row];
             }
 
-            [[nodiscard]] constexpr Value& operator[](this Matrix& self, Size const row, Size const column)
+            [[nodiscard]]
+            inline Valueauto operator[](this Matrix& self, Size const row, Size const column)
+                ->&
             {
                 if (row >= self.rows() || column >= self.cols()) {
                     throw Error{"Wrong dimensions\n"};
@@ -239,7 +274,8 @@ namespace Linalg {
                 return self.data[row][column];
             }
 
-            [[nodiscard]] constexpr Value const& operator[](this Matrix const& self, Size const row, Size const column)
+            [[nodiscard]]
+            inline Value auto operator[](this Matrix const& self, Size const row, Size const column) -> const&
             {
                 if (row >= self.rows() || column >= self.cols()) {
                     throw Error{"Wrong dimensions\n"};
@@ -247,9 +283,10 @@ namespace Linalg {
                 return self.data[row][column];
             }
 
-            [[nodiscard]] constexpr bool operator<=>(this Matrix const& self, Matrix const& other) noexcept = default;
+            [[nodiscard]]
+            inline bool operator<=>(this Matrix const& self, Matrix const& other) noexcept = default;
 
-            constexpr void print(this Matrix const& self) noexcept
+            inline auto print(this Matrix const& self) noexcept -> void
             {
                 fmt::print("[");
                 if (!self.data.empty()) {
@@ -272,22 +309,25 @@ namespace Linalg {
                 fmt::print("]\n");
             }
 
-            [[nodiscard]] constexpr bool is_square(this Matrix const& self) noexcept
+            [[nodiscard]]
+            constexpr auto is_square(this Matrix const& self) noexcept -> bool
             {
                 return self.rows() == self.cols();
             }
 
-            [[nodiscard]] constexpr Size rows(this Matrix const& self) noexcept
+            [[nodiscard]]
+            inline auto rows(this Matrix const& self) noexcept -> Size
             {
                 return self.data.size();
             }
 
-            [[nodiscard]] constexpr Size cols(this Matrix const& self) noexcept
+            [[nodiscard]]
+            inline auto cols(this Matrix const& self) noexcept -> Size
             {
                 return self.data.front().size();
             }
 
-            constexpr void transpose(this Matrix& self)
+            inline auto transpose(this Matrix& self) -> void
             {
                 try {
                     self = matrix_transpose(self);
@@ -296,7 +336,7 @@ namespace Linalg {
                 }
             }
 
-            constexpr void invert(this Matrix& self)
+            inline auto invert(this Matrix& self) -> void
             {
                 try {
                     self = matrix_inverse(self);
@@ -310,8 +350,9 @@ namespace Linalg {
         };
 
         template <typename Value>
-        [[nodiscard]] Matrix<Value>
-        matrix_minor(Matrix<Value> const& matrix, Size const row, Size const column, Size const dimensions)
+        [[nodiscard]]
+        inline auto matrix_minor(Matrix<Value> const& matrix, Size const row, Size const column, Size const dimensions)
+            -> Matrix<Value>
         {
             if (!matrix.is_square()) {
                 throw Error{"Wrong dimensions\n"};
@@ -342,7 +383,8 @@ namespace Linalg {
         }
 
         template <typename Value>
-        [[nodiscard]] Value matrix_det(Matrix<Value> const& matrix, Size const dimensions)
+        [[nodiscard]]
+        inline auto matrix_det(Matrix<Value> const& matrix, Size const dimensions) -> Value
         {
             if (!matrix.is_square()) {
                 throw Error{"Wrong dimensions\n"};
@@ -371,7 +413,8 @@ namespace Linalg {
         }
 
         template <typename Value>
-        [[nodiscard]] Matrix<Value> matrix_transpose(Matrix<Value> const& matrix)
+        [[nodiscard]]
+        inline auto matrix_transpose(Matrix<Value> const& matrix) -> Matrix<Value>
         {
             auto result{Matrix<Value>::zeros(matrix.rows(), matrix.cols())};
             for (Size i{0}; i < matrix.rows(); ++i) {
@@ -383,7 +426,8 @@ namespace Linalg {
         }
 
         template <typename Value>
-        [[nodiscard]] Matrix<Value> matrix_complement(Matrix<Value> const& matrix)
+        [[nodiscard]]
+        inline auto matrix_complement(Matrix<Value> const& matrix) -> Matrix<Value>
         {
             if (!matrix.is_square()) {
                 throw Error{"Wrong dimensions\n"};
@@ -409,7 +453,8 @@ namespace Linalg {
         }
 
         template <typename Value>
-        [[nodiscard]] Matrix<Value> matrix_adjoint(Matrix<Value> const& matrix)
+        [[nodiscard]]
+        inline auto matrix_adjoint(Matrix<Value> const& matrix) -> Matrix<Value>
         {
             try {
                 return matrix_transpose(matrix_complement(matrix));
@@ -419,7 +464,8 @@ namespace Linalg {
         }
 
         template <typename Value>
-        [[nodiscard]] Matrix<Value> matrix_inverse(Matrix<Value> const& matrix)
+        [[nodiscard]]
+        inline auto matrix_inverse(Matrix<Value> const& matrix) -> Matrix<Value>
         {
             try {
                 return matrix_scale(matrix_adjoint(matrix), 1 / matrix_det(matrix, matrix.rows()));
@@ -429,7 +475,8 @@ namespace Linalg {
         }
 
         template <typename Value>
-        [[nodiscard]] Matrix<Value> matrix_upper_triangular(Matrix<Value> const& matrix)
+        [[nodiscard]]
+        inline auto matrix_upper_triangular(Matrix<Value> const& matrix) -> Matrix<Value>
         {
             try {
                 return matrix_transpose(matrix_lower_triangular(matrix));
@@ -439,7 +486,8 @@ namespace Linalg {
         }
 
         template <typename Value>
-        [[nodiscard]] Matrix<Value> matrix_lower_triangular(Matrix<Value> const& matrix)
+        [[nodiscard]]
+        inline auto matrix_lower_triangular(Matrix<Value> const& matrix) -> Matrix<Value>
         {
             if (!matrix.is_square()) {
                 throw Error{"Wrong dimensions!\n"};
@@ -468,7 +516,8 @@ namespace Linalg {
         }
 
         template <typename Value>
-        [[nodiscard]] Matrix<Value> matrix_product(Matrix<Value> const& left, Matrix<Value> const& right)
+        [[nodiscard]]
+        inline auto matrix_product(Matrix<Value> const& left, Matrix<Value> const& right) -> Matrix<Value>
         {
             auto result{Matrix<Value>::zeros(left.rows(), right.rows())};
             for (Size i{}; i < left.rows(); ++i) {
@@ -484,7 +533,8 @@ namespace Linalg {
         }
 
         template <typename Value>
-        [[nodiscard]] Matrix<Value> matrix_sum(Matrix<Value> const& left, Matrix<Value> const& right)
+        [[nodiscard]]
+        inline auto matrix_sum(Matrix<Value> const& left, Matrix<Value> const& right) -> Matrix<Value>
         {
             if (left.cols() != right.cols() || left.rows() != right.rows()) {
                 throw Error{"Wrong dimensions\n"};
@@ -500,7 +550,8 @@ namespace Linalg {
         }
 
         template <typename Value>
-        [[nodiscard]] Matrix<Value> matrix_difference(Matrix<Value> const& left, Matrix<Value> const& right)
+        [[nodiscard]]
+        inline auto matrix_difference(Matrix<Value> const& left, Matrix<Value> const& right) -> Matrix<Value>
         {
             if (left.cols() != right.cols() || left.rows() != right.rows()) {
                 throw Error{"Wrong dimensions\n"};
@@ -516,7 +567,8 @@ namespace Linalg {
         }
 
         template <typename Value>
-        [[nodiscard]] Matrix<Value> matrix_scale(Matrix<Value> const& matrix, Value const scale)
+        [[nodiscard]]
+        inline auto matrix_scale(Matrix<Value> const& matrix, Value const scale) -> Matrix<Value>
         {
             if (scale == std::numeric_limits<Value>::max()) {
                 throw Error{"Multiplication by inf!\n"};
@@ -532,7 +584,8 @@ namespace Linalg {
         }
 
         template <typename Value>
-        [[nodiscard]] Matrix<Value> matrix_power(Matrix<Value> const& matrix, Value const power)
+        [[nodiscard]]
+        inline auto matrix_power(Matrix<Value> const& matrix, Value const power) -> Matrix<Value>
         {
             if (!matrix.is_square()) {
                 throw Error{"Wrong dimensions\n"};
@@ -550,7 +603,8 @@ namespace Linalg {
         }
 
         template <typename Value>
-        Matrix<Value> operator+(Matrix<Value> const& left, Matrix<Value> const& right)
+        [[nodiscard]]
+        inline auto operator+(Matrix<Value> const& left, Matrix<Value> const& right) -> Matrix<Value>
         {
             try {
                 return matrix_sum(left, right);
@@ -560,7 +614,8 @@ namespace Linalg {
         }
 
         template <typename Value>
-        Matrix<Value> operator-(Matrix<Value> const& left, Matrix<Value> const& right)
+        [[nodiscard]]
+        inline auto operator-(Matrix<Value> const& left, Matrix<Value> const& right) -> Matrix<Value>
         {
             try {
                 return matrix_difference(left, right);
@@ -570,7 +625,8 @@ namespace Linalg {
         }
 
         template <typename Value>
-        Matrix<Value> operator*(Value const scale, Matrix<Value> const& matrix)
+        [[nodiscard]]
+        inline auto operator*(Value const scale, Matrix<Value> const& matrix) -> Matrix<Value>
         {
             try {
                 return matrix_scale(matrix, scale);
@@ -580,7 +636,8 @@ namespace Linalg {
         }
 
         template <typename Value>
-        Matrix<Value> operator*(Matrix<Value> const& matrix, Value const scale)
+        [[nodiscard]]
+        inline auto operator*(Matrix<Value> const& matrix, Value const scale) -> Matrix<Value>
         {
             try {
                 return matrix_scale(matrix, scale);
@@ -590,7 +647,8 @@ namespace Linalg {
         }
 
         template <typename Value>
-        Matrix<Value> operator*(Matrix<Value> const& left, Matrix<Value> const& right)
+        [[nodiscard]]
+        inline auto operator*(Matrix<Value> const& left, Matrix<Value> const& right) -> Matrix<Value>
         {
             try {
                 return matrix_product(left, right);
@@ -600,7 +658,8 @@ namespace Linalg {
         }
 
         template <typename Value>
-        Matrix<Value> operator/(Matrix<Value> const& matrix, Value const scale)
+        [[nodiscard]]
+        inline auto operator/(Matrix<Value> const& matrix, Value const scale) -> Matrix<Value>
         {
             try {
                 return matrix_scale(matrix, 1 / scale);
@@ -610,7 +669,8 @@ namespace Linalg {
         }
 
         template <typename Value>
-        Matrix<Value> operator/(Matrix<Value> const& left, Matrix<Value> const& right)
+        [[nodiscard]]
+        inline auto operator/(Matrix<Value> const& left, Matrix<Value> const& right) -> Matrix<Value>
         {
             try {
                 return matrix_product(left, matrix_inverse(right));
@@ -620,7 +680,8 @@ namespace Linalg {
         }
 
         template <typename Value>
-        Matrix<Value> operator^(Matrix<Value> const& matrix, Value const scale)
+        [[nodiscard]]
+        inline auto operator^(Matrix<Value> const& matrix, Value const scale) -> Matrix<Value>
         {
             try {
                 return matrix_power(matrix, scale);

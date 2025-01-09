@@ -6,7 +6,7 @@
 #include <fmt/core.h>
 #include <functional>
 
-int main([[maybe_unused]] int const argc, [[maybe_unused]] char const* argv[])
+auto main([[maybe_unused]] int const argc, [[maybe_unused]] char const* argv[]) -> int
 {
     using namespace Linalg::Stack;
     using Kalman = Kalman<double, 2>;
@@ -21,7 +21,7 @@ int main([[maybe_unused]] int const argc, [[maybe_unused]] char const* argv[])
 
     Kalman kalman{Matrix2x1{{1.0}, {0.0}},
                   Matrix2x2{{1.0, dt}, {0.0, 1.0}},
-                  Matrix2x2{{1.0, 0.0}, {0.0, 10.0}},
+                  Matrix2x2{{1.0, 0.0}, {0.0, 1.0}},
                   Matrix2x1{{1.0}, {1.0}},
                   Matrix1x1{{1.0}},
                   Matrix1x2{{1.0, 0.0}},

@@ -6,23 +6,15 @@
 namespace Regulators {
 
     template <Linalg::Arithmetic Value>
-    struct Ternary
-#ifdef REGULATOR_PTR
-        : public Base<Value>
-#endif
-    {
+    struct Ternary {
         enum struct State {
             POSITIVE,
             NEGATIVE,
             ZERO,
         };
 
-        Value operator()(this Ternary& self, const Value error, const Value dt) noexcept
-        {
-            return error;
-        }
-
-        State operator()(this Ternary& self, const Value error) noexcept
+        [[nodiscard]]
+        inline auto operator()(this Ternary& self, const Value error) noexcept -> State
         {
             switch (self.state) {
                 case State::POSITIVE:

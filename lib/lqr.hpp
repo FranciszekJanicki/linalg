@@ -11,9 +11,7 @@ namespace Regulators {
 
     template <Linalg::Arithmetic Value>
     struct LQR
-#ifdef REGULATOR_PTR
-        : public Base<Value>
-#endif
+
     {
     public:
         using Matrix = Linalg::Matrix<Value>;
@@ -55,14 +53,9 @@ namespace Regulators {
                                                      samples)}
         {}
 
-        Value operator()(this LQR& self, const Value error, const Value) noexcept
-        {
-            // implement lqr algorithm here
-            return error;
-        }
-
-        [[nodiscard]] constexpr Matrix
-        operator()(this LQR& self, std::uint64_t const sample, Matrix const& input, Matrix const& measurement)
+        [[nodiscard]]
+        inline auto
+        operator()(this LQR& self, std::uint64_t const sample, Matrix const& input, Matrix const& measurement) -> Matrix
         {
             auto error{input - measurement};
             return input - (get_optimal_gain(sample,
@@ -73,20 +66,20 @@ namespace Regulators {
         }
 
     private:
-        static constexpr Matrix get_optimal_gain(std::uint64_t const sample,
-                                                 Matrix const& ricatti,
-                                                 Matrix const& input_transition,
-                                                 Matrix const& input_cost)
+        static inline auto get_optimal_gain(std::uint64_t const sample,
+                                            Matrix const& ricatti,
+                                            Matrix const& input_transition,
+                                            Matrix const& input_cost) -> Matrix
         {
             return Matrix::inverse(input_cost).value() * Matrix::transpose(input_transition) * ricatti;
         }
 
-        static constexpr RicattiSolutions get_ricatti_solutions(Matrix const& state_transition,
-                                                                Matrix const& input_transition,
-                                                                Matrix const& state_cost,
-                                                                Matrix const& input_cost,
-                                                                Matrix const& end_condition,
-                                                                std::uint64_t const samples)
+        static inline auto get_ricatti_solutions(Matrix const& state_transition,
+                                                 Matrix const& input_transition,
+                                                 Matrix const& state_cost,
+                                                 Matrix const& input_cost,
+                                                 Matrix const& end_condition,
+                                                 std::uint64_t const samples) -> RicattiSolutions
         {
             RicattiSolutions solutions{};
             solutions.reserve(samples);
@@ -99,11 +92,11 @@ namespace Regulators {
             return solutions;
         }
 
-        static constexpr Matrix get_ricatti_solution(Matrix const& state_transition,
-                                                     Matrix const& input_transition,
-                                                     Matrix const& state_cost,
-                                                     Matrix const& input_cost,
-                                                     Matrix const& prev_solution)
+        static inline auto get_ricatti_solution(Matrix const& state_transition,
+                                                Matrix const& input_transition,
+                                                Matrix const& state_cost,
+                                                Matrix const& input_cost,
+                                                Matrix const& prev_solution) -> Matrix
         {
             return -1 * (prev_solution * state_transition -
                          prev_solution * input_transition * Matrix::inverse(input_cost).value() *

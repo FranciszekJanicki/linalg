@@ -18,7 +18,8 @@ namespace Linalg::Stack {
         using Row = std::array<Value, COLS>;
         using Column = std::array<Value, ROWS>;
 
-        [[nodiscard]] static constexpr Data make_data(Init const init) noexcept
+        [[nodiscard]]
+        static inline auto make_data(Init const init) noexcept -> Data
         {
             Data result;
             for (Size i{}; i < ROWS; ++i) {
@@ -29,20 +30,29 @@ namespace Linalg::Stack {
             return result;
         }
 
-        constexpr Matrix() noexcept = default;
+        [[nodiscard]]
+        inline Matrix() noexcept = default;
 
-        constexpr Matrix(Init const init) noexcept : data{make_data(init)}
+        [[nodiscard]]
+        inline Matrix(Init const init) noexcept :
+            data{make_data(init)}
         {}
 
-        constexpr Matrix(Matrix&& other) noexcept = default;
-        constexpr Matrix(Matrix const& other) noexcept = default;
+        [[nodiscard]]
+        inline Matrix(Matrix&& other) noexcept = default;
+        [[nodiscard]]
+        inline Matrix(Matrix const& other) noexcept = default;
 
-        constexpr Matrix& operator=(Matrix&& other) noexcept = default;
-        constexpr Matrix& operator=(Matrix const& other) noexcept = default;
+        [[nodiscard]]
+        inline auto operator=(Matrix&& other) noexcept -> Matrix& = default;
+        [[nodiscard]]
+        inline auto operator=(Matrix const& other) noexcept -> Matrix& = default;
 
-        constexpr ~Matrix() noexcept = default;
+        [[nodiscard]]
+        inline ~Matrix() noexcept = default;
 
-        [[nodiscard]] constexpr Row const& operator[](this Matrix const& self, Size const row)
+        [[nodiscard]]
+        inline auto operator[](this Matrix const& self, Size const row) -> Row const&
         {
             if (row > ROWS) {
                 throw Error{"Out of bounds\n"};
@@ -50,7 +60,8 @@ namespace Linalg::Stack {
             return self.data[row];
         }
 
-        [[nodiscard]] constexpr Row& operator[](this Matrix& self, Size const row)
+        [[nodiscard]]
+        inline auto operator[](this Matrix& self, Size const row) -> Row&
         {
             if (row > ROWS) {
                 throw Error{"Out of bounds\n"};
@@ -58,7 +69,8 @@ namespace Linalg::Stack {
             return self.data[row];
         }
 
-        [[nodiscard]] constexpr Value const& operator[](this Matrix const& self, Size const row, Size const col)
+        [[nodiscard]]
+        inline auto operator[](this Matrix const& self, Size const row, Size const col) -> Value const&
         {
             if (row > ROWS || col > COLS) {
                 throw Error{"Out of bounds\n"};
@@ -66,7 +78,8 @@ namespace Linalg::Stack {
             return self.data[row][col];
         }
 
-        [[nodiscard]] constexpr Value& operator[](this Matrix& self, Size const row, Size const col)
+        [[nodiscard]]
+        inline auto operator[](this Matrix& self, Size const row, Size const col) -> Value&
         {
             if (row > ROWS || col > COLS) {
                 throw Error{"Out of bounds\n"};
@@ -74,14 +87,16 @@ namespace Linalg::Stack {
             return self.data[row][col];
         }
 
-        [[nodiscard]] constexpr bool operator<=>(this Matrix const& self, Matrix const& other) noexcept = default;
+        [[nodiscard]]
+        inline auto operator<=>(this Matrix const& self, Matrix const& other) noexcept -> bool = default;
 
-        constexpr void operator=(this Matrix& self, Init const init)
+        inline auto operator=(this Matrix& self, Init const init) -> Matrix
         {
             self.data = make_data(init);
+            return self;
         }
 
-        constexpr void print(this Matrix const& self) noexcept
+        inline auto print(this Matrix const& self) noexcept -> void
         {
             fmt::print("[");
             if (!self.data.empty()) {
@@ -104,34 +119,40 @@ namespace Linalg::Stack {
             fmt::print("]\n");
         }
 
-        [[nodiscard]] constexpr bool is_square(this Matrix const& self) noexcept
+        [[nodiscard]]
+        inline auto is_square(this Matrix const& self) noexcept -> bool
         {
             return ROWS == COLS;
         }
 
-        [[nodiscard]] constexpr Size rows(this Matrix const& self) noexcept
+        [[nodiscard]]
+        inline auto rows(this Matrix const& self) noexcept -> Size
         {
             return ROWS;
         }
 
-        [[nodiscard]] constexpr Size cols(this Matrix const& self) noexcept
+        [[nodiscard]]
+        inline auto cols(this Matrix const& self) noexcept -> Size
         {
             return COLS;
         }
 
-        [[nodiscard]] Matrix operator+=(this Matrix& self, Matrix const& other) noexcept
+        [[nodiscard]]
+        inline auto operator+=(this Matrix& self, Matrix const& other) noexcept -> Matrix
         {
             self = matrix_sum(self, other);
             return self;
         }
 
-        [[nodiscard]] Matrix operator-=(this Matrix& self, Matrix const& other) noexcept
+        [[nodiscard]]
+        inline auto operator-=(this Matrix& self, Matrix const& other) noexcept -> Matrix
         {
             self = matrix_difference(self, other);
             return self;
         }
 
-        [[nodiscard]] Matrix operator*=(this Matrix& self, Matrix const& other)
+        [[nodiscard]]
+        inline auto operator*=(this Matrix& self, Matrix const& other) -> Matrix
         {
             try {
                 self = matrix_product(self, other);
@@ -141,7 +162,8 @@ namespace Linalg::Stack {
             }
         }
 
-        [[nodiscard]] Matrix operator*=(this Matrix& self, Value const scale)
+        [[nodiscard]]
+        inline auto operator*=(this Matrix& self, Value const scale) -> Matrix
         {
             try {
                 self = matrix_scale(self, scale);
@@ -151,7 +173,8 @@ namespace Linalg::Stack {
             }
         }
 
-        [[nodiscard]] Matrix operator/=(this Matrix& self, Value const scale)
+        [[nodiscard]]
+        inline auto operator/=(this Matrix& self, Value const scale) -> Matrix
         {
             try {
                 self = matrix_scale(self, 1 / scale);
@@ -161,7 +184,8 @@ namespace Linalg::Stack {
             }
         }
 
-        [[nodiscard]] Matrix operator/=(this Matrix& self, Matrix const& other)
+        [[nodiscard]]
+        inline auto operator/=(this Matrix& self, Matrix const& other) -> Matrix
         {
             try {
                 self = matrix_product(self, matrix_inverse(other));
@@ -171,7 +195,8 @@ namespace Linalg::Stack {
             }
         }
 
-        [[nodiscard]] Matrix operator^=(this Matrix& self, Value const power)
+        [[nodiscard]]
+        inline auto operator^=(this Matrix& self, Value const power) -> Matrix
         {
             self = matrix_power(self, power);
             return self;
@@ -202,7 +227,8 @@ namespace Linalg::Stack {
     using Minor = Square<Value, DIMS - 1>;
 
     template <Arithmetic Value, Size DIMS>
-    [[nodiscard]] constexpr Square<Value, DIMS> make_eye() noexcept
+    [[nodiscard]]
+    inline auto make_eye() noexcept -> Square<Value, DIMS>
     {
         Square<Value, DIMS> result;
         for (Size i{}; i < DIMS; ++i) {
@@ -214,8 +240,9 @@ namespace Linalg::Stack {
     }
 
     template <Arithmetic Value, Size DIMS>
-    [[nodiscard]] Square<Value, DIMS - 1>
-    matrix_minor(Square<Value, DIMS> const& matrix, Size const row, Size const column)
+    [[nodiscard]]
+    inline auto
+    matrix_minor(Square<Value, DIMS> const& matrix, Size const row, Size const column) -> Square<Value, DIMS - 1>
     {
         if (row >= DIMS || column >= DIMS) {
             throw Error{"Wrong dimensions\n"};
@@ -244,7 +271,8 @@ namespace Linalg::Stack {
     }
 
     template <Arithmetic Value, Size DIMS>
-    [[nodiscard]] Square<Value, DIMS> matrix_complement(Square<Value, DIMS> const& matrix)
+    [[nodiscard]]
+    inline auto matrix_complement(Square<Value, DIMS> const& matrix) -> Square<Value, DIMS>
     {
         if constexpr (DIMS == 1) {
             return matrix;
@@ -266,7 +294,8 @@ namespace Linalg::Stack {
     }
 
     template <Arithmetic Value, Size DIMS>
-    [[nodiscard]] Square<Value, DIMS> matrix_adjoint(Square<Value, DIMS> const& matrix)
+    [[nodiscard]]
+    inline auto matrix_adjoint(Square<Value, DIMS> const& matrix) -> Square<Value, DIMS>
     {
         try {
             return matrix_transpose(matrix_complement(matrix));
@@ -276,7 +305,8 @@ namespace Linalg::Stack {
     }
 
     template <Arithmetic Value, Size ROWS, Size COLS>
-    [[nodiscard]] Matrix<Value, COLS, ROWS> matrix_transpose(Matrix<Value, ROWS, COLS> const& matrix) noexcept
+    [[nodiscard]]
+    inline auto matrix_transpose(Matrix<Value, ROWS, COLS> const& matrix) noexcept -> Matrix<Value, COLS, ROWS>
     {
         Matrix<Value, COLS, ROWS> result{};
         for (Size i{}; i < ROWS; ++i) {
@@ -288,7 +318,8 @@ namespace Linalg::Stack {
     }
 
     template <Arithmetic Value, Size DIMS>
-    [[nodiscard]] Value matrix_det(Square<Value, DIMS> const& matrix)
+    [[nodiscard]]
+    inline auto matrix_det(Square<Value, DIMS> const& matrix) -> Value
     {
         if constexpr (DIMS == 1) {
             return matrix[0, 0];
@@ -312,7 +343,8 @@ namespace Linalg::Stack {
     }
 
     template <Arithmetic Value, Size DIMS>
-    [[nodiscard]] Square<Value, DIMS> matrix_inverse(Square<Value, DIMS> const& matrix)
+    [[nodiscard]]
+    inline auto matrix_inverse(Square<Value, DIMS> const& matrix) -> Square<Value, DIMS>
     {
         try {
             return matrix_scale(matrix_adjoint(matrix), 1 / matrix_det(matrix));
@@ -322,7 +354,8 @@ namespace Linalg::Stack {
     }
 
     template <Arithmetic Value, Size DIMS>
-    [[nodiscard]] Square<Value, DIMS> matrix_upper_triangular(Square<Value, DIMS> const& matrix)
+    [[nodiscard]]
+    inline auto matrix_upper_triangular(Square<Value, DIMS> const& matrix) -> Square<Value, DIMS>
     {
         try {
             return matrix_transpose(matrix_lower_triangular(matrix));
@@ -332,7 +365,8 @@ namespace Linalg::Stack {
     }
 
     template <Arithmetic Value, Size DIMS>
-    [[nodiscard]] Square<Value, DIMS> matrix_lower_triangular(Square<Value, DIMS> const& matrix)
+    [[nodiscard]]
+    inline auto matrix_lower_triangular(Square<Value, DIMS> const& matrix) -> Square<Value, DIMS>
     {
         if constexpr (DIMS == 1) {
             return matrix;
@@ -359,8 +393,9 @@ namespace Linalg::Stack {
     }
 
     template <Arithmetic Value, Size ROWS, Size COLS>
-    [[nodiscard]] Matrix<Value, ROWS, COLS> matrix_sum(Matrix<Value, ROWS, COLS> const& left,
-                                                       Matrix<Value, ROWS, COLS> const& right) noexcept
+    [[nodiscard]]
+    inline auto matrix_sum(Matrix<Value, ROWS, COLS> const& left,
+                           Matrix<Value, ROWS, COLS> const& right) noexcept -> Matrix<Value, ROWS, COLS>
     {
         Matrix<Value, ROWS, COLS> result;
         for (Size i{}; i < ROWS; ++i) {
@@ -372,8 +407,9 @@ namespace Linalg::Stack {
     }
 
     template <Arithmetic Value, Size ROWS, Size COLS>
-    [[nodiscard]] Matrix<Value, ROWS, COLS> matrix_difference(Matrix<Value, ROWS, COLS> const& left,
-                                                              Matrix<Value, ROWS, COLS> const& right) noexcept
+    [[nodiscard]]
+    inline auto matrix_difference(Matrix<Value, ROWS, COLS> const& left,
+                                  Matrix<Value, ROWS, COLS> const& right) noexcept -> Matrix<Value, ROWS, COLS>
     {
         Matrix<Value, ROWS, COLS> result;
         for (Size i{}; i < ROWS; ++i) {
@@ -385,7 +421,8 @@ namespace Linalg::Stack {
     }
 
     template <Arithmetic Value, Size ROWS, Size COLS>
-    [[nodiscard]] Matrix<Value, ROWS, COLS> matrix_scale(Matrix<Value, ROWS, COLS> const& matrix, Value const scale)
+    [[nodiscard]]
+    inline auto matrix_scale(Matrix<Value, ROWS, COLS> const& matrix, Value const scale) -> Matrix<Value, ROWS, COLS>
     {
         if (scale == std::numeric_limits<Value>::max()) {
             throw Error{"Multiplication by inf!\n"};
@@ -401,9 +438,10 @@ namespace Linalg::Stack {
     }
 
     template <Arithmetic Value, Size LEFT_ROWS, Size LEFT_COLS_RIGHT_ROWS, Size RIGHT_COLS>
-    [[nodiscard]] Matrix<Value, LEFT_ROWS, RIGHT_COLS>
-    matrix_product(Matrix<Value, LEFT_ROWS, LEFT_COLS_RIGHT_ROWS> const& left,
-                   Matrix<Value, LEFT_COLS_RIGHT_ROWS, RIGHT_COLS> const& right) noexcept
+    [[nodiscard]]
+    inline auto matrix_product(Matrix<Value, LEFT_ROWS, LEFT_COLS_RIGHT_ROWS> const& left,
+                               Matrix<Value, LEFT_COLS_RIGHT_ROWS, RIGHT_COLS> const& right) noexcept
+        -> Matrix<Value, LEFT_ROWS, RIGHT_COLS>
     {
         Matrix<Value, LEFT_ROWS, RIGHT_COLS> result;
         for (Size i{}; i < left.rows(); ++i) {
@@ -419,7 +457,8 @@ namespace Linalg::Stack {
     }
 
     template <Arithmetic Value, Size DIMS>
-    [[nodiscard]] Square<Value, DIMS> matrix_power(Square<Value, DIMS> const& matrix, Value const power) noexcept
+    [[nodiscard]]
+    inline auto matrix_power(Square<Value, DIMS> const& matrix, Value const power) noexcept -> Square<Value, DIMS>
     {
         if (power == 1) {
             return matrix;
@@ -433,29 +472,33 @@ namespace Linalg::Stack {
     }
 
     template <Arithmetic Value, Size ROWS, Size COLS>
-    [[nodiscard]] Matrix<Value, ROWS, COLS> operator+(Matrix<Value, ROWS, COLS> const& left,
-                                                      Matrix<Value, ROWS, COLS> const& right) noexcept
+    [[nodiscard]]
+    inline auto operator+(Matrix<Value, ROWS, COLS> const& left,
+                          Matrix<Value, ROWS, COLS> const& right) noexcept -> Matrix<Value, ROWS, COLS>
     {
         return matrix_sum(left, right);
     }
 
     template <Arithmetic Value, Size ROWS, Size COLS>
-    [[nodiscard]] Matrix<Value, ROWS, COLS> operator-(Matrix<Value, ROWS, COLS> const& left,
-                                                      Matrix<Value, ROWS, COLS> const& right) noexcept
+    [[nodiscard]]
+    inline auto operator-(Matrix<Value, ROWS, COLS> const& left,
+                          Matrix<Value, ROWS, COLS> const& right) noexcept -> Matrix<Value, ROWS, COLS>
     {
         return matrix_difference(left, right);
     }
 
     template <Arithmetic Value, Size LEFT_ROWS, Size LEFT_COLS_RIGHT_ROWS, Size RIGHT_COLS>
-    [[nodiscard]] Matrix<Value, LEFT_ROWS, RIGHT_COLS>
-    operator*(Matrix<Value, LEFT_ROWS, LEFT_COLS_RIGHT_ROWS> const& left,
-              Matrix<Value, LEFT_COLS_RIGHT_ROWS, RIGHT_COLS> const& right) noexcept
+    [[nodiscard]]
+    inline auto operator*(Matrix<Value, LEFT_ROWS, LEFT_COLS_RIGHT_ROWS> const& left,
+                          Matrix<Value, LEFT_COLS_RIGHT_ROWS, RIGHT_COLS> const& right) noexcept
+        -> Matrix<Value, LEFT_ROWS, RIGHT_COLS>
     {
         return matrix_product(left, right);
     }
 
     template <Arithmetic Value, Size ROWS, Size COLS>
-    [[nodiscard]] Matrix<Value, ROWS, COLS> operator*(Value const scale, Matrix<Value, ROWS, COLS> const& matrix)
+    [[nodiscard]]
+    inline auto operator*(Value const scale, Matrix<Value, ROWS, COLS> const& matrix) -> Matrix<Value, ROWS, COLS>
     {
         try {
             return matrix_scale(matrix, scale);
@@ -465,7 +508,8 @@ namespace Linalg::Stack {
     }
 
     template <Arithmetic Value, Size ROWS, Size COLS>
-    [[nodiscard]] Matrix<Value, ROWS, COLS> operator*(Matrix<Value, ROWS, COLS> const& matrix, Value const scale)
+    [[nodiscard]]
+    inline auto operator*(Matrix<Value, ROWS, COLS> const& matrix, Value const scale) -> Matrix<Value, ROWS, COLS>
     {
         try {
             return matrix_scale(matrix, scale);
@@ -475,7 +519,8 @@ namespace Linalg::Stack {
     }
 
     template <Arithmetic Value, Size ROWS, Size COLS>
-    [[nodiscard]] Matrix<Value, ROWS, COLS> operator/(Matrix<Value, ROWS, COLS> const& matrix, Value const scale)
+    [[nodiscard]]
+    inline auto operator/(Matrix<Value, ROWS, COLS> const& matrix, Value const scale) -> Matrix<Value, ROWS, COLS>
     {
         try {
             return matrix_scale(matrix, 1 / scale);
@@ -485,7 +530,8 @@ namespace Linalg::Stack {
     }
 
     template <Arithmetic Value, Size DIMS>
-    [[nodiscard]] Square<Value, DIMS> operator/(Square<Value, DIMS> const& left, Square<Value, DIMS> const& right)
+    [[nodiscard]]
+    inline auto operator/(Square<Value, DIMS> const& left, Square<Value, DIMS> const& right) -> Square<Value, DIMS>
     {
         try {
             return matrix_product(left, matrix_inverse(right));
@@ -495,7 +541,8 @@ namespace Linalg::Stack {
     }
 
     template <Arithmetic Value, Size DIMS>
-    [[nodiscard]] Square<Value, DIMS> operator^(Square<Value, DIMS> const& matrix, Value const power)
+    [[nodiscard]]
+    inline auto operator^(Square<Value, DIMS> const& matrix, Value const power) -> Square<Value, DIMS>
     {
         return matrix_power(matrix, power);
     }
