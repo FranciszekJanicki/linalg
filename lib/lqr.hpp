@@ -2,83 +2,26 @@
 #define LQR_HPP
 
 #include "common.hpp"
-#include "matrix.hpp"
+#include "stack_matrix.hpp"
 #include <algorithm>
 #include <ranges>
 #include <vector>
 
-namespace Regulators {
+namespace Linalg {
 
-    template <Linalg::Arithmetic Value>
-    struct LQR
-
-    {
-    public:
-        using Matrix = Linalg::Matrix<Value>;
+    template <Arithmetic Value, Size STATES, Size INPUTS = 1UL, Size MEASUREMENTS = INPUTS>
+    struct LQR {
+        template <Size ROWS, Size COLS>
+        using Matrix = Stack::Matrix<Value, ROWS, COLS>;
         using RicattiSolutions = std::vector<Matrix>;
+        using namespace Stack;
 
-        constexpr LQR(Matrix const& state_transition,
-                      Matrix const& input_transition,
-                      Matrix const& state_cost,
-                      Matrix const& input_cost,
-                      Matrix const& end_condition,
-                      std::uint64_t const samples) :
-            state_transition_{state_transition},
-            input_transition_{input_transition},
-            state_cost_{state_cost},
-            input_cost_{input_cost},
-            ricatti_solutions_{get_ricatti_solutions(state_transition,
-                                                     input_transition,
-                                                     state_cost,
-                                                     input_cost,
-                                                     end_condition,
-                                                     samples)}
-        {}
-
-        constexpr LQR(Matrix&& state_transition,
-                      Matrix&& input_transition,
-                      Matrix&& state_cost,
-                      Matrix&& input_cost,
-                      Matrix const& end_condition,
-                      std::uint64_t const samples) noexcept :
-            state_transition_{std::forward<Matrix>(state_transition)},
-            input_transition_{std::forward<Matrix>(input_transition)},
-            state_cost_{std::forward<Matrix>(state_cost)},
-            input_cost_{std::forward<Matrix>(input_cost)},
-            ricatti_solutions_{get_ricatti_solutions(state_transition,
-                                                     input_transition,
-                                                     state_cost,
-                                                     input_cost,
-                                                     end_condition,
-                                                     samples)}
-        {}
-
-        [[nodiscard]] inline auto
-        operator()(this LQR& self, std::uint64_t const sample, Matrix const& input, Matrix const& measurement) -> Matrix
-        {
-            auto error{input - measurement};
-            return input - (get_optimal_gain(sample,
-                                             self.ricatti_solutions_[sample],
-                                             self.input_transition_,
-                                             self.input_cost_) *
-                            error);
-        }
-
-    private:
-        static inline auto get_optimal_gain(std::uint64_t const sample,
-                                            Matrix const& ricatti,
-                                            Matrix const& input_transition,
-                                            Matrix const& input_cost) -> Matrix
-        {
-            return Matrix::inverse(input_cost).value() * Matrix::transpose(input_transition) * ricatti;
-        }
-
-        static inline auto get_ricatti_solutions(Matrix const& state_transition,
-                                                 Matrix const& input_transition,
-                                                 Matrix const& state_cost,
-                                                 Matrix const& input_cost,
-                                                 Matrix const& end_condition,
-                                                 std::uint64_t const samples) -> RicattiSolutions
+        static auto get_ricatti_solutions(Matrix<STATES, STATES> const& state_transition,
+                                          Matrix<STATES, INPUTS> const& input_transition,
+                                          Matrix<STATES, STATES> const& state_cost,
+                                          Value const input_cost,
+                                          Matrix<STATES, STATES> const& end_condition,
+                                          std::uint64_t const samples) -> RicattiSolutions
         {
             RicattiSolutions solutions{};
             solutions.reserve(samples);
@@ -91,26 +34,47 @@ namespace Regulators {
             return solutions;
         }
 
-        static inline auto get_ricatti_solution(Matrix const& state_transition,
-                                                Matrix const& input_transition,
-                                                Matrix const& state_cost,
-                                                Matrix const& input_cost,
-                                                Matrix const& prev_solution) -> Matrix
+        static auto get_ricatti_solution(Matrix<STATES, STATES> const& state_transition,
+                                         Matrix<STATES, INPUTS> const& input_transition,
+                                         Matrix<STATES, STATES> const& state_cost,
+                                         Value const input_cost,
+                                         Matrix<STATES, STATES> const& prev_solution) -> Matrix
         {
             return -1 * (prev_solution * state_transition -
-                         prev_solution * input_transition * Matrix::inverse(input_cost).value() *
-                             Matrix::transpose(input_transition) * prev_solution +
-                         Matrix::transpose(state_transition) * prev_solution + state_cost);
+                         prev_solution * input_transition * matrix_inverse(input_cost) *
+                             matrix_transpose(input_transition) * prev_solution +
+                         matrix_transpose(state_transition) * prev_solution + state_cost);
         }
 
-        Matrix state_transition_{};
-        Matrix input_transition_{};
-        Matrix state_cost_{};
-        Matrix input_cost_{};
+        static inline auto get_optimal_gain(std::uint64_t const sample,
+                                            Matrix<STATES, STATES> const& ricatti,
+                                            Matrix<STATES, INPUTS> const& input_transition,
+                                            Value const input_cost) -> Matrix<1UL, STATES>
+        {
+            return matrix_inverse(input_cost) * matrix_transpose(input_transition) * ricatti;
+        }
 
-        RicattiSolutions ricatti_solutions_{};
+        [[nodiscard]] inline auto operator()(this LQR& self,
+                                             Matrix<1UL, INPUTS> const& input,
+                                             Matrix<1UL, MEASUREMENTS> const& measurement) -> Matrix<STATES, 1UL>
+        {
+            auto error{input - measurement};
+            return input - (get_optimal_gain(sample,
+                                             self.ricatti_solutions[self.sample++],
+                                             self.input_transition,
+                                             self.input_cost) *
+                            error);
+        }
+
+        Matrix<STATES, STATES> state_transition{};
+        Matrix<STATES, INPUTS> input_transition{};
+        Matrix<STATES, STATES> state_cost{};
+        Value input_cost_{};
+
+        RicattiSolutions ricatti_solutions{};
+        std::uint64_t sample{0UL};
     };
 
-}; // namespace Regulators
+}; // namespace Linalg
 
 #endif // LQR_HPP

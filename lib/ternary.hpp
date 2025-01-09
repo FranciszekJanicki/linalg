@@ -3,9 +3,9 @@
 
 #include "common.hpp"
 
-namespace Regulators {
+namespace Linalg {
 
-    template <Linalg::Arithmetic Value>
+    template <Arithmetic Value>
     struct Ternary {
         enum struct State {
             POSITIVE,
@@ -45,6 +45,6 @@ namespace Regulators {
         State state{State::ZERO};
     };
 
-}; // namespace Regulators
+}; // namespace Linalg
 
 #endif // TERNARY_HPP

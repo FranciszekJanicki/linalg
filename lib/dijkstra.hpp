@@ -12,7 +12,7 @@
 #include <utility>
 #include <vector>
 
-namespace Algorithm {
+namespace Linalg {
 
     template <typename Value>
     struct Dijkstra {
@@ -116,6 +116,6 @@ namespace Algorithm {
         }
     };
 
-}; // namespace Algorithm
+}; // namespace Linalg
 
 #endif // DIJKSTRA_HPP

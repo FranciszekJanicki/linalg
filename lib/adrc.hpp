@@ -3,11 +3,11 @@
 
 #include "common.hpp"
 
-namespace Regulators {
+namespace Linalg {
 
-    template <Linalg::Arithmetic Value>
+    template <Arithmetic Value>
     struct ADRC {};
 
-}; // namespace Regulators
+}; // namespace Linalg
 
 #endif // ADRC_HPP

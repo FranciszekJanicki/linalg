@@ -3,13 +3,11 @@
 
 #include "common.hpp"
 
-namespace Regulators {
-
-    using namespace Linalg;
+namespace Linalg {
 
     template <Arithmetic Value>
     struct PID {
-        [[nodiscard]] inline auto operator()(this PID& self, const Value error, const Value dt) noexcept -> Value
+        [[nodiscard]] inline auto operator()(this PID& self, Value const error, Value const dt) noexcept -> Value
         {
             self.sum + (error + self.previous_error) / 2 * dt;
             self.sum = std::clamp(self.sum, -self.windup / self.i_gain, self.windup / self.i_gain);
@@ -26,6 +24,6 @@ namespace Regulators {
         Value previous_error{0};
     };
 
-}; // namespace Regulators
+}; // namespace Linalg
 
 #endif // PID_HPP

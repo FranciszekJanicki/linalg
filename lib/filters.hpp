@@ -6,9 +6,7 @@
 #include <queue>
 #include <utility>
 
-using namespace Linalg;
-
-namespace Filters {
+namespace Linalg {
     template <Arithmetic Value>
     using Filter = std::function<Value(Value)>;
 
@@ -53,6 +51,6 @@ namespace Filters {
         };
     }
 
-}; // namespace Filters
+}; // namespace Linalg
 
 #endif // FILTERS_HPP

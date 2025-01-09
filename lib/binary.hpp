@@ -3,16 +3,16 @@
 
 #include "arithmetic.hpp"
 
-namespace Regulators {
+namespace Linalg {
 
-    template <Linalg::Arithmetic Value>
+    template <Arithmetic Value>
     struct Binary {
         enum struct State {
             POSITIVE,
             ZERO,
         };
 
-        [[nodiscard]] inline auto operator()(this Binary& self, const Value error) noexcept -> State
+        [[nodiscard]] inline auto operator()(this Binary& self, Value const error) noexcept -> State
         {
             switch (self.state) {
                 case State::POSITIVE:
@@ -37,6 +37,6 @@ namespace Regulators {
         State state{State::ZERO};
     };
 
-}; // namespace Regulators
+}; // namespace Linalg
 
 #endif // BINARY_HPP
