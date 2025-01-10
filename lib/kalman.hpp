@@ -1,5 +1,5 @@
-#ifndef STACK_KALMAN_HPP
-#define STACK_KALMAN_HPP
+#ifndef KALMAN_HPP
+#define KALMAN_HPP
 
 #include "common.hpp"
 #include "stack_matrix.hpp"
@@ -7,7 +7,11 @@
 #include <stdexcept>
 #include <utility>
 
-namespace Linalg::Stack {
+namespace Linalg {
+
+    namespace {
+        using namespace Stack;
+    };
 
     template <Arithmetic Value, Size STATES, Size INPUTS = 1UL, Size MEASUREMENTS = 1UL>
     struct Kalman {
@@ -72,6 +76,6 @@ namespace Linalg::Stack {
         Matrix<STATES, STATES> process_noise{};
     };
 
-}; // namespace Linalg::Stack
+}; // namespace Linalg
 
-#endif // STACK_KALMAN_HPP
+#endif // KALMAN_HPP

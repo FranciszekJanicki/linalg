@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 if(NOT DEFINED MAKE_PROJECT_NAME)
-    set(MAKE_PROJECT_NAME kalman)
+    set(MAKE_PROJECT_NAME linalg)
 endif()
 
 project(${MAKE_PROJECT_NAME})
@@ -10,8 +10,7 @@ set(CMAKE_CXX_COMPILER "/usr/bin/g++")
 set(CMAKE_CXX_STANDARD 23)
 
 add_library(Lib STATIC
-    "lib/stack_kalman.hpp"
-    "lib/heap_kalman.hpp"
+    "lib/kalman.hpp"
     "lib/heap_matrix.hpp"
     "lib/vector3d.hpp"
     "lib/rotation3d.hpp"
@@ -47,6 +46,7 @@ target_link_libraries(App PRIVATE
 )
 
 target_compile_options(Lib PUBLIC
+    -O3
     -std=c++23
     -fconcepts
     -Wall

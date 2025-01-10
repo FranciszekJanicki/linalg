@@ -29,18 +29,18 @@ namespace Linalg::Stack {
             return result;
         }
 
-        [[nodiscard]] inline Matrix() noexcept = default;
+        inline Matrix() noexcept = default;
 
-        [[nodiscard]] inline Matrix(Init const init) noexcept : data{make_data(init)}
+        inline Matrix(Init const init) noexcept : data{make_data(init)}
         {}
 
-        [[nodiscard]] inline Matrix(Matrix&& other) noexcept = default;
-        [[nodiscard]] inline Matrix(Matrix const& other) noexcept = default;
+        inline Matrix(Matrix&& other) noexcept = default;
+        inline Matrix(Matrix const& other) noexcept = default;
 
         [[nodiscard]] inline auto operator=(Matrix&& other) noexcept -> Matrix& = default;
         [[nodiscard]] inline auto operator=(Matrix const& other) noexcept -> Matrix& = default;
 
-        [[nodiscard]] inline ~Matrix() noexcept = default;
+        inline ~Matrix() noexcept = default;
 
         [[nodiscard]] inline auto operator[](this Matrix const& self, Size const row) -> Row const&
         {
@@ -76,7 +76,7 @@ namespace Linalg::Stack {
 
         [[nodiscard]] inline auto operator<=>(this Matrix const& self, Matrix const& other) noexcept -> bool = default;
 
-        inline auto operator=(this Matrix& self, Init const init) -> Matrix
+        [[nodiscard]] inline auto operator=(this Matrix& self, Init const init) -> Matrix
         {
             self.data = make_data(init);
             return self;
@@ -410,10 +410,10 @@ namespace Linalg::Stack {
         -> Matrix<Value, LEFT_ROWS, RIGHT_COLS>
     {
         Matrix<Value, LEFT_ROWS, RIGHT_COLS> result;
-        for (Size i{}; i < left.rows(); ++i) {
-            for (Size j{}; j < right.cols(); ++j) {
+        for (Size i{}; i < LEFT_ROWS; ++i) {
+            for (Size j{}; j < RIGHT_COLS; ++j) {
                 Value sum{};
-                for (Size k{}; k < left.cols(); ++k) {
+                for (Size k{}; k < LEFT_COLS_RIGHT_ROWS; ++k) {
                     sum += left[i, k] * right[k, j];
                 }
                 result[i, j] = sum;
@@ -431,7 +431,7 @@ namespace Linalg::Stack {
         }
 
         Square<Value, DIMS> result{matrix};
-        for (Size i{}; i < power; ++i) {
+        for (Size i{}; i < power - 1; ++i) {
             result = matrix_product(result, matrix);
         }
         return result;
