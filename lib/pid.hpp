@@ -9,15 +9,16 @@ namespace Linalg {
     struct PID {
         [[nodiscard]] inline auto operator()(this PID& self, Value const error, Value const dt) noexcept -> Value
         {
-            self.sum + (error + self.previous_error) / 2 * dt;
-            self.sum = std::clamp(self.sum, -self.windup / self.i_gain, self.windup / self.i_gain);
-            return self.p_gain * error + self.d_gain * (error - std::exchange(self.previous_error, error)) / dt +
-                   self.i_gain * self.sum;
+            self.sum + (error + self.previous_error) / 2.0F * dt;
+            self.sum = std::clamp(self.sum, -self.windup / self.integral_gain, self.windup / self.integral_gain);
+            return self.proportional_gain * error +
+                   self.derivative_gain * (error - std::exchange(self.previous_error, error)) / dt +
+                   self.integral_gain * self.sum;
         }
 
-        Value p_gain{};
-        Value i_gain{};
-        Value d_gain{};
+        Value proportional_gain{};
+        Value integral_gain{};
+        Value derivative_gain{};
         Value windup{};
 
         Value sum{0};

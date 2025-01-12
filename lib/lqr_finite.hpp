@@ -1,5 +1,5 @@
-#ifndef LQR_HPP
-#define LQR_HPP
+#ifndef LQR_FINITE_HPP
+#define LQR_FINITE_HPP
 
 #include "common.hpp"
 #include "stack_matrix.hpp"
@@ -9,8 +9,8 @@
 
 namespace Linalg {
 
-    template <Arithmetic Value, Size STATES, Size INPUTS = 1UL, Size MEASUREMENTS = INPUTS>
-    struct LQR {
+    template <Arithmetic Value, Size STATES, Size INPUTS = 1UL, Size MEASUREMENTS = 1UL>
+    struct LQR_Finite {
         template <Size ROWS, Size COLS>
         using Matrix = Stack::Matrix<Value, ROWS, COLS>;
         using RicattiSolutions = std::vector<Matrix>;
@@ -54,7 +54,7 @@ namespace Linalg {
             return matrix_inverse(input_cost) * matrix_transpose(input_transition) * ricatti;
         }
 
-        [[nodiscard]] inline auto operator()(this LQR& self,
+        [[nodiscard]] inline auto operator()(this LQR_Finite& self,
                                              Matrix<1UL, INPUTS> const& input,
                                              Matrix<1UL, MEASUREMENTS> const& measurement) -> Matrix<STATES, 1UL>
         {
@@ -70,11 +70,10 @@ namespace Linalg {
         Matrix<STATES, INPUTS> input_transition{};
         Matrix<STATES, STATES> state_cost{};
         Value input_cost_{};
-
         RicattiSolutions ricatti_solutions{};
         std::uint64_t sample{0UL};
     };
 
 }; // namespace Linalg
 
-#endif // LQR_HPP
+#endif // LQR_FINITE_HPP
