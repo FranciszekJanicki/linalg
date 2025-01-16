@@ -1,4 +1,5 @@
 #include "kalman.hpp"
+#include "pid.hpp"
 #include "quaternion3d.hpp"
 #include "stack_matrix.hpp"
 #include "stack_vector.hpp"

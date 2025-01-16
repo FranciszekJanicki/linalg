@@ -46,7 +46,7 @@ namespace Linalg {
         }
 
         Matrix<STATES, 1UL> state{};
-        Matrix<1UL, STATES> state_gain{};
+        Matrix<STATES, 1UL> state_gain{};
         Matrix<STATES, STATES> state_transition{};
         Matrix<STATES, CONTROLS> control_transition{};
         Matrix<MEASUREMENTS, 1UL> measurement_transition{};

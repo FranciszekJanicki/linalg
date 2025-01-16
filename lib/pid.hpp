@@ -2,27 +2,43 @@
 #define PID_HPP
 
 #include "common.hpp"
+#include <algorithm>
+#include <numeric>
 
 namespace Linalg {
+
+    template <Arithmetic Value>
+    [[nodiscard]] constexpr auto derivative(Value const value, Value const prev_value, Value const dt) noexcept -> Value
+    {
+        return (value - prev_value) / dt;
+    }
+
+    template <Arithmetic Value>
+    [[nodiscard]] constexpr auto integral(Value const value, Value const prev_value, Value const dt) noexcept -> Value
+    {
+        return (value + prev_value) / 2.0F * dt;
+    }
 
     template <Arithmetic Value>
     struct PID {
         [[nodiscard]] inline auto operator()(this PID& self, Value const error, Value const dt) noexcept -> Value
         {
-            self.sum + (error + self.previous_error) / 2.0F * dt;
-            self.sum = std::clamp(self.sum, -self.windup / self.integral_gain, self.windup / self.integral_gain);
-            return self.proportional_gain * error +
-                   self.derivative_gain * (error - std::exchange(self.previous_error, error)) / dt +
-                   self.integral_gain * self.sum;
+            auto control{self.kp * error + self.ki * self.sum +
+                         self.kd * derivative(error, std::exchange(self.prev_error, error), dt)};
+            auto sat_control{std::clamp(control, -self.sat, self.sat)};
+            auto windup{control - sat_control};
+            self.sum += integral(windup, std::exchange(self.prev_windup, windup), dt);
+            return sat_control;
         }
 
-        Value proportional_gain{};
-        Value integral_gain{};
-        Value derivative_gain{};
-        Value windup{};
+        Value kp{};
+        Value ki{};
+        Value kd{};
+        Value sat{};
 
-        Value sum{0};
-        Value previous_error{0};
+    private:
+        Value sum{0.0F};
+        Value prev_error{0.0F};
     };
 
 }; // namespace Linalg
