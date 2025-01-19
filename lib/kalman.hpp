@@ -7,7 +7,7 @@
 #include <stdexcept>
 #include <utility>
 
-namespace Linalg {
+namespace Linalg::Observers {
 
     namespace {
         using namespace Stack;
@@ -50,7 +50,7 @@ namespace Linalg {
                 auto const innovation{measurement - (self.measurement_transition * self.state)};
                 auto const residual_covariance{(self.measurement_transition * self.state_covariance *
                                                 matrix_transpose(self.measurement_transition)) +
-                                               self.measurement_covariance};
+                                               self.measurement_noise};
                 auto const kalman_gain{self.state_covariance * matrix_transpose(self.measurement_transition) *
                                        matrix_inverse(residual_covariance)};
                 self.state = self.state + (kalman_gain * innovation);
@@ -63,15 +63,16 @@ namespace Linalg {
         }
 
         Matrix<STATES, 1UL> state{};
-        Matrix<STATES, STATES> state_transition{};
         Matrix<STATES, STATES> state_covariance{};
+
+        Matrix<STATES, STATES> state_transition{};
         Matrix<STATES, CONTROLS> control_transition{};
-        Matrix<CONTROLS, CONTROLS> control_covariance{};
         Matrix<MEASUREMENTS, STATES> measurement_transition{};
-        Matrix<MEASUREMENTS, MEASUREMENTS> measurement_covariance{};
+
+        Matrix<MEASUREMENTS, MEASUREMENTS> measurement_noise{};
         Matrix<STATES, STATES> process_noise{};
     };
 
-}; // namespace Linalg
+}; // namespace Linalg::Observers
 
 #endif // KALMAN_HPP

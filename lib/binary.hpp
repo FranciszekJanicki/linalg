@@ -3,7 +3,7 @@
 
 #include "arithmetic.hpp"
 
-namespace Linalg {
+namespace Linalg::Regulators {
 
     template <Arithmetic Value>
     struct Binary {
@@ -12,7 +12,7 @@ namespace Linalg {
             ZERO,
         };
 
-        [[nodiscard]] inline auto operator()(this Binary& self, Value const error) noexcept -> State
+        [[nodiscard]] constexpr auto operator()(this Binary& self, Value const error) noexcept -> State
         {
             switch (self.state) {
                 case State::POSITIVE:
@@ -37,6 +37,6 @@ namespace Linalg {
         State state{State::ZERO};
     };
 
-}; // namespace Linalg
+}; // namespace Linalg::Regulators
 
 #endif // BINARY_HPP

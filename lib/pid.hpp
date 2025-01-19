@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <numeric>
 
-namespace Linalg {
+namespace Linalg::Regulators {
 
     template <Arithmetic Value>
     [[nodiscard]] constexpr auto derivative(Value const value, Value const prev_value, Value const dt) noexcept -> Value
@@ -21,7 +21,7 @@ namespace Linalg {
 
     template <Arithmetic Value>
     struct PID {
-        [[nodiscard]] inline auto operator()(this PID& self, Value const error, Value const dt) noexcept -> Value
+        [[nodiscard]] constexpr auto operator()(this PID& self, Value const error, Value const dt) noexcept -> Value
         {
             auto control{self.kp * error + self.ki * self.sum +
                          self.kd * derivative(error, std::exchange(self.prev_error, error), dt)};
@@ -36,11 +36,10 @@ namespace Linalg {
         Value kd{};
         Value sat{};
 
-    private:
         Value sum{0.0F};
         Value prev_error{0.0F};
     };
 
-}; // namespace Linalg
+}; // namespace Linalg::Regulators
 
 #endif // PID_HPP

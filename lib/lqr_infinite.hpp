@@ -4,7 +4,7 @@
 #include "common.hpp"
 #include "stack_matrix.hpp"
 
-namespace Linalg {
+namespace Linalg::Regulators {
 
     template <Arithmetic Value, Size STATES, Size INPUTS = 1UL>
     struct LQR_Infinite {
@@ -12,9 +12,9 @@ namespace Linalg {
         template <Size ROWS, Size COLS>
         using Matrix = Stack::Matrix<Value, ROWS, COLS>;
 
-        [[nodiscard]] inline auto operator()(this LQR_Infinite& self,
-                                             Matrix<1UL, INPUTS> const& input,
-                                             Matrix<STATES, 1UL> const& state) -> Matrix<STATES, 1UL>
+        [[nodiscard]] constexpr auto operator()(this LQR_Infinite& self,
+                                                Matrix<1UL, INPUTS> const& input,
+                                                Matrix<STATES, 1UL> const& state) -> Matrix<STATES, 1UL>
         {
             try {
                 return input - self.state_gain * state;
@@ -26,6 +26,6 @@ namespace Linalg {
         Matrix<1UL, STATES> state_gain{};
     };
 
-}; // namespace Linalg
+}; // namespace Linalg::Regulators
 
 #endif // LQR_INFINITE_HPP

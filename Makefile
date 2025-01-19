@@ -8,9 +8,13 @@ APP_DIR := ${PROJECT_DIR }/app
 build: 
 	cd ${BUILD_DIR} && make
 
-.PHONY: run
-run:
-	cd ${BUILD_DIR} && ./App
+.PHONY: run-kalman
+run-kalman:
+	cd ${BUILD_DIR} && ./Kalman
+
+.PHONY: run-polynomial
+run-polynomial:
+	cd ${BUILD_DIR} && ./Polynomial
 
 .PHONY: clean
 clean:
@@ -43,6 +47,6 @@ clang-tidy:
 
 .PHONY: all
 all:
-	make clang-format && make build && make run
+	make clang-format && make build && make run-kalman
 
 	

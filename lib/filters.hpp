@@ -6,7 +6,8 @@
 #include <queue>
 #include <utility>
 
-namespace Linalg {
+namespace Linalg::Filters {
+
     template <Arithmetic Value>
     using Filter = std::function<Value(Value)>;
 
@@ -21,8 +22,8 @@ namespace Linalg {
     }
 
     template <Arithmetic Value>
-    [[nodiscard]] constexpr auto make_moving_average(Value const start_condition = 0,
-                                                     Size const last_samples = 10UL) -> auto
+    [[nodiscard]] constexpr auto make_moving_average(Value const start_condition = 0, Size const last_samples = 10UL)
+        -> auto
     {
         assert(last_samples > 0);
         std::queue<Value> measurements{};
@@ -41,8 +42,8 @@ namespace Linalg {
     }
 
     template <Arithmetic Value>
-    [[nodiscard]] constexpr auto make_low_pass(Value const start_condition = 0,
-                                               Value const alpha = 0.5) noexcept -> auto
+    [[nodiscard]] constexpr auto make_low_pass(Value const start_condition = 0, Value const alpha = 0.5) noexcept
+        -> auto
     {
         assert(alpha >= 0 && alpha <= 1);
         return [estimate = start_condition, alpha](Value const measurement) mutable {
@@ -51,6 +52,6 @@ namespace Linalg {
         };
     }
 
-}; // namespace Linalg
+}; // namespace Linalg::Filters
 
 #endif // FILTERS_HPP

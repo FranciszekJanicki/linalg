@@ -4,7 +4,7 @@
 #include "common.hpp"
 #include "stack_matrix.hpp"
 
-namespace Linalg {
+namespace Linalg::Observers {
 
     template <Arithmetic Value, Size STATES, Size CONTROLS = 1UL, Size MEASUREMENTS = 1UL>
     struct Observer {
@@ -12,9 +12,9 @@ namespace Linalg {
         template <Size ROWS, Size COLS>
         using Matrix = Stack::Matrix<Value, ROWS, COLS>;
 
-        [[nodiscard]] inline auto operator()(this Observer& self,
-                                             Matrix<1UL, CONTROLS> const& control,
-                                             Matrix<1UL, MEASUREMENTS> const& measurement) -> Matrix<STATES, 1UL>
+        [[nodiscard]] constexpr auto operator()(this Observer& self,
+                                                Matrix<1UL, CONTROLS> const& control,
+                                                Matrix<1UL, MEASUREMENTS> const& measurement) -> Matrix<STATES, 1UL>
         {
             try {
                 self.predict(control);
@@ -25,7 +25,7 @@ namespace Linalg {
             }
         }
 
-        inline auto predict(this Observer& self, Matrix<1UL, CONTROLS> const& control) -> Matrix<STATES, 1UL>
+        constexpr auto predict(this Observer& self, Matrix<1UL, CONTROLS> const& control) -> Matrix<STATES, 1UL>
         {
             try {
                 self.state = self.state_transition * self.state + self.control_transition * control;
@@ -35,7 +35,7 @@ namespace Linalg {
             }
         }
 
-        inline auto predict(this Observer& self, Matrix<1UL, MEASUREMENTS> const& measurement) -> Matrix<STATES, 1UL>
+        constexpr auto predict(this Observer& self, Matrix<1UL, MEASUREMENTS> const& measurement) -> Matrix<STATES, 1UL>
         {
             try {
                 self.state = self.state + self.state_gain * (measurement - self.measurement_transition * self.state);
@@ -52,6 +52,6 @@ namespace Linalg {
         Matrix<MEASUREMENTS, 1UL> measurement_transition{};
     };
 
-}; // namespace Linalg
+}; // namespace Linalg::Observers
 
 #endif // OBSERVER_HPP

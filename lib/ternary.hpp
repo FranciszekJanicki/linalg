@@ -3,7 +3,7 @@
 
 #include "common.hpp"
 
-namespace Linalg {
+namespace Linalg::Regulators {
 
     template <Arithmetic Value>
     struct Ternary {
@@ -13,7 +13,7 @@ namespace Linalg {
             ZERO,
         };
 
-        [[nodiscard]] inline auto operator()(this Ternary& self, const Value error) noexcept -> State
+        [[nodiscard]] constexpr auto operator()(this Ternary& self, const Value error) noexcept -> State
         {
             switch (self.state) {
                 case State::POSITIVE:
@@ -45,6 +45,6 @@ namespace Linalg {
         State state{State::ZERO};
     };
 
-}; // namespace Linalg
+}; // namespace Linalg::Regulators
 
 #endif // TERNARY_HPP

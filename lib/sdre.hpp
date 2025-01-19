@@ -1,13 +1,11 @@
-#ifndef ADRC_HPP
-#define ADRC_HPP
-
-#include "common.hpp"
+#ifndef SDRE_HPP
+#define SDRE_HPP
 
 namespace Linalg::Regulators {
 
     template <Arithmetic Value>
-    struct ADRC {};
+    struct SDRE {};
 
 }; // namespace Linalg::Regulators
 
-#endif // ADRC_HPP
+#endif // SDRE_HPP

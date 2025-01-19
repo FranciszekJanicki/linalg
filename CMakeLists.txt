@@ -26,6 +26,7 @@ add_library(Lib STATIC
     "lib/ternary.hpp"
     "lib/stack_vector.hpp"
     "lib/stack_matrix.hpp"
+    "lib/polynomial.hpp"
 )
 
 set_target_properties(Lib PROPERTIES LINKER_LANGUAGE CXX)
@@ -39,11 +40,19 @@ target_link_libraries(Lib PUBLIC
     fmt::fmt
 )
 
-add_executable(App
-    "app/main.cpp"
+add_executable(Kalman
+    "app/kalman_test.cpp"
 )
 
-target_link_libraries(App PRIVATE
+target_link_libraries(Kalman PRIVATE
+    Lib
+)
+
+add_executable(Polynomial
+    "app/polynomial_test.cpp"
+)
+
+target_link_libraries(Polynomial PRIVATE
     Lib
 )
 
