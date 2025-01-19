@@ -41,7 +41,7 @@ target_link_libraries(Lib PUBLIC
 )
 
 add_executable(Kalman
-    "app/kalman_test.cpp"
+    "test/kalman_test.cpp"
 )
 
 target_link_libraries(Kalman PRIVATE
@@ -49,7 +49,7 @@ target_link_libraries(Kalman PRIVATE
 )
 
 add_executable(Polynomial
-    "app/polynomial_test.cpp"
+    "test/polynomial_test.cpp"
 )
 
 target_link_libraries(Polynomial PRIVATE

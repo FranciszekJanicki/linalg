@@ -2,7 +2,7 @@ PROJECT_DIR := $(shell pwd)
 THIRD_PARTY_DIR := ${PROJECT_DIR}/third_party
 BUILD_DIR := ${PROJECT_DIR}/build
 LIB_DIR := ${PROJECT_DIR}/lib
-APP_DIR := ${PROJECT_DIR }/app
+TEST_DIR := ${PROJECT_DIR }/test
 
 .PHONY: build
 build: 
