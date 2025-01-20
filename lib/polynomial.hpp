@@ -40,7 +40,7 @@ namespace Linalg {
         [[nodiscard]] constexpr auto delta(this Polynomial const& self) noexcept -> Value
         {
             auto const& [a, b, c]{self.coeffs_};
-            return std::pow(b, 2) - 4.0F * a * c;
+            return std::pow(b, 2.0F) - 4.0F * a * c;
         }
 
         [[nodiscard]] constexpr auto roots(this Polynomial const& self) noexcept -> Roots

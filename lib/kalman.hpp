@@ -18,9 +18,9 @@ namespace Linalg::Observers {
         template <Size ROWS, Size COLS>
         using Matrix = Matrix<Value, ROWS, COLS>;
 
-        [[nodiscard]] auto operator()(this Kalman& self,
-                                      Matrix<1UL, CONTROLS> const& control,
-                                      Matrix<1UL, MEASUREMENTS> const& measurement) -> Matrix<STATES, 1UL>
+        [[nodiscard]] constexpr auto operator()(this Kalman& self,
+                                                Matrix<1UL, CONTROLS> const& control,
+                                                Matrix<1UL, MEASUREMENTS> const& measurement) -> Matrix<STATES, 1UL>
         {
             try {
                 self.predict(control);
@@ -31,20 +31,19 @@ namespace Linalg::Observers {
             }
         }
 
-        auto predict(this Kalman& self, Matrix<1UL, CONTROLS> const& control) -> Matrix<STATES, 1UL>
+        constexpr auto predict(this Kalman& self, Matrix<1UL, CONTROLS> const& control) -> void
         {
             try {
                 self.state = (self.state_transition * self.state) + (self.control_transition * control);
                 self.state_covariance =
                     (self.state_transition * self.state_covariance * matrix_transpose(self.state_transition)) +
                     self.process_noise;
-                return self.state;
             } catch (Error const& error) {
                 throw error;
             }
         }
 
-        auto correct(this Kalman& self, Matrix<1UL, MEASUREMENTS> const& measurement) -> Matrix<STATES, 1UL>
+        constexpr auto correct(this Kalman& self, Matrix<1UL, MEASUREMENTS> const& measurement) -> void
         {
             try {
                 auto const innovation{measurement - (self.measurement_transition * self.state)};
@@ -56,7 +55,6 @@ namespace Linalg::Observers {
                 self.state = self.state + (kalman_gain * innovation);
                 self.state_covariance =
                     (make_eye<Value, STATES>() - kalman_gain * self.measurement_transition) * self.state_covariance;
-                return self.state;
             } catch (Error const& error) {
                 throw error;
             }

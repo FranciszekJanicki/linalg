@@ -273,7 +273,7 @@ namespace Linalg::Stack {
         try {
             return matrix_transpose(matrix_complement(matrix));
         } catch (Error const& error) {
-            error;
+            throw error;
         }
     }
 

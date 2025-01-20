@@ -25,21 +25,19 @@ namespace Linalg::Observers {
             }
         }
 
-        constexpr auto predict(this Observer& self, Matrix<1UL, CONTROLS> const& control) -> Matrix<STATES, 1UL>
+        constexpr auto predict(this Observer& self, Matrix<1UL, CONTROLS> const& control) -> void
         {
             try {
                 self.state = self.state_transition * self.state + self.control_transition * control;
-                return self.state;
             } catch (Error const& error) {
                 throw error;
             }
         }
 
-        constexpr auto predict(this Observer& self, Matrix<1UL, MEASUREMENTS> const& measurement) -> Matrix<STATES, 1UL>
+        constexpr auto predict(this Observer& self, Matrix<1UL, MEASUREMENTS> const& measurement) -> void
         {
             try {
                 self.state = self.state + self.state_gain * (measurement - self.measurement_transition * self.state);
-                return self.state;
             } catch (Error const& error) {
                 throw error;
             }
