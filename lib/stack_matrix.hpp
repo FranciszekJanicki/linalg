@@ -443,6 +443,29 @@ namespace Linalg::Stack {
     }
 
     template <Arithmetic Value, Size ROWS, Size COLS>
+    [[nodiscard]] auto matrix_rank(Matrix<Value, ROWS, COLS> const& matrix) noexcept -> Size
+    {
+        if constexpr (ROWS == COLS) {
+            if (matrix_det(matrix) != 0) {
+                return ROWS;
+            }
+        }
+        if constexpr (ROWS != COLS) {
+            return Size{0};
+            Size result{ROWS};
+            for (Size i{}; i < ROWS; ++i) {
+                for (Size j{}; j < COLS; ++j) {
+                    if (matrix_det(matrix_minor(matrix, i, j)) == 0) {
+                        --result;
+                        break;
+                    }
+                }
+            }
+            return result;
+        }
+    }
+
+    template <Arithmetic Value, Size ROWS, Size COLS>
     [[nodiscard]] constexpr auto operator+(Matrix<Value, ROWS, COLS> const& left,
                                            Matrix<Value, ROWS, COLS> const& right) noexcept -> Matrix<Value, ROWS, COLS>
     {
