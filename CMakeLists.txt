@@ -56,6 +56,15 @@ target_link_libraries(Polynomial PRIVATE
     Lib
 )
 
+
+add_executable(Pid
+    "test/pid_test.cpp"
+)
+
+target_link_libraries(Pid PRIVATE
+    Lib
+)
+
 target_compile_options(Lib PUBLIC
     -O3
     -std=c++23

@@ -16,6 +16,10 @@ run-kalman:
 run-polynomial:
 	cd ${BUILD_DIR} && ./Polynomial
 
+.PHONY: run-pid
+run-pid:
+	cd ${BUILD_DIR} && ./Pid
+
 .PHONY: clean
 clean:
 	cd ${PROJECT_DIR} && rm -rf ${BUILD_DIR}

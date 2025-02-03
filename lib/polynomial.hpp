@@ -1,11 +1,11 @@
-#ifndef POLYNOMIAL
-#define POLYNOMIAL
+#ifndef POLYNOMIAL_HPP
+#define POLYNOMIAL_HPP
 
 #include "common.hpp"
+#include <algorithm>
 #include <complex>
 #include <ranges>
 #include <utility>
-#include <algorithm>
 
 namespace Linalg {
 
@@ -72,12 +72,11 @@ namespace Linalg {
         -> Polynomial<Value, ORDER>
     {
         Polynomial<Value, ORDER> result{};
-        std::ranges::transform(polynomial, result.data(), [first_coeff = polynomial.front()](Value const coeff){
+        std::ranges::transform(polynomial, result.data(), [first_coeff = polynomial.front()](Value const coeff) {
             return coeff / first_coeff;
         });
         return result;
     }
-
 
     template <Arithmetic Value, Size ORDER>
     [[nodiscard]] constexpr auto derivative(Polynomial<Value, ORDER> const& polynomial) noexcept
@@ -122,23 +121,23 @@ namespace Linalg {
         fmt::println("");
     }
 
-template <Arithmetic Value, Size ORDER>
-constexpr auto print_derivative(Polynomial<Value, ORDER> const& polynomial) noexcept -> void {
-    print<Value, ORDER - 1>(derivative<Value, ORDER>(polynomial));
-}
+    template <Arithmetic Value, Size ORDER>
+    constexpr auto print_derivative(Polynomial<Value, ORDER> const& polynomial) noexcept -> void
+    {
+        print<Value, ORDER - 1>(derivative<Value, ORDER>(polynomial));
+    }
 
-
-template <Arithmetic Value, Size ORDER>
-constexpr auto print_integral(Polynomial<Value, ORDER> const& polynomial) noexcept -> void {
-    print<Value, ORDER + 1>(integral<Value, ORDER>(polynomial));
-}
-template <Arithmetic Value, Size ORDER>
-constexpr auto print_normalized(Polynomial<Value, ORDER> const& polynomial) noexcept -> void {
-    print<Value, ORDER>(normalized<Value, ORDER>(polynomial));
-}
-
-
+    template <Arithmetic Value, Size ORDER>
+    constexpr auto print_integral(Polynomial<Value, ORDER> const& polynomial) noexcept -> void
+    {
+        print<Value, ORDER + 1>(integral<Value, ORDER>(polynomial));
+    }
+    template <Arithmetic Value, Size ORDER>
+    constexpr auto print_normalized(Polynomial<Value, ORDER> const& polynomial) noexcept -> void
+    {
+        print<Value, ORDER>(normalized<Value, ORDER>(polynomial));
+    }
 
 }; // namespace Linalg
 
-#endif // POLYNOMIAL
+#endif // POLYNOMIAL_HPP

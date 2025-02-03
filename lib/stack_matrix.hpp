@@ -446,24 +446,25 @@ namespace Linalg::Stack {
     [[nodiscard]] auto matrix_rank(Matrix<Value, ROWS, COLS> const& matrix) noexcept -> Size
     {
         if constexpr (ROWS == COLS) {
-            if (matrix_det(matrix) != 0) {
-                return ROWS;
+            if (auto det{matrix_det(matrix)}; std::abs(det) < 0.00001F) {
+                return ROWS - 1UL;
             }
+            return ROWS;
         }
-        if constexpr (ROWS != COLS) {
-            return Size{0};
-            Size result{ROWS};
-            for (Size i{}; i < ROWS; ++i) {
-                for (Size j{}; j < COLS; ++j) {
-                    if (matrix_det(matrix_minor(matrix, i, j)) == 0) {
-                        --result;
-                        break;
-                    }
-                }
-            }
-            return result;
+        if constexpr (ROWS > COLS) {
+            return COLS;
+        }
+        if constexpr (ROWS < COLS) {
+            return ROWS;
         }
     }
+
+    template <Arithmetic Value, Size ELEMS>
+    using Eigvals = std::array<Value, ELEMS>;
+
+    template <Arithmetic Value, Size DIMS>
+    [[nodiscard]] constexpr auto matrix_eigvals(Square<Value, DIMS> const& matrix) noexcept -> Eigvals<Value, DIMS>
+    {}
 
     template <Arithmetic Value, Size ROWS, Size COLS>
     [[nodiscard]] constexpr auto operator+(Matrix<Value, ROWS, COLS> const& left,
