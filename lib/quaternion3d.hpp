@@ -71,10 +71,6 @@ namespace Linalg {
 
         [[nodiscard]] inline auto operator*=(this Quaternion3D& self, Value const factor) -> Quaternion3D&
         {
-            if (factor == std::numeric_limits<Value>::max()) {
-                throw std::runtime_error{"Multiplication by inf\n"};
-            }
-
             self.w *= factor;
             self.x *= factor;
             self.y *= factor;
@@ -84,7 +80,7 @@ namespace Linalg {
 
         [[nodiscard]] inline auto operator/=(this Quaternion3D& self, Value const factor) -> Quaternion3D&
         {
-            if (factor == 0) {
+            if (factor == Value{0.0}) {
                 throw std::runtime_error{"Division by zero\n"};
             }
 
@@ -137,10 +133,6 @@ namespace Linalg {
     template <std::floating_point Value>
     [[nodiscard]] inline auto operator*(Quaternion3D<Value> const& quaternion, Value const factor)
     {
-        if (factor == std::numeric_limits<Value>::max()) {
-            throw std::runtime_error{"Multiplication by inf\n"};
-        }
-
         return Quaternion3D<Value>{quaternion.w * factor,
                                    quaternion.x * factor,
                                    quaternion.y * factor,
@@ -150,17 +142,13 @@ namespace Linalg {
     template <std::floating_point Value>
     [[nodiscard]] inline auto operator*(Value const factor, Quaternion3D<Value> const& quaternion)
     {
-        try {
-            return quaternion * factor;
-        } catch (std::runtime_error const& error) {
-            throw error;
-        }
+        return quaternion * factor;
     }
 
     template <std::floating_point Value>
     [[nodiscard]] inline auto operator/(Quaternion3D<Value> const& quaternion, Value const factor)
     {
-        if (factor == std::numeric_limits<Value>::min()) {
+        if (factor == Value{0.0}) {
             throw std::runtime_error{"Disivion by zero\n"};
         }
 

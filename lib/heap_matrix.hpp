@@ -163,14 +163,12 @@ namespace Linalg::Heap {
             }
         }
 
-        [[nodiscard]] auto operator*=(this Matrix& self, Value const scale) -> Matrix&
+        [[nodiscard]] auto operator*=(this Matrix& self, Value const scale) noexcept -> Matrix&
         {
-            try {
+           
                 self = matrix_scale(self, scale);
                 return self;
-            } catch (std::runtime_error const& error) {
-                throw error;
-            }
+         
         }
 
         [[nodiscard]] auto operator*=(this Matrix& self, Matrix const& other) -> Matrix&
@@ -517,11 +515,8 @@ namespace Linalg::Heap {
     }
 
     template <typename Value>
-    [[nodiscard]] auto matrix_scale(Matrix<Value> const& matrix, Value const scale) -> Matrix<Value>
+    [[nodiscard]] auto matrix_scale(Matrix<Value> const& matrix, Value const scale) noexcept -> Matrix<Value>
     {
-        if (scale == std::numeric_limits<Value>::max()) {
-            throw std::runtime_error{"Multiplication by inf!\n"};
-        }
 
         auto result{Matrix<Value>::zeros(matrix.rows(), matrix.cols())};
         for (std::size_t i{}; i < matrix.rows(); ++i) {
@@ -571,23 +566,19 @@ namespace Linalg::Heap {
     }
 
     template <typename Value>
-    [[nodiscard]] auto operator*(Value const scale, Matrix<Value> const& matrix) -> Matrix<Value>
+    [[nodiscard]] auto operator*(Value const scale, Matrix<Value> const& matrix) noexcept -> Matrix<Value>
     {
-        try {
+        
             return matrix_scale(matrix, scale);
-        } catch (std::runtime_error const& error) {
-            throw error;
-        }
+    
     }
 
     template <typename Value>
-    [[nodiscard]] auto operator*(Matrix<Value> const& matrix, Value const scale) -> Matrix<Value>
+    [[nodiscard]] auto operator*(Matrix<Value> const& matrix, Value const scale) noexcept -> Matrix<Value>
     {
-        try {
+      
             return matrix_scale(matrix, scale);
-        } catch (std::runtime_error const& error) {
-            throw error;
-        }
+   
     }
 
     template <typename Value>
@@ -601,13 +592,13 @@ namespace Linalg::Heap {
     }
 
     template <typename Value>
-    [[nodiscard]] auto operator/(Matrix<Value> const& matrix, Value const scale) -> Matrix<Value>
+    [[nodiscard]] auto operator/(Matrix<Value> const& matrix, Value const scale) noexcept -> Matrix<Value>
     {
-        try {
-            return matrix_scale(matrix, 1 / scale);
-        } catch (std::runtime_error const& error) {
-            throw error;
+              if (scale == Value{0.0}) {
+            throw std::runtime_error{"Division by 0!\n"};
         }
+            return matrix_scale(matrix, 1 / scale);
+    
     }
 
     template <typename Value>

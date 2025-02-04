@@ -28,6 +28,7 @@ add_library(Lib STATIC
     "lib/stack_matrix.hpp"
     "lib/polynomial.hpp"
     "lib/transforms.hpp"
+    "lib/signals.hpp"
 )
 
 set_target_properties(Lib PROPERTIES LINKER_LANGUAGE CXX)

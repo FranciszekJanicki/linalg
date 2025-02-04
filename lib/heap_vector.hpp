@@ -113,22 +113,20 @@ namespace Linalg::Heap {
 
         [[nodiscard]] auto operator*=(this Vector& self, Value const scale) -> Vector&
         {
-            try {
+         
                 self = vector_scale(self, scale);
                 return self;
-            } catch (std::runtime_error const& error) {
-                throw error;
-            }
+        
         }
 
         [[nodiscard]] auto operator/=(this Vector& self, Value const scale) -> Vector&
         {
-            try {
+                  if (scale == Value{0.0}) {
+            throw std::runtime_error{"Division by 0!\n"};
+        }
                 self = vector_scale(self, 1 / scale);
                 return self;
-            } catch (std::runtime_error const& error) {
-                throw error;
-            }
+           
         }
 
         [[nodiscard]] Valueauto operator[](this Vector& self, std::size_t const elem)->&
@@ -198,11 +196,8 @@ namespace Linalg::Heap {
     }
 
     template <typename Value>
-    [[nodiscard]] auto vector_scale(Vector<Value> const& vector, Value const scale) -> Vector<Value>
+    [[nodiscard]] auto vector_scale(Vector<Value> const& vector, Value const scale) noexcept -> Vector<Value>
     {
-        if (scale == std::numeric_limits<Value>::max()) {
-            throw std::runtime_error{"Multiplication by inf!\n"};
-        }
 
         auto result{Vector<Value>::make_zeros(vector.elems())};
         for (std::size_t i{0}; i < vector.elems(); ++i) {
@@ -232,33 +227,30 @@ namespace Linalg::Heap {
     }
 
     template <typename Value>
-    [[nodiscard]] auto operator*(Value const scale, Vector<Value> const& vector) -> Vector<Value>
+    [[nodiscard]] auto operator*(Value const scale, Vector<Value> const& vector) noexcept -> Vector<Value>
     {
-        try {
+     
             return vector_scale(vector, scale);
-        } catch (std::runtime_error const& error) {
-            throw error;
-        }
+
+        
     }
 
     template <typename Value>
-    [[nodiscard]] auto operator*(Vector<Value> const& vector, Value const scale) -> Vector<Value>
+    [[nodiscard]] auto operator*(Vector<Value> const& vector, Value const scale)noexcept -> Vector<Value>
     {
-        try {
+      
             return vector_scale(vector, scale);
-        } catch (std::runtime_error const& error) {
-            throw error;
-        }
+     
     }
 
     template <typename Value>
     [[nodiscard]] auto operator/(Vector<Value> const& vector, Value const scale) -> Vector<Value>
     {
-        try {
-            return vector_scale(vector, 1 / scale);
-        } catch (std::runtime_error const& error) {
-            throw error;
+             if (scale == Value{0.0}) {
+            throw std::runtime_error{"Division by 0!\n"};
         }
+            return vector_scale(vector, 1 / scale);
+      
     }
 
 }; // namespace Linalg::Heap

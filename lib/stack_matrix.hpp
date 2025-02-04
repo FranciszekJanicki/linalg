@@ -136,32 +136,28 @@ namespace Linalg::Stack {
 
         [[nodiscard]] auto operator*=(this Matrix& self, Matrix const& other) -> Matrix
         {
-            try {
+            
                 self = matrix_product(self, other);
                 return self;
-            } catch (std::runtime_error const& error) {
-                throw error;
-            }
+         
         }
 
-        [[nodiscard]] auto operator*=(this Matrix& self, Value const scale) -> Matrix
+        [[nodiscard]] auto operator*=(this Matrix& self, Value const scale) noexcept-> Matrix
         {
-            try {
+         
                 self = matrix_scale(self, scale);
                 return self;
-            } catch (std::runtime_error const& error) {
-                throw error;
-            }
+          
         }
 
         [[nodiscard]] auto operator/=(this Matrix& self, Value const scale) -> Matrix
-        {
-            try {
+        {       if (scale == Value{0.0}) {
+            throw std::runtime_error{"Division by 0!\n"};
+        }
+            
                 self = matrix_scale(self, 1 / scale);
                 return self;
-            } catch (std::runtime_error const& error) {
-                throw error;
-            }
+         
         }
 
         [[nodiscard]] auto operator/=(this Matrix& self, Matrix const& other) -> Matrix
@@ -412,7 +408,7 @@ namespace Linalg::Stack {
               std::size_t RIGHT_COLS>
     [[nodiscard]] auto matrix_product(Matrix<Value, LEFT_ROWS, LEFT_COLS_RIGHT_ROWS> const& left,
                                       Matrix<Value, LEFT_COLS_RIGHT_ROWS, RIGHT_COLS> const& right)
-        -> Matrix<Value, LEFT_ROWS, RIGHT_COLS>
+      noexcept  -> Matrix<Value, LEFT_ROWS, RIGHT_COLS>
     {
         Matrix<Value, LEFT_ROWS, RIGHT_COLS> result;
         for (std::size_t i{}; i < LEFT_ROWS; ++i) {
@@ -420,9 +416,6 @@ namespace Linalg::Stack {
                 Value sum{};
                 for (std::size_t k{}; k < LEFT_COLS_RIGHT_ROWS; ++k) {
                     sum += left[i, k] * right[k, j];
-                    if (sum >= std::numeric_limits<Value>::max()) {
-                        throw std::runtime_error{"Multiplication by inf"};
-                    }
                 }
                 result[i, j] = sum;
             }
@@ -496,35 +489,32 @@ namespace Linalg::Stack {
 
     template <std::floating_point Value, std::size_t ROWS, std::size_t COLS>
     [[nodiscard]] auto operator*(Value const scale, Matrix<Value, ROWS, COLS> const& matrix)
-        -> Matrix<Value, ROWS, COLS>
+       noexcept -> Matrix<Value, ROWS, COLS>
     {
-        try {
+      
             return matrix_scale(matrix, scale);
-        } catch (std::runtime_error const& error) {
-            throw error;
-        }
+    
     }
 
     template <std::floating_point Value, std::size_t ROWS, std::size_t COLS>
     [[nodiscard]] auto operator*(Matrix<Value, ROWS, COLS> const& matrix, Value const scale)
-        -> Matrix<Value, ROWS, COLS>
+       noexcept-> Matrix<Value, ROWS, COLS>
     {
-        try {
+     
             return matrix_scale(matrix, scale);
-        } catch (std::runtime_error const& error) {
-            throw error;
-        }
+ 
+        
     }
 
     template <std::floating_point Value, std::size_t ROWS, std::size_t COLS>
     [[nodiscard]] auto operator/(Matrix<Value, ROWS, COLS> const& matrix, Value const scale)
         -> Matrix<Value, ROWS, COLS>
     {
-        try {
-            return matrix_scale(matrix, 1 / scale);
-        } catch (std::runtime_error const& error) {
-            throw error;
+               if (scale == Value{0.0}) {
+            throw std::runtime_error{"Division by 0!\n"};
         }
+            return matrix_scale(matrix, 1 / scale);
+       
     }
 
     template <std::floating_point Value, std::size_t DIMS>

@@ -38,34 +38,30 @@ namespace Linalg::Stack {
 
         [[nodiscard]] auto operator+=(this Vector& self, Vector const& other) noexcept -> Vector&
         {
-            self = sum(self, other);
+            self = vector_sum(self, other);
             return self;
         }
 
         [[nodiscard]] auto operator-=(this Vector& self, Vector const& other) noexcept -> Vector&
         {
-            self = difference(self, other);
+            self = vector_difference(self, other);
             return self;
         }
 
-        [[nodiscard]] auto operator*=(this Vector& self, Value const scale) -> Vector&
+        [[nodiscard]] auto operator*=(this Vector& self, Value const scale) noexcept-> Vector&
         {
-            try {
-                self = scale(self, scale);
+                self = vector_scale(self, scale);
                 return self;
-            } catch (std::runtime_error const& error) {
-                throw error;
-            }
-        }
+         }
 
-        [[nodiscard]] auto operator/=(this Vector& self, Value const scale) noexcept -> Vector&
+        [[nodiscard]] auto operator/=(this Vector& self, Value const scale)  -> Vector&
         {
-            try {
-                self = scale(self, 1 / scale);
+                    if (scale == Value{0.0}) {
+            throw std::runtime_error{"Division by 0!\n"};
+        }
+                self = vector_scale(self, 1 / scale);
                 return self;
-            } catch (std::runtime_error const& error) {
-                throw error;
-            }
+          
         }
 
         auto print(this Vector const& self) noexcept -> void
@@ -107,12 +103,8 @@ namespace Linalg::Stack {
 
     template <std::floating_point Value, std::size_t ELEMS>
     [[nodiscard]] auto vector_scale(Vector<Value, ELEMS> const& vector, Vector<Value, ELEMS> const scale)
-        -> Vector<Value, ELEMS>
+       noexcept -> Vector<Value, ELEMS>
     {
-        if (scale == std::numeric_limits<Value>::max()) {
-            throw std::runtime_error{"Multiplication by inf!\n"};
-        }
-
         Vector<Value, ELEMS> result;
         for (std::size_t i{}; i < ELEMS; ++i) {
             result[i] = vector[i] * scale;
@@ -135,33 +127,28 @@ namespace Linalg::Stack {
     }
 
     template <std::floating_point Value, std::size_t ELEMS>
-    [[nodiscard]] auto operator*(Value const scale, Vector<Value, ELEMS> const& vector) -> Vector<Value, ELEMS>
+    [[nodiscard]] auto operator*(Value const scale, Vector<Value, ELEMS> const& vector) noexcept -> Vector<Value, ELEMS>
     {
-        try {
-            return vector_scale(vector, scale);
-        } catch (std::runtime_error const& error) {
-            throw error;
-        }
+       return vector_scale(vector, scale);
+     
     }
 
     template <std::floating_point Value, std::size_t ELEMS>
-    [[nodiscard]] auto operator*(Vector<Value, ELEMS> const& vector, Value const scale) -> Vector<Value, ELEMS>
+    [[nodiscard]] auto operator*(Vector<Value, ELEMS> const& vector, Value const scale)noexcept -> Vector<Value, ELEMS>
     {
-        try {
+      
             return vector_scale(vector, scale);
-        } catch (std::runtime_error const& error) {
-            throw error;
-        }
+   
     }
 
     template <std::floating_point Value, std::size_t ELEMS>
     [[nodiscard]] auto operator/(Vector<Value, ELEMS> const& vector, Value const scale) -> Vector<Value, ELEMS>
     {
-        try {
-            return vector_scale(vector, 1 / scale);
-        } catch (std::runtime_error const& error) {
-            throw error;
+        if (scale == Value{0.0}) {
+            throw std::runtime_error{"Division by 0!\n"};
         }
+
+        return vector_scale(vector, 1 / scale);
     }
 
 }; // namespace Linalg::Stack

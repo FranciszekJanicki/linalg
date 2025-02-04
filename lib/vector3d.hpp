@@ -73,10 +73,6 @@ namespace Linalg {
 
         [[nodiscard]] auto operator*=(this Vector3D& self, Value const factor) -> Vector3D&
         {
-            if (factor == std::numeric_limits<Value>::max()) {
-                throw std::runtime_error{"Multiplication by inf\n"};
-            }
-
             self.x *= factor;
             self.y *= factor;
             self.z *= factor;
@@ -85,7 +81,7 @@ namespace Linalg {
 
         [[nodiscard]] auto operator/=(this Vector3D& self, Value const factor) -> Vector3D&
         {
-            if (factor == 0) {
+            if (factor == Value{0.0}) {
                 throw std::runtime_error{"Disivion by 0\n"};
             }
 
@@ -125,27 +121,19 @@ namespace Linalg {
     template <std::floating_point Value>
     [[nodiscard]] auto operator*(Value const factor, Vector3D<Value> const& vector)
     {
-        if (factor == std::numeric_limits<Value>::max()) {
-            throw std::runtime_error{"Multiplication by inf\n"};
-        }
-
         return Vector3D<Value>{vector.x * factor, vector.y * factor, vector.z * factor};
     }
 
     template <std::floating_point Value>
     [[nodiscard]] auto operator*(Vector3D<Value> const& vector, Value const factor)
     {
-        try {
             return factor * vector;
-        } catch (std::runtime_error const& error) {
-            throw error;
-        }
     }
 
     template <std::floating_point Value>
     [[nodiscard]] auto operator/(Vector3D<Value> const& vector, Value const factor)
     {
-        if (factor == 0) {
+        if (factor == Value{0.0}) {
             throw std::runtime_error{"Division by zero\n"};
         }
 

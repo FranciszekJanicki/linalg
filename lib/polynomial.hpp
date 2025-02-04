@@ -10,13 +10,13 @@
 
 namespace Linalg {
 
-    template <std::floating_point Value, std::size_t ORDER>
+    template <std::floating_point Value, std::uint32_t ORDER>
     using Polynomial = std::array<Value, ORDER + 1>;
 
     template <std::floating_point Value>
     using Root = std::complex<Value>;
 
-    template <std::floating_point Value, std::size_t ORDER>
+    template <std::floating_point Value, std::uint32_t ORDER>
     using Roots = std::array<Root<Value>, ORDER>;
 
     template <std::floating_point Value>
@@ -68,7 +68,7 @@ namespace Linalg {
                std::pow(b, 2) * std::pow(c, 2) * std::pow(d, 2);
     }
 
-    template <std::floating_point Value, std::size_t ORDER>
+    template <std::floating_point Value, std::uint32_t ORDER>
     [[nodiscard]] auto normalized(Polynomial<Value, ORDER> const& polynomial) noexcept -> Polynomial<Value, ORDER>
     {
         Polynomial<Value, ORDER> result{};
@@ -78,39 +78,39 @@ namespace Linalg {
         return result;
     }
 
-    template <std::floating_point Value, std::size_t ORDER>
+    template <std::floating_point Value, std::uint32_t ORDER>
     [[nodiscard]] auto derivative(Polynomial<Value, ORDER> const& polynomial) noexcept -> Polynomial<Value, ORDER - 1>
     {
         Polynomial<Value, ORDER - 1> result{};
-        for (std::size_t i{}; i < ORDER - 1; ++i) {
+        for (std::uint32_t i{}; i < ORDER - 1; ++i) {
             result[i] = polynomial[i] * static_cast<Value>(ORDER - i);
         }
         return result;
     }
 
-    template <std::floating_point Value, std::size_t ORDER>
+    template <std::floating_point Value, std::uint32_t ORDER>
     [[nodiscard]] auto integral(Polynomial<Value, ORDER> const& polynomial, Value const constant = 0.0) noexcept
         -> Polynomial<Value, ORDER + 1>
     {
         Polynomial<Value, ORDER + 1> result{};
-        for (std::size_t i{}; i < ORDER; ++i) {
+        for (std::uint32_t i{}; i < ORDER; ++i) {
             result[i] = polynomial[i] / static_cast<Value>(ORDER - i + 1);
         }
         result.back() = constant;
         return result;
     }
 
-    template <std::floating_point Value, std::size_t ORDER>
+    template <std::floating_point Value, std::uint32_t ORDER>
     auto print(Polynomial<Value, ORDER> const& polynomial) noexcept -> void
     {
         std::println("");
         for (auto const& [index, coeff] : std::views::enumerate(polynomial)) {
-            std::println(" {} * x^{} ", coeff, ORDER - index);
+            std::println(" {} * x^{} ", coeff, static_cast<std::uint32_t>(ORDER - index));
         }
         std::println("");
     }
 
-    template <std::floating_point Value, std::size_t ORDER>
+    template <std::floating_point Value, std::uint32_t ORDER>
     auto print_roots(Polynomial<Value, ORDER> const& polynomial) noexcept -> void
     {
         std::println("");
@@ -118,23 +118,6 @@ namespace Linalg {
             std::println(" Real: {} Imag: {} ", root.real(), root.imag());
         }
         std::println("");
-    }
-
-    template <std::floating_point Value, std::size_t ORDER>
-    auto print_derivative(Polynomial<Value, ORDER> const& polynomial) noexcept -> void
-    {
-        print<Value, ORDER - 1>(derivative<Value, ORDER>(polynomial));
-    }
-
-    template <std::floating_point Value, std::size_t ORDER>
-    auto print_integral(Polynomial<Value, ORDER> const& polynomial) noexcept -> void
-    {
-        print<Value, ORDER + 1>(integral<Value, ORDER>(polynomial));
-    }
-    template <std::floating_point Value, std::size_t ORDER>
-    auto print_normalized(Polynomial<Value, ORDER> const& polynomial) noexcept -> void
-    {
-        print<Value, ORDER>(normalized<Value, ORDER>(polynomial));
     }
 
 }; // namespace Linalg

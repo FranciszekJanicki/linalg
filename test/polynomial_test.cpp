@@ -8,9 +8,6 @@ auto main([[maybe_unused]] int const argc, [[maybe_unused]] char const* const ar
     Polynomial<std::float32_t, 2UL> polynomial{2.0F32, 4.0F32, 4.0F32};
     print<std::float32_t, 2UL>(polynomial);
     print_roots<std::float32_t, 2UL>(polynomial);
-    print_derivative<std::float32_t, 2UL>(polynomial);
-    print_integral<std::float32_t, 2UL>(polynomial);
-    print_normalized<std::float32_t, 2UL>(polynomial);
 
     return 0;
 }
