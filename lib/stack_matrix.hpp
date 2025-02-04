@@ -136,28 +136,24 @@ namespace Linalg::Stack {
 
         [[nodiscard]] auto operator*=(this Matrix& self, Matrix const& other) -> Matrix
         {
-            
-                self = matrix_product(self, other);
-                return self;
-         
+            self = matrix_product(self, other);
+            return self;
         }
 
-        [[nodiscard]] auto operator*=(this Matrix& self, Value const scale) noexcept-> Matrix
+        [[nodiscard]] auto operator*=(this Matrix& self, Value const scale) noexcept -> Matrix
         {
-         
-                self = matrix_scale(self, scale);
-                return self;
-          
+            self = matrix_scale(self, scale);
+            return self;
         }
 
         [[nodiscard]] auto operator/=(this Matrix& self, Value const scale) -> Matrix
-        {       if (scale == Value{0.0}) {
-            throw std::runtime_error{"Division by 0!\n"};
-        }
-            
-                self = matrix_scale(self, 1 / scale);
-                return self;
-         
+        {
+            if (scale == Value{0.0}) {
+                throw std::runtime_error{"Division by 0!\n"};
+            }
+
+            self = matrix_scale(self, 1 / scale);
+            return self;
         }
 
         [[nodiscard]] auto operator/=(this Matrix& self, Matrix const& other) -> Matrix
@@ -407,8 +403,8 @@ namespace Linalg::Stack {
               std::size_t LEFT_COLS_RIGHT_ROWS,
               std::size_t RIGHT_COLS>
     [[nodiscard]] auto matrix_product(Matrix<Value, LEFT_ROWS, LEFT_COLS_RIGHT_ROWS> const& left,
-                                      Matrix<Value, LEFT_COLS_RIGHT_ROWS, RIGHT_COLS> const& right)
-      noexcept  -> Matrix<Value, LEFT_ROWS, RIGHT_COLS>
+                                      Matrix<Value, LEFT_COLS_RIGHT_ROWS, RIGHT_COLS> const& right) noexcept
+        -> Matrix<Value, LEFT_ROWS, RIGHT_COLS>
     {
         Matrix<Value, LEFT_ROWS, RIGHT_COLS> result;
         for (std::size_t i{}; i < LEFT_ROWS; ++i) {
@@ -488,33 +484,27 @@ namespace Linalg::Stack {
     }
 
     template <std::floating_point Value, std::size_t ROWS, std::size_t COLS>
-    [[nodiscard]] auto operator*(Value const scale, Matrix<Value, ROWS, COLS> const& matrix)
-       noexcept -> Matrix<Value, ROWS, COLS>
+    [[nodiscard]] auto operator*(Value const scale, Matrix<Value, ROWS, COLS> const& matrix) noexcept
+        -> Matrix<Value, ROWS, COLS>
     {
-      
-            return matrix_scale(matrix, scale);
-    
+        return matrix_scale(matrix, scale);
     }
 
     template <std::floating_point Value, std::size_t ROWS, std::size_t COLS>
-    [[nodiscard]] auto operator*(Matrix<Value, ROWS, COLS> const& matrix, Value const scale)
-       noexcept-> Matrix<Value, ROWS, COLS>
+    [[nodiscard]] auto operator*(Matrix<Value, ROWS, COLS> const& matrix, Value const scale) noexcept
+        -> Matrix<Value, ROWS, COLS>
     {
-     
-            return matrix_scale(matrix, scale);
- 
-        
+        return matrix_scale(matrix, scale);
     }
 
     template <std::floating_point Value, std::size_t ROWS, std::size_t COLS>
     [[nodiscard]] auto operator/(Matrix<Value, ROWS, COLS> const& matrix, Value const scale)
         -> Matrix<Value, ROWS, COLS>
     {
-               if (scale == Value{0.0}) {
+        if (scale == Value{0.0}) {
             throw std::runtime_error{"Division by 0!\n"};
         }
-            return matrix_scale(matrix, 1 / scale);
-       
+        return matrix_scale(matrix, 1 / scale);
     }
 
     template <std::floating_point Value, std::size_t DIMS>

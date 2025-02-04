@@ -13,12 +13,13 @@ namespace Linalg::Regulators {
             ZERO,
         };
 
-        [[nodiscard]] auto operator()(this Ternary& self,  Value const error) noexcept -> State
+        [[nodiscard]] auto operator()(this Ternary& self, Value const error) noexcept -> State
         {
             return self.state = self.get_state(error);
         }
 
-        auto get_state(this Ternary const& self, Value const error) noexcept ->State {
+        auto get_state(this Ternary const& self, Value const error) noexcept -> State
+        {
             switch (self.state) {
                 case State::POSITIVE:
                     return error < self.hysteresis_down ? State::ZERO : self.state;

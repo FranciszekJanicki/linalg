@@ -33,7 +33,6 @@ namespace Signals {
                 auto const time) { return amplitude * std::tan(omega * static_cast<Value>(time)); });
     }
 
-
     template <std::floating_point Value, std::size_t SAMPLES>
     [[nodiscard]] constexpr auto make_sine(Value const amplitude, std::uint32_t const frequency) noexcept
         -> std::array<Value, SAMPLES>

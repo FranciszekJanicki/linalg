@@ -1,9 +1,11 @@
 #ifndef FILTERS_HPP
 #define FILTERS_HPP
 
+#include <algorithm>
 #include <concepts>
 #include <functional>
 #include <queue>
+#include <ranges>
 #include <utility>
 
 namespace Linalg::Filters {
@@ -11,42 +13,37 @@ namespace Linalg::Filters {
     template <std::floating_point Value>
     using Filter = std::function<Value(Value)>;
 
-    template <std::floating_point Value>
-    [[nodiscard]] auto make_recursive_average(Value const start_condition = 0) noexcept -> auto
+    template <std::floating_point Value, std::size_t SAMPLES>
+    [[nodiscard]] constexpr auto make_fir_filter(std::array<Value, SAMPLES> const& coeffs) noexcept
     {
-        return [estimate = start_condition, samples = 1UL](Value const measurement) mutable {
-            estimate = (estimate * (samples - 1UL) + measurement) / samples;
-            samples += 1UL;
+        return [coeffs, measurements = std::array<Value, SAMPLES>](Value const measurement) mutable {
+            Value estimate{0.0};
+            for (auto &[coeff, measurement] : std::views::zip(coeffs, measurements)) {
+                estimate += coeff * measurement;
+            }            
+            std::shift_right(measurements.begin(), measurements.end());
+            measurements[0UL] = measurement;
             return estimate;
         };
     }
 
-    template <std::floating_point Value>
-    [[nodiscard]] auto make_moving_average(Value const start_condition = 0, std::size_t const last_samples = 10UL)
-        -> auto
+    template <std::floating_point Value, std::size_t SAMPLES>
+    [[nodiscard]] constexpr auto make_iir_filter(std::array<Value, SAMPLES> const& num_coeffs,
+                                                 std::array<Value, SAMPLES> const& den_coeffs) noexcept
     {
-        assert(last_samples > 0);
-        std::queue<Value> measurements{};
-        for (auto i{0UL}; i < last_samples; ++i) {
-            measurements.push(start_condition);
-        }
-        return [estimate = start_condition, last_samples, measurements = std::move(measurements)](
-                   Value const measurement) mutable {
-            estimate = estimate + (measurement - measurements.front()) / last_samples;
-            if (!measurements.empty()) {
-                measurements.pop();
+        return [measurements = std::array<Value, SAMPLES>{},
+                estimates = std::array<Value, SAMPLES>{},
+                num_coeffs,
+                den_coeffs](Value const measurement) mutable {
+            Value estimate{0.0};
+            for (auto &[num_coeff, den_coeff, measurement, estimate] :
+                 std::views::zip(num_coeffs, den_coeffs, measurements, estimates)) {
+                estimate += num_coeff * measurement - den_coeff * estimate;
             }
-            measurements.push(measurement);
-            return estimate;
-        };
-    }
-
-    template <std::floating_point Value>
-    [[nodiscard]] auto make_low_pass(Value const start_condition = 0, Value const alpha = 0.5) noexcept -> auto
-    {
-        assert(alpha >= 0 && alpha <= 1);
-        return [estimate = start_condition, alpha](Value const measurement) mutable {
-            estimate = (estimate * alpha) + (measurement * (Value{1} - alpha));
+            std::shift_right(estimates.begin(), estimates.end());
+            std::shift_right(measurements.begin(), measurements.end());
+            estimates[0UL] = estimate;
+            measurements[0UL] = measurement;
             return estimate;
         };
     }

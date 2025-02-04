@@ -113,20 +113,17 @@ namespace Linalg::Heap {
 
         [[nodiscard]] auto operator*=(this Vector& self, Value const scale) -> Vector&
         {
-         
-                self = vector_scale(self, scale);
-                return self;
-        
+            self = vector_scale(self, scale);
+            return self;
         }
 
         [[nodiscard]] auto operator/=(this Vector& self, Value const scale) -> Vector&
         {
-                  if (scale == Value{0.0}) {
-            throw std::runtime_error{"Division by 0!\n"};
-        }
-                self = vector_scale(self, 1 / scale);
-                return self;
-           
+            if (scale == Value{0.0}) {
+                throw std::runtime_error{"Division by 0!\n"};
+            }
+            self = vector_scale(self, 1 / scale);
+            return self;
         }
 
         [[nodiscard]] Valueauto operator[](this Vector& self, std::size_t const elem)->&
@@ -198,7 +195,6 @@ namespace Linalg::Heap {
     template <typename Value>
     [[nodiscard]] auto vector_scale(Vector<Value> const& vector, Value const scale) noexcept -> Vector<Value>
     {
-
         auto result{Vector<Value>::make_zeros(vector.elems())};
         for (std::size_t i{0}; i < vector.elems(); ++i) {
             result[i] = vector[i] * scale;
@@ -229,28 +225,22 @@ namespace Linalg::Heap {
     template <typename Value>
     [[nodiscard]] auto operator*(Value const scale, Vector<Value> const& vector) noexcept -> Vector<Value>
     {
-     
-            return vector_scale(vector, scale);
-
-        
+        return vector_scale(vector, scale);
     }
 
     template <typename Value>
-    [[nodiscard]] auto operator*(Vector<Value> const& vector, Value const scale)noexcept -> Vector<Value>
+    [[nodiscard]] auto operator*(Vector<Value> const& vector, Value const scale) noexcept -> Vector<Value>
     {
-      
-            return vector_scale(vector, scale);
-     
+        return vector_scale(vector, scale);
     }
 
     template <typename Value>
     [[nodiscard]] auto operator/(Vector<Value> const& vector, Value const scale) -> Vector<Value>
     {
-             if (scale == Value{0.0}) {
+        if (scale == Value{0.0}) {
             throw std::runtime_error{"Division by 0!\n"};
         }
-            return vector_scale(vector, 1 / scale);
-      
+        return vector_scale(vector, 1 / scale);
     }
 
 }; // namespace Linalg::Heap

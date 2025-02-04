@@ -127,7 +127,7 @@ namespace Linalg {
     template <std::floating_point Value>
     [[nodiscard]] auto operator*(Vector3D<Value> const& vector, Value const factor)
     {
-            return factor * vector;
+        return factor * vector;
     }
 
     template <std::floating_point Value>

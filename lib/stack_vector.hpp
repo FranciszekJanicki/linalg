@@ -48,20 +48,19 @@ namespace Linalg::Stack {
             return self;
         }
 
-        [[nodiscard]] auto operator*=(this Vector& self, Value const scale) noexcept-> Vector&
+        [[nodiscard]] auto operator*=(this Vector& self, Value const scale) noexcept -> Vector&
         {
-                self = vector_scale(self, scale);
-                return self;
-         }
-
-        [[nodiscard]] auto operator/=(this Vector& self, Value const scale)  -> Vector&
-        {
-                    if (scale == Value{0.0}) {
-            throw std::runtime_error{"Division by 0!\n"};
+            self = vector_scale(self, scale);
+            return self;
         }
-                self = vector_scale(self, 1 / scale);
-                return self;
-          
+
+        [[nodiscard]] auto operator/=(this Vector& self, Value const scale) -> Vector&
+        {
+            if (scale == Value{0.0}) {
+                throw std::runtime_error{"Division by 0!\n"};
+            }
+            self = vector_scale(self, 1 / scale);
+            return self;
         }
 
         auto print(this Vector const& self) noexcept -> void
@@ -102,8 +101,8 @@ namespace Linalg::Stack {
     }
 
     template <std::floating_point Value, std::size_t ELEMS>
-    [[nodiscard]] auto vector_scale(Vector<Value, ELEMS> const& vector, Vector<Value, ELEMS> const scale)
-       noexcept -> Vector<Value, ELEMS>
+    [[nodiscard]] auto vector_scale(Vector<Value, ELEMS> const& vector, Vector<Value, ELEMS> const scale) noexcept
+        -> Vector<Value, ELEMS>
     {
         Vector<Value, ELEMS> result;
         for (std::size_t i{}; i < ELEMS; ++i) {
@@ -129,16 +128,13 @@ namespace Linalg::Stack {
     template <std::floating_point Value, std::size_t ELEMS>
     [[nodiscard]] auto operator*(Value const scale, Vector<Value, ELEMS> const& vector) noexcept -> Vector<Value, ELEMS>
     {
-       return vector_scale(vector, scale);
-     
+        return vector_scale(vector, scale);
     }
 
     template <std::floating_point Value, std::size_t ELEMS>
-    [[nodiscard]] auto operator*(Vector<Value, ELEMS> const& vector, Value const scale)noexcept -> Vector<Value, ELEMS>
+    [[nodiscard]] auto operator*(Vector<Value, ELEMS> const& vector, Value const scale) noexcept -> Vector<Value, ELEMS>
     {
-      
-            return vector_scale(vector, scale);
-   
+        return vector_scale(vector, scale);
     }
 
     template <std::floating_point Value, std::size_t ELEMS>
