@@ -3,7 +3,7 @@
 
 namespace Linalg::Regulators {
 
-    template <Arithmetic Value>
+    template <std::floating_point Value>
     struct SDRE {};
 
 }; // namespace Linalg::Regulators

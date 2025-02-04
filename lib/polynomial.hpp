@@ -1,32 +1,33 @@
 #ifndef POLYNOMIAL_HPP
 #define POLYNOMIAL_HPP
 
-#include "common.hpp"
 #include <algorithm>
 #include <complex>
+#include <concepts>
+#include <print>
 #include <ranges>
 #include <utility>
 
 namespace Linalg {
 
-    template <Arithmetic Value, Size ORDER>
+    template <std::floating_point Value, std::size_t ORDER>
     using Polynomial = std::array<Value, ORDER + 1>;
 
-    template <Arithmetic Value>
+    template <std::floating_point Value>
     using Root = std::complex<Value>;
 
-    template <Arithmetic Value, Size ORDER>
+    template <std::floating_point Value, std::size_t ORDER>
     using Roots = std::array<Root<Value>, ORDER>;
 
-    template <Arithmetic Value>
-    [[nodiscard]] constexpr auto delta(Polynomial<Value, 2UL> const& polynomial) noexcept -> Value
+    template <std::floating_point Value>
+    [[nodiscard]] auto delta(Polynomial<Value, 2UL> const& polynomial) noexcept -> Value
     {
         auto const& [a, b, c]{polynomial};
         return std::pow(b, 2.0F) - 4.0F * a * c;
     }
 
-    template <Arithmetic Value>
-    [[nodiscard]] constexpr auto roots(Polynomial<Value, 2UL> const& polynomial) noexcept -> Roots<Value, 2UL>
+    template <std::floating_point Value>
+    [[nodiscard]] auto roots(Polynomial<Value, 2UL> const& polynomial) noexcept -> Roots<Value, 2UL>
     {
         using Root = Root<Value>;
         using Roots = Roots<Value, 2UL>;
@@ -44,16 +45,16 @@ namespace Linalg {
         }
     }
 
-    template <Arithmetic Value>
-    [[nodiscard]] constexpr auto delta(Polynomial<Value, 3UL> const& polynomial) noexcept -> Value
+    template <std::floating_point Value>
+    [[nodiscard]] auto delta(Polynomial<Value, 3UL> const& polynomial) noexcept -> Value
     {
         auto const& [a, b, c, d]{polynomial};
         return std::pow(b, 2) * std::pow(c, 2) - 4.0F * a * std::pow(c, 3) - 4.0F * std::pow(b, 3) * d -
                27.0F * std::pow(a, 2) * std::pow(d, 2) + 18.0F * a * b * c * d;
     }
 
-    template <Arithmetic Value>
-    [[nodiscard]] constexpr auto delta(Polynomial<Value, 4UL> const& polynomial) noexcept -> Value
+    template <std::floating_point Value>
+    [[nodiscard]] auto delta(Polynomial<Value, 4UL> const& polynomial) noexcept -> Value
     {
         auto const& [a, b, c, d, e]{polynomial};
         return 256.0F * std::pow(a, 3) * std::pow(e, 3) - 192.0F * std::pow(a, 2) * b * d * std::pow(e, 2) -
@@ -67,9 +68,8 @@ namespace Linalg {
                std::pow(b, 2) * std::pow(c, 2) * std::pow(d, 2);
     }
 
-    template <Arithmetic Value, Size ORDER>
-    [[nodiscard]] constexpr auto normalized(Polynomial<Value, ORDER> const& polynomial) noexcept
-        -> Polynomial<Value, ORDER>
+    template <std::floating_point Value, std::size_t ORDER>
+    [[nodiscard]] auto normalized(Polynomial<Value, ORDER> const& polynomial) noexcept -> Polynomial<Value, ORDER>
     {
         Polynomial<Value, ORDER> result{};
         std::ranges::transform(polynomial, result.data(), [first_coeff = polynomial.front()](Value const coeff) {
@@ -78,62 +78,61 @@ namespace Linalg {
         return result;
     }
 
-    template <Arithmetic Value, Size ORDER>
-    [[nodiscard]] constexpr auto derivative(Polynomial<Value, ORDER> const& polynomial) noexcept
-        -> Polynomial<Value, ORDER - 1>
+    template <std::floating_point Value, std::size_t ORDER>
+    [[nodiscard]] auto derivative(Polynomial<Value, ORDER> const& polynomial) noexcept -> Polynomial<Value, ORDER - 1>
     {
         Polynomial<Value, ORDER - 1> result{};
-        for (Size i{}; i < ORDER - 1; ++i) {
-            result[i] = polynomial[i] * (ORDER - i);
+        for (std::size_t i{}; i < ORDER - 1; ++i) {
+            result[i] = polynomial[i] * static_cast<Value>(ORDER - i);
         }
         return result;
     }
 
-    template <Arithmetic Value, Size ORDER>
-    [[nodiscard]] constexpr auto integral(Polynomial<Value, ORDER> const& polynomial,
-                                          Value const constant = 0.0) noexcept -> Polynomial<Value, ORDER + 1>
+    template <std::floating_point Value, std::size_t ORDER>
+    [[nodiscard]] auto integral(Polynomial<Value, ORDER> const& polynomial, Value const constant = 0.0) noexcept
+        -> Polynomial<Value, ORDER + 1>
     {
         Polynomial<Value, ORDER + 1> result{};
-        for (Size i{}; i < ORDER; ++i) {
-            result[i] = polynomial[i] / (ORDER - i + 1);
+        for (std::size_t i{}; i < ORDER; ++i) {
+            result[i] = polynomial[i] / static_cast<Value>(ORDER - i + 1);
         }
         result.back() = constant;
         return result;
     }
 
-    template <Arithmetic Value, Size ORDER>
-    constexpr auto print(Polynomial<Value, ORDER> const& polynomial) noexcept -> void
+    template <std::floating_point Value, std::size_t ORDER>
+    auto print(Polynomial<Value, ORDER> const& polynomial) noexcept -> void
     {
-        fmt::println("");
+        std::println("");
         for (auto const& [index, coeff] : std::views::enumerate(polynomial)) {
-            fmt::println(" {} * x^{} ", coeff, ORDER - index);
+            std::println(" {} * x^{} ", coeff, ORDER - index);
         }
-        fmt::println("");
+        std::println("");
     }
 
-    template <Arithmetic Value, Size ORDER>
-    constexpr auto print_roots(Polynomial<Value, ORDER> const& polynomial) noexcept -> void
+    template <std::floating_point Value, std::size_t ORDER>
+    auto print_roots(Polynomial<Value, ORDER> const& polynomial) noexcept -> void
     {
-        fmt::println("");
+        std::println("");
         for (auto const root : roots(polynomial)) {
-            fmt::println(" Real: {} Imag: {} ", root.real(), root.imag());
+            std::println(" Real: {} Imag: {} ", root.real(), root.imag());
         }
-        fmt::println("");
+        std::println("");
     }
 
-    template <Arithmetic Value, Size ORDER>
-    constexpr auto print_derivative(Polynomial<Value, ORDER> const& polynomial) noexcept -> void
+    template <std::floating_point Value, std::size_t ORDER>
+    auto print_derivative(Polynomial<Value, ORDER> const& polynomial) noexcept -> void
     {
         print<Value, ORDER - 1>(derivative<Value, ORDER>(polynomial));
     }
 
-    template <Arithmetic Value, Size ORDER>
-    constexpr auto print_integral(Polynomial<Value, ORDER> const& polynomial) noexcept -> void
+    template <std::floating_point Value, std::size_t ORDER>
+    auto print_integral(Polynomial<Value, ORDER> const& polynomial) noexcept -> void
     {
         print<Value, ORDER + 1>(integral<Value, ORDER>(polynomial));
     }
-    template <Arithmetic Value, Size ORDER>
-    constexpr auto print_normalized(Polynomial<Value, ORDER> const& polynomial) noexcept -> void
+    template <std::floating_point Value, std::size_t ORDER>
+    auto print_normalized(Polynomial<Value, ORDER> const& polynomial) noexcept -> void
     {
         print<Value, ORDER>(normalized<Value, ORDER>(polynomial));
     }

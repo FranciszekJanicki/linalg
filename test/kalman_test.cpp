@@ -5,8 +5,8 @@
 #include "stack_matrix.hpp"
 #include "stack_vector.hpp"
 #include "vector3d.hpp"
-#include <fmt/core.h>
 #include <functional>
+#include <print>
 #include <stdfloat>
 
 auto main([[maybe_unused]] int const argc, [[maybe_unused]] char const* const argv[]) -> int
@@ -37,7 +37,7 @@ auto main([[maybe_unused]] int const argc, [[maybe_unused]] char const* const ar
             auto const kalman_state = std::invoke(kalman, Matrix1x1{{1.0F}}, Matrix1x1{{1.0F}});
             kalman_state.print();
         } catch (std::runtime_error const& error) {
-            fmt::print("error: {}", error.what());
+            std::print("error: {}", error.what());
         }
 
     return 0;

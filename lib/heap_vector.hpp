@@ -1,26 +1,26 @@
 #ifndef HEAP_VECTOR_HPP
 #define HEAP_VECTOR_HPP
 
-#include "common.hpp"
 #include <cassert>
 #include <cmath>
 #include <compare>
+#include <concepts>
 #include <exception>
-#include <fmt/core.h>
 #include <initializer_list>
+#include <print>
 #include <stdexcept>
 #include <utility>
 #include <vector>
 
 namespace Linalg::Heap {
 
-    template <Arithmetic Value>
+    template <std::floating_point Value>
     struct Vector {
     public:
         using Data = std::vector<Value>;
         using Init = std::initializer_list<Value>;
 
-        [[nodiscard]] static constexpr auto make_data(Init const init) -> Data
+        [[nodiscard]] static auto make_data(Init const init) -> Data
         {
             // Data data{};
 
@@ -33,12 +33,12 @@ namespace Linalg::Heap {
             return Data{init};
         }
 
-        [[nodiscard]] static constexpr auto make_data(Size const elems) -> Data
+        [[nodiscard]] static auto make_data(std::size_t const elems) -> Data
         {
             // Data data{};
 
             // data.reserve(elems);
-            // for (Size i{}; i < elems; ++i) {
+            // for (std::size_t i{}; i < elems; ++i) {
             //     data.emplace_back();
             // }
 
@@ -46,13 +46,13 @@ namespace Linalg::Heap {
             return Data(elems, Value{0});
         }
 
-        [[nodiscard]] constexpr auto zeros(Size const elems) -> Vector
+        [[nodiscard]] auto zeros(std::size_t const elems) -> Vector
         {
             // return Vector{make_data(elems)};
             return Data(elems, Value{0});
         }
 
-        [[nodiscard]] constexpr auto ones(Size const elems) -> Vector
+        [[nodiscard]] auto ones(std::size_t const elems) -> Vector
         {
             // Vector result{make_data(elems)};
 
@@ -64,104 +64,104 @@ namespace Linalg::Heap {
             return Data(elems, Value{1});
         }
 
-        [[nodiscard]] constexpr Vector() noexcept = default;
+        [[nodiscard]] Vector() noexcept = default;
 
-        [[nodiscard]] constexpr Vector(Data&& data) : data{std::forward<Data>(data)}
+        [[nodiscard]] Vector(Data&& data) : data{std::forward<Data>(data)}
         {}
 
-        [[nodiscard]] constexpr Vector(Init const init) : data{init}
+        [[nodiscard]] Vector(Init const init) : data{init}
         {}
 
-        [[nodiscard]] constexpr Vector(Size const elems) : data{make_data(elems)}
+        [[nodiscard]] Vector(std::size_t const elems) : data{make_data(elems)}
         {}
 
-        [[nodiscard]] constexpr Vector(Vector const& other) = default;
+        [[nodiscard]] Vector(Vector const& other) = default;
 
-        [[nodiscard]] constexpr Vector(Vector&& other) noexcept = default;
+        [[nodiscard]] Vector(Vector&& other) noexcept = default;
 
-        [[nodiscard]] constexpr ~Vector() noexcept = default;
+        [[nodiscard]] ~Vector() noexcept = default;
 
-        [[nodiscard]] constexpr auto operator=(Vector const& other) -> Vector& = default;
+        [[nodiscard]] auto operator=(Vector const& other) -> Vector& = default;
 
-        [[nodiscard]] constexpr auto operator=(Vector&& other) noexcept -> Vector& = default;
+        [[nodiscard]] auto operator=(Vector&& other) noexcept -> Vector& = default;
 
-        constexpr auto operator=(this Vector& self, Init const init) -> Vector&
+        auto operator=(this Vector& self, Init const init) -> Vector&
         {
             self.data = data;
             return self;
         }
 
-        [[nodiscard]] constexpr auto operator+=(this Vector& self, Vector const& other) -> Vector&
+        [[nodiscard]] auto operator+=(this Vector& self, Vector const& other) -> Vector&
         {
             try {
                 self = vector_sum(self, other);
                 return self;
-            } catch (Error const& error) {
+            } catch (std::runtime_error const& error) {
                 throw error;
             }
         }
 
-        [[nodiscard]] constexpr auto operator-=(this Vector& self, Vector const& other) -> Vector&
+        [[nodiscard]] auto operator-=(this Vector& self, Vector const& other) -> Vector&
         {
             try {
                 self = vector_difference(self, other);
                 return self;
-            } catch (Error const& error) {
+            } catch (std::runtime_error const& error) {
                 throw error;
             }
         }
 
-        [[nodiscard]] constexpr auto operator*=(this Vector& self, Value const scale) -> Vector&
+        [[nodiscard]] auto operator*=(this Vector& self, Value const scale) -> Vector&
         {
             try {
                 self = vector_scale(self, scale);
                 return self;
-            } catch (Error const& error) {
+            } catch (std::runtime_error const& error) {
                 throw error;
             }
         }
 
-        [[nodiscard]] constexpr auto operator/=(this Vector& self, Value const scale) -> Vector&
+        [[nodiscard]] auto operator/=(this Vector& self, Value const scale) -> Vector&
         {
             try {
                 self = vector_scale(self, 1 / scale);
                 return self;
-            } catch (Error const& error) {
+            } catch (std::runtime_error const& error) {
                 throw error;
             }
         }
 
-        [[nodiscard]] constexpr Valueauto operator[](this Vector& self, Size const elem)->&
+        [[nodiscard]] Valueauto operator[](this Vector& self, std::size_t const elem)->&
         {
             if (elem > self.elems()) {
-                throw Error{"Wrong dimensions\n"};
+                throw std::runtime_error{"Wrong dimensions\n"};
             }
             return self.data[elem];
         }
 
-        [[nodiscard]] constexpr Value auto operator[](this Vector const& self, Size const elem) noexcept -> const&
+        [[nodiscard]] Value auto operator[](this Vector const& self, std::size_t const elem) noexcept -> const&
         {
             if (elem > self.elems()) {
-                throw Error{"Wrong dimensions\n"};
+                throw std::runtime_error{"Wrong dimensions\n"};
             }
             return self.data[elem];
         }
 
-        [[nodiscard]] constexpr bool operator<=>(this Vector const& self, Vector const& other) noexcept = default;
+        [[nodiscard]] bool operator<=>(this Vector const& self, Vector const& other) noexcept = default;
 
-        constexpr auto print(this Vector const& self) noexcept -> void
+        auto print(this Vector const& self) noexcept -> void
         {
-            fmt::print("[");
+            std::print("[");
             for (auto& elem : self.data) {
-                fmt::print("{}", elem);
+                std::print("{}", elem);
                 if (elem != self.data.back()) {
-                    fmt::print(", ");
+                    std::print(", ");
                 }
             }
-            fmt::print("]\n");
+            std::print("]\n");
         }
 
-        [[nodiscard]] constexpr auto elems(this Vector const& self) noexcept -> Size
+        [[nodiscard]] auto elems(this Vector const& self) noexcept -> std::size_t
         {
             return self.data.size();
         }
@@ -170,94 +170,93 @@ namespace Linalg::Heap {
     };
 
     template <typename Value>
-    [[nodiscard]] constexpr auto vector_sum(Vector<Value> const& left, Vector<Value> const& right) -> Vector<Value>
+    [[nodiscard]] auto vector_sum(Vector<Value> const& left, Vector<Value> const& right) -> Vector<Value>
     {
         if (left.elems() != right.elems()) {
-            throw Error{"Incorrect dimensions!\n"};
+            throw std::runtime_error{"Incorrect dimensions!\n"};
         }
 
         auto result{Vector<Value>::make_zeros(left.elems())};
-        for (Size i{0}; i < left.elems(); ++i) {
+        for (std::size_t i{0}; i < left.elems(); ++i) {
             result[i] = left[i] + right[i];
         }
         return result;
     }
 
     template <typename Value>
-    [[nodiscard]] constexpr auto vector_difference(Vector<Value> const& left, Vector<Value> const& right)
-        -> Vector<Value>
+    [[nodiscard]] auto vector_difference(Vector<Value> const& left, Vector<Value> const& right) -> Vector<Value>
     {
         if (left.elems() != right.elems()) {
-            throw Error{"Incorrect dimensions!\n"};
+            throw std::runtime_error{"Incorrect dimensions!\n"};
         }
 
         auto result{Vector<Value>::make_zeros(left.elems())};
-        for (Size i{0}; i < left.elems(); ++i) {
+        for (std::size_t i{0}; i < left.elems(); ++i) {
             result[i] = left[i] - right[i];
         }
         return result;
     }
 
     template <typename Value>
-    [[nodiscard]] constexpr auto vector_scale(Vector<Value> const& vector, Value const scale) -> Vector<Value>
+    [[nodiscard]] auto vector_scale(Vector<Value> const& vector, Value const scale) -> Vector<Value>
     {
         if (scale == std::numeric_limits<Value>::max()) {
-            throw Error{"Multiplication by inf!\n"};
+            throw std::runtime_error{"Multiplication by inf!\n"};
         }
 
         auto result{Vector<Value>::make_zeros(vector.elems())};
-        for (Size i{0}; i < vector.elems(); ++i) {
+        for (std::size_t i{0}; i < vector.elems(); ++i) {
             result[i] = vector[i] * scale;
         }
         return result;
     }
 
     template <typename Value>
-    [[nodiscard]] constexpr auto operator+(Vector<Value> const& left, Vector<Value> const& right) -> Vector<Value>
+    [[nodiscard]] auto operator+(Vector<Value> const& left, Vector<Value> const& right) -> Vector<Value>
     {
         try {
             return vector_sum(left, right);
-        } catch (Error const& error) {
+        } catch (std::runtime_error const& error) {
             throw error;
         }
     }
 
     template <typename Value>
-    [[nodiscard]] constexpr auto operator-(Vector<Value> const& left, Vector<Value> const& right) -> Vector<Value>
+    [[nodiscard]] auto operator-(Vector<Value> const& left, Vector<Value> const& right) -> Vector<Value>
     {
         try {
             return vector_difference(left, right);
-        } catch (Error const& error) {
+        } catch (std::runtime_error const& error) {
             throw error;
         }
     }
 
     template <typename Value>
-    [[nodiscard]] constexpr auto operator*(Value const scale, Vector<Value> const& vector) -> Vector<Value>
+    [[nodiscard]] auto operator*(Value const scale, Vector<Value> const& vector) -> Vector<Value>
     {
         try {
             return vector_scale(vector, scale);
-        } catch (Error const& error) {
+        } catch (std::runtime_error const& error) {
             throw error;
         }
     }
 
     template <typename Value>
-    [[nodiscard]] constexpr auto operator*(Vector<Value> const& vector, Value const scale) -> Vector<Value>
+    [[nodiscard]] auto operator*(Vector<Value> const& vector, Value const scale) -> Vector<Value>
     {
         try {
             return vector_scale(vector, scale);
-        } catch (Error const& error) {
+        } catch (std::runtime_error const& error) {
             throw error;
         }
     }
 
     template <typename Value>
-    [[nodiscard]] constexpr auto operator/(Vector<Value> const& vector, Value const scale) -> Vector<Value>
+    [[nodiscard]] auto operator/(Vector<Value> const& vector, Value const scale) -> Vector<Value>
     {
         try {
             return vector_scale(vector, 1 / scale);
-        } catch (Error const& error) {
+        } catch (std::runtime_error const& error) {
             throw error;
         }
     }

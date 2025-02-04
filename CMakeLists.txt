@@ -27,17 +27,13 @@ add_library(Lib STATIC
     "lib/stack_vector.hpp"
     "lib/stack_matrix.hpp"
     "lib/polynomial.hpp"
+    "lib/transforms.hpp"
 )
 
 set_target_properties(Lib PROPERTIES LINKER_LANGUAGE CXX)
 
 target_include_directories(Lib PUBLIC
     "lib"
-)
-
-find_package(fmt REQUIRED)
-target_link_libraries(Lib PUBLIC
-    fmt::fmt
 )
 
 add_executable(Kalman
@@ -62,6 +58,14 @@ add_executable(Pid
 )
 
 target_link_libraries(Pid PRIVATE
+    Lib
+)
+
+add_executable(Dft
+    "test/dft_test.cpp"
+)
+
+target_link_libraries(Dft PRIVATE
     Lib
 )
 

@@ -1,9 +1,9 @@
 #ifndef KALMAN_HPP
 #define KALMAN_HPP
 
-#include "common.hpp"
 #include "stack_matrix.hpp"
-#include <fmt/core.h>
+#include <concepts>
+#include <print>
 #include <stdexcept>
 #include <utility>
 
@@ -13,37 +13,37 @@ namespace Linalg::Observers {
         using namespace Stack;
     };
 
-    template <Arithmetic Value, Size STATES, Size CONTROLS = 1UL, Size MEASUREMENTS = 1UL>
+    template <std::floating_point Value, std::size_t STATES, std::size_t CONTROLS = 1UL, std::size_t MEASUREMENTS = 1UL>
     struct Kalman {
-        template <Size ROWS, Size COLS>
+        template <std::size_t ROWS, std::size_t COLS>
         using Matrix = Matrix<Value, ROWS, COLS>;
 
-        [[nodiscard]] constexpr auto operator()(this Kalman& self,
-                                                Matrix<1UL, CONTROLS> const& control,
-                                                Matrix<1UL, MEASUREMENTS> const& measurement) -> Matrix<STATES, 1UL>
+        [[nodiscard]] auto operator()(this Kalman& self,
+                                      Matrix<1UL, CONTROLS> const& control,
+                                      Matrix<1UL, MEASUREMENTS> const& measurement) -> Matrix<STATES, 1UL>
         {
             try {
                 self.predict(control);
                 self.correct(measurement);
                 return self.state;
-            } catch (Error const& error) {
+            } catch (std::runtime_error const& error) {
                 throw error;
             }
         }
 
-        constexpr auto predict(this Kalman& self, Matrix<1UL, CONTROLS> const& control) -> void
+        auto predict(this Kalman& self, Matrix<1UL, CONTROLS> const& control) -> void
         {
             try {
                 self.state = (self.state_transition * self.state) + (self.control_transition * control);
                 self.state_covariance =
                     (self.state_transition * self.state_covariance * matrix_transpose(self.state_transition)) +
                     self.process_noise;
-            } catch (Error const& error) {
+            } catch (std::runtime_error const& error) {
                 throw error;
             }
         }
 
-        constexpr auto correct(this Kalman& self, Matrix<1UL, MEASUREMENTS> const& measurement) -> void
+        auto correct(this Kalman& self, Matrix<1UL, MEASUREMENTS> const& measurement) -> void
         {
             try {
                 auto const innovation{measurement - (self.measurement_transition * self.state)};
@@ -55,7 +55,7 @@ namespace Linalg::Observers {
                 self.state = self.state + (kalman_gain * innovation);
                 self.state_covariance =
                     (make_eye<Value, STATES>() - kalman_gain * self.measurement_transition) * self.state_covariance;
-            } catch (Error const& error) {
+            } catch (std::runtime_error const& error) {
                 throw error;
             }
         }

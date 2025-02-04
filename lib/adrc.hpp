@@ -1,11 +1,11 @@
 #ifndef ADRC_HPP
 #define ADRC_HPP
 
-#include "common.hpp"
+#include <concepts>
 
 namespace Linalg::Regulators {
 
-    template <Arithmetic Value>
+    template <std::floating_point Value>
     struct ADRC {};
 
 }; // namespace Linalg::Regulators

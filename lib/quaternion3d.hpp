@@ -1,19 +1,17 @@
 #ifndef QUATERNION3D_HPP
 #define QUATERNION3D_HPP
 
-#include "common.hpp"
 #include <cmath>
 #include <compare>
+#include <concepts>
 #include <cstdlib>
 #include <stdexcept>
 #include <tuple>
 #include <utility>
 
-using Error = std::runtime_error;
-
 namespace Linalg {
 
-    template <Arithmetic Value>
+    template <std::floating_point Value>
     struct Quaternion3D {
         [[nodiscard]] inline auto conjugated(this Quaternion3D const& self) noexcept -> Quaternion3D
         {
@@ -74,7 +72,7 @@ namespace Linalg {
         [[nodiscard]] inline auto operator*=(this Quaternion3D& self, Value const factor) -> Quaternion3D&
         {
             if (factor == std::numeric_limits<Value>::max()) {
-                throw Error{"Multiplication by inf\n"};
+                throw std::runtime_error{"Multiplication by inf\n"};
             }
 
             self.w *= factor;
@@ -87,7 +85,7 @@ namespace Linalg {
         [[nodiscard]] inline auto operator/=(this Quaternion3D& self, Value const factor) -> Quaternion3D&
         {
             if (factor == 0) {
-                throw Error{"Division by zero\n"};
+                throw std::runtime_error{"Division by zero\n"};
             }
 
             self.w /= factor;
@@ -97,7 +95,7 @@ namespace Linalg {
             return self;
         }
 
-        template <Arithmetic Converted>
+        template <std::floating_point Converted>
         [[nodiscard]] explicit inline operator Quaternion3D<Converted>(this Quaternion3D const& self) noexcept
         {
             return Quaternion3D<Converted>{static_cast<Converted>(self.w),
@@ -115,19 +113,19 @@ namespace Linalg {
         Value z{};
     };
 
-    template <Arithmetic Value>
+    template <std::floating_point Value>
     [[nodiscard]] inline auto operator+(Quaternion3D<Value> const& left, Quaternion3D<Value> const& right) noexcept
     {
         return Quaternion3D<Value>{left.w + right.w, left.x + right.x, left.y + right.y, left.z + right.z};
     }
 
-    template <Arithmetic Value>
+    template <std::floating_point Value>
     [[nodiscard]] inline auto operator-(Quaternion3D<Value> const& left, Quaternion3D<Value> const& right) noexcept
     {
         return Quaternion3D<Value>{left.w - right.w, left.x - right.x, left.y - right.y, left.z + right.z};
     }
 
-    template <Arithmetic Value>
+    template <std::floating_point Value>
     [[nodiscard]] inline auto operator*(Quaternion3D<Value> const& left, Quaternion3D<Value> const& right) noexcept
     {
         return Quaternion3D<Value>{left.w * right.w - left.x * right.x - left.y * right.y - left.z * right.z,
@@ -136,11 +134,11 @@ namespace Linalg {
                                    left.w * right.z + left.x * right.y - left.y * right.x + left.z * right.w};
     }
 
-    template <Arithmetic Value>
+    template <std::floating_point Value>
     [[nodiscard]] inline auto operator*(Quaternion3D<Value> const& quaternion, Value const factor)
     {
         if (factor == std::numeric_limits<Value>::max()) {
-            throw Error{"Multiplication by inf\n"};
+            throw std::runtime_error{"Multiplication by inf\n"};
         }
 
         return Quaternion3D<Value>{quaternion.w * factor,
@@ -149,21 +147,21 @@ namespace Linalg {
                                    quaternion.z * factor};
     }
 
-    template <Arithmetic Value>
+    template <std::floating_point Value>
     [[nodiscard]] inline auto operator*(Value const factor, Quaternion3D<Value> const& quaternion)
     {
         try {
             return quaternion * factor;
-        } catch (Error const& error) {
+        } catch (std::runtime_error const& error) {
             throw error;
         }
     }
 
-    template <Arithmetic Value>
+    template <std::floating_point Value>
     [[nodiscard]] inline auto operator/(Quaternion3D<Value> const& quaternion, Value const factor)
     {
         if (factor == std::numeric_limits<Value>::min()) {
-            throw Error{"Disivion by zero\n"};
+            throw std::runtime_error{"Disivion by zero\n"};
         }
 
         return Quaternion3D<Value>{quaternion.w / factor,

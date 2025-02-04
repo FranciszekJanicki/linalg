@@ -1,18 +1,18 @@
 #ifndef FILTERS_HPP
 #define FILTERS_HPP
 
-#include "common.hpp"
+#include <concepts>
 #include <functional>
 #include <queue>
 #include <utility>
 
 namespace Linalg::Filters {
 
-    template <Arithmetic Value>
+    template <std::floating_point Value>
     using Filter = std::function<Value(Value)>;
 
-    template <Arithmetic Value>
-    [[nodiscard]] constexpr auto make_recursive_average(Value const start_condition = 0) noexcept -> auto
+    template <std::floating_point Value>
+    [[nodiscard]] auto make_recursive_average(Value const start_condition = 0) noexcept -> auto
     {
         return [estimate = start_condition, samples = 1UL](Value const measurement) mutable {
             estimate = (estimate * (samples - 1UL) + measurement) / samples;
@@ -21,8 +21,8 @@ namespace Linalg::Filters {
         };
     }
 
-    template <Arithmetic Value>
-    [[nodiscard]] constexpr auto make_moving_average(Value const start_condition = 0, Size const last_samples = 10UL)
+    template <std::floating_point Value>
+    [[nodiscard]] auto make_moving_average(Value const start_condition = 0, std::size_t const last_samples = 10UL)
         -> auto
     {
         assert(last_samples > 0);
@@ -41,9 +41,8 @@ namespace Linalg::Filters {
         };
     }
 
-    template <Arithmetic Value>
-    [[nodiscard]] constexpr auto make_low_pass(Value const start_condition = 0, Value const alpha = 0.5) noexcept
-        -> auto
+    template <std::floating_point Value>
+    [[nodiscard]] auto make_low_pass(Value const start_condition = 0, Value const alpha = 0.5) noexcept -> auto
     {
         assert(alpha >= 0 && alpha <= 1);
         return [estimate = start_condition, alpha](Value const measurement) mutable {

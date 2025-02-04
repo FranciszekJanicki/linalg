@@ -3,16 +3,16 @@
 
 #include <chrono>
 #include <cstdint>
-#include <fmt/core.h>
+#include <print>
 
 struct Timer {
 public:
-    constexpr Timer() : time_{get_time()}
+    Timer() : time_{get_time()}
     {}
 
-    constexpr ~Timer()
+    ~Timer()
     {
-        fmt::print("Elapsed time: {}", get_time() - time_);
+        std::print("Elapsed time: {}", get_time() - time_);
     }
 
 private:

@@ -20,6 +20,10 @@ run-polynomial:
 run-pid:
 	cd ${BUILD_DIR} && ./Pid
 
+.PHONY: run-dft
+run-dft:
+	cd ${BUILD_DIR} && ./Dft
+
 .PHONY: clean
 clean:
 	cd ${PROJECT_DIR} && rm -rf ${BUILD_DIR}

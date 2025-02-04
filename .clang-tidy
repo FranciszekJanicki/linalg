@@ -1,2 +1,2 @@
 Checks: 'modernize-use-trailing-return-type'
-WarningsAsErrors: ''
+WarningsAsstd::runtime_errors: ''

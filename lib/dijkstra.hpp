@@ -5,6 +5,7 @@
 #include "vector3d.hpp"
 #include "vector6d.hpp"
 #include <algorithm>
+#include <concepts>
 #include <queue>
 #include <ranges>
 #include <unordered_map>

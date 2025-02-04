@@ -1,18 +1,18 @@
 #ifndef BINARY_HPP
 #define BINARY_HPP
 
-#include "arithmetic.hpp"
+#include <concepts>
 
 namespace Linalg::Regulators {
 
-    template <Arithmetic Value>
+    template <std::floating_point Value>
     struct Binary {
         enum struct State {
             POSITIVE,
             ZERO,
         };
 
-        [[nodiscard]] constexpr auto operator()(this Binary& self, Value const error) noexcept -> State
+        [[nodiscard]] auto operator()(this Binary& self, Value const error) noexcept -> State
         {
             switch (self.state) {
                 case State::POSITIVE:

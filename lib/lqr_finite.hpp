@@ -1,17 +1,17 @@
 #ifndef LQR_FINITE_HPP
 #define LQR_FINITE_HPP
 
-#include "common.hpp"
 #include "stack_matrix.hpp"
 #include <algorithm>
+#include <concepts>
 #include <ranges>
 #include <vector>
 
 namespace Linalg::Regulators {
 
-    template <Arithmetic Value, Size STATES, Size INPUTS = 1UL, Size MEASUREMENTS = 1UL>
+    template <std::floating_point Value, std::size_t STATES, std::size_t INPUTS = 1UL, std::size_t MEASUREMENTS = 1UL>
     struct LQR_Finite {
-        template <Size ROWS, Size COLS>
+        template <std::size_t ROWS, std::size_t COLS>
         using Matrix = Stack::Matrix<Value, ROWS, COLS>;
         using RicattiSolutions = std::vector<Matrix>;
         using namespace Stack;
@@ -46,17 +46,17 @@ namespace Linalg::Regulators {
                          matrix_transpose(state_transition) * prev_solution + state_cost);
         }
 
-        static constexpr auto get_optimal_gain(std::uint64_t const sample,
-                                               Matrix<STATES, STATES> const& ricatti,
-                                               Matrix<STATES, INPUTS> const& input_transition,
-                                               Value const input_cost) -> Matrix<1UL, STATES>
+        static auto get_optimal_gain(std::uint64_t const sample,
+                                     Matrix<STATES, STATES> const& ricatti,
+                                     Matrix<STATES, INPUTS> const& input_transition,
+                                     Value const input_cost) -> Matrix<1UL, STATES>
         {
             return matrix_inverse(input_cost) * matrix_transpose(input_transition) * ricatti;
         }
 
-        [[nodiscard]] constexpr auto operator()(this LQR_Finite& self,
-                                                Matrix<1UL, INPUTS> const& input,
-                                                Matrix<1UL, MEASUREMENTS> const& measurement) -> Matrix<STATES, 1UL>
+        [[nodiscard]] auto operator()(this LQR_Finite& self,
+                                      Matrix<1UL, INPUTS> const& input,
+                                      Matrix<1UL, MEASUREMENTS> const& measurement) -> Matrix<STATES, 1UL>
         {
             auto error{input - measurement};
             return input - (get_optimal_gain(sample,

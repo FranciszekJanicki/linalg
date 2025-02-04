@@ -1,24 +1,24 @@
 #ifndef LQR_INFINITE_HPP
 #define LQR_INFINITE_HPP
 
-#include "common.hpp"
 #include "stack_matrix.hpp"
+#include <concepts>
 
 namespace Linalg::Regulators {
 
-    template <Arithmetic Value, Size STATES, Size INPUTS = 1UL>
+    template <std::floating_point Value, std::size_t STATES, std::size_t INPUTS = 1UL>
     struct LQR_Infinite {
     public:
-        template <Size ROWS, Size COLS>
+        template <std::size_t ROWS, std::size_t COLS>
         using Matrix = Stack::Matrix<Value, ROWS, COLS>;
 
-        [[nodiscard]] constexpr auto operator()(this LQR_Infinite& self,
-                                                Matrix<1UL, INPUTS> const& input,
-                                                Matrix<STATES, 1UL> const& state) -> Matrix<STATES, 1UL>
+        [[nodiscard]] auto operator()(this LQR_Infinite& self,
+                                      Matrix<1UL, INPUTS> const& input,
+                                      Matrix<STATES, 1UL> const& state) -> Matrix<STATES, 1UL>
         {
             try {
                 return input - self.state_gain * state;
-            } catch (Error const& error) {
+            } catch (std::runtime_error const& error) {
                 throw error;
             }
         }

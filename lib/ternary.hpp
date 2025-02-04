@@ -1,11 +1,11 @@
 #ifndef TERNARY_HPP
 #define TERNARY_HPP
 
-#include "common.hpp"
+#include <concepts>
 
 namespace Linalg::Regulators {
 
-    template <Arithmetic Value>
+    template <std::floating_point Value>
     struct Ternary {
         enum struct State {
             POSITIVE,
@@ -13,7 +13,7 @@ namespace Linalg::Regulators {
             ZERO,
         };
 
-        [[nodiscard]] constexpr auto operator()(this Ternary& self, const Value error) noexcept -> State
+        [[nodiscard]] auto operator()(this Ternary& self, const Value error) noexcept -> State
         {
             switch (self.state) {
                 case State::POSITIVE:

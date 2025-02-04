@@ -1,44 +1,44 @@
 #ifndef OBSERVER_HPP
 #define OBSERVER_HPP
 
-#include "common.hpp"
 #include "stack_matrix.hpp"
+#include <concepts>
 
 namespace Linalg::Observers {
 
-    template <Arithmetic Value, Size STATES, Size CONTROLS = 1UL, Size MEASUREMENTS = 1UL>
+    template <std::floating_point Value, std::size_t STATES, std::size_t CONTROLS = 1UL, std::size_t MEASUREMENTS = 1UL>
     struct Observer {
     public:
-        template <Size ROWS, Size COLS>
+        template <std::size_t ROWS, std::size_t COLS>
         using Matrix = Stack::Matrix<Value, ROWS, COLS>;
 
-        [[nodiscard]] constexpr auto operator()(this Observer& self,
-                                                Matrix<1UL, CONTROLS> const& control,
-                                                Matrix<1UL, MEASUREMENTS> const& measurement) -> Matrix<STATES, 1UL>
+        [[nodiscard]] auto operator()(this Observer& self,
+                                      Matrix<1UL, CONTROLS> const& control,
+                                      Matrix<1UL, MEASUREMENTS> const& measurement) -> Matrix<STATES, 1UL>
         {
             try {
                 self.predict(control);
                 self.correct(measurement);
                 return self.state;
-            } catch (Error const& error) {
+            } catch (std::runtime_error const& error) {
                 throw error;
             }
         }
 
-        constexpr auto predict(this Observer& self, Matrix<1UL, CONTROLS> const& control) -> void
+        auto predict(this Observer& self, Matrix<1UL, CONTROLS> const& control) -> void
         {
             try {
                 self.state = self.state_transition * self.state + self.control_transition * control;
-            } catch (Error const& error) {
+            } catch (std::runtime_error const& error) {
                 throw error;
             }
         }
 
-        constexpr auto predict(this Observer& self, Matrix<1UL, MEASUREMENTS> const& measurement) -> void
+        auto predict(this Observer& self, Matrix<1UL, MEASUREMENTS> const& measurement) -> void
         {
             try {
                 self.state = self.state + self.state_gain * (measurement - self.measurement_transition * self.state);
-            } catch (Error const& error) {
+            } catch (std::runtime_error const& error) {
                 throw error;
             }
         }
