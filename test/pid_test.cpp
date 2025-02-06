@@ -12,7 +12,7 @@ auto main([[maybe_unused]] int const argc, [[maybe_unused]] char const* const ar
         input = static_cast<float>(index);
     }
 
-    PID pid{.kp = 100.0F, .ki = 0.0F, .kd = 0.0F, .kc = 0.0F, .saturation = 100.0F};
+    PID pid{.proportion_gain = 100.0F, .integral_gain = 0.0F, .derivative_gain = 0.0F, .control_gain = 0.0F, .saturation = 100.0F};
 
     auto output = 0.0F;
     auto dt = 0.01F;

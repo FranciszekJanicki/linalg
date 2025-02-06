@@ -18,9 +18,9 @@ namespace Linalg::Filters {
     {
         return [coeffs, measurements = std::array<Value, SAMPLES>](Value const measurement) mutable {
             Value estimate{0.0};
-            for (auto &[coeff, measurement] : std::views::zip(coeffs, measurements)) {
+            for (auto& [coeff, measurement] : std::views::zip(coeffs, measurements)) {
                 estimate += coeff * measurement;
-            }            
+            }
             std::shift_right(measurements.begin(), measurements.end());
             measurements[0UL] = measurement;
             return estimate;
@@ -36,7 +36,7 @@ namespace Linalg::Filters {
                 num_coeffs,
                 den_coeffs](Value const measurement) mutable {
             Value estimate{0.0};
-            for (auto &[num_coeff, den_coeff, measurement, estimate] :
+            for (auto& [num_coeff, den_coeff, measurement, estimate] :
                  std::views::zip(num_coeffs, den_coeffs, measurements, estimates)) {
                 estimate += num_coeff * measurement - den_coeff * estimate;
             }
