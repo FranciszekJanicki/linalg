@@ -24,6 +24,10 @@ run-pid:
 run-dft:
 	cd ${BUILD_DIR} && ./Dft
 
+.PHONY: run-filters
+run-filters:
+	cd ${BUILD_DIR} && ./Filters
+
 .PHONY: clean
 clean:
 	cd ${PROJECT_DIR} && rm -rf ${BUILD_DIR}

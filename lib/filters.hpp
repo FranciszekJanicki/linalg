@@ -5,8 +5,10 @@
 #include <concepts>
 #include <functional>
 #include <queue>
+#include <array>
 #include <ranges>
 #include <utility>
+#include <cstdint>
 
 namespace Linalg::Filters {
 
@@ -14,21 +16,21 @@ namespace Linalg::Filters {
     using Filter = std::function<Value(Value)>;
 
     template <std::floating_point Value, std::size_t SAMPLES>
-    [[nodiscard]] constexpr auto make_fir_filter(std::array<Value, SAMPLES> const& coeffs) noexcept
+    [[nodiscard]] auto make_fir_filter(std::array<Value, SAMPLES> const& coeffs) noexcept
     {
-        return [coeffs, measurements = std::array<Value, SAMPLES>](Value const measurement) mutable {
+        return [coeffs, measurements = std::array<Value, SAMPLES>{}](Value const measurement) mutable {
             Value estimate{0.0};
-            for (auto& [coeff, measurement] : std::views::zip(coeffs, measurements)) {
+            for (auto [coeff, measurement] : std::views::zip(coeffs, measurements)) {
                 estimate += coeff * measurement;
             }
-            std::shift_right(measurements.begin(), measurements.end());
+            std::shift_right(measurements.begin(), measurements.end(), 1UL);
             measurements[0UL] = measurement;
             return estimate;
         };
     }
 
     template <std::floating_point Value, std::size_t SAMPLES>
-    [[nodiscard]] constexpr auto make_iir_filter(std::array<Value, SAMPLES> const& num_coeffs,
+    [[nodiscard]] auto make_iir_filter(std::array<Value, SAMPLES> const& num_coeffs,
                                                  std::array<Value, SAMPLES> const& den_coeffs) noexcept
     {
         return [measurements = std::array<Value, SAMPLES>{},
@@ -36,12 +38,12 @@ namespace Linalg::Filters {
                 num_coeffs,
                 den_coeffs](Value const measurement) mutable {
             Value estimate{0.0};
-            for (auto& [num_coeff, den_coeff, measurement, estimate] :
+            for (auto [num_coeff, den_coeff, measurement, estimate] :
                  std::views::zip(num_coeffs, den_coeffs, measurements, estimates)) {
                 estimate += num_coeff * measurement - den_coeff * estimate;
             }
-            std::shift_right(estimates.begin(), estimates.end());
-            std::shift_right(measurements.begin(), measurements.end());
+            std::shift_right(estimates.begin(), estimates.end(), 1UL);
+            std::shift_right(measurements.begin(), measurements.end(), 1UL);
             estimates[0UL] = estimate;
             measurements[0UL] = measurement;
             return estimate;

@@ -53,7 +53,6 @@ target_link_libraries(Polynomial PRIVATE
     Lib
 )
 
-
 add_executable(Pid
     "test/pid_test.cpp"
 )
@@ -67,6 +66,14 @@ add_executable(Dft
 )
 
 target_link_libraries(Dft PRIVATE
+    Lib
+)
+
+add_executable(Filters
+    "test/filter_test.cpp"    
+)
+
+target_link_libraries(Filters PRIVATE
     Lib
 )
 
