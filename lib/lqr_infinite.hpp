@@ -6,15 +6,14 @@
 
 namespace Linalg::Regulators {
 
-    template <std::floating_point Value, std::size_t STATES, std::size_t INPUTS = 1UL>
+    template <std::floating_point T, std::size_t STATES, std::size_t INPUTS = 1UL>
     struct LQR_Infinite {
     public:
         template <std::size_t ROWS, std::size_t COLS>
-        using Matrix = Stack::Matrix<Value, ROWS, COLS>;
+        using Matrix = Stack::Matrix<T, ROWS, COLS>;
 
-        [[nodiscard]] auto operator()(this LQR_Infinite& self,
-                                      Matrix<1UL, INPUTS> const& input,
-                                      Matrix<STATES, 1UL> const& state) -> Matrix<STATES, 1UL>
+        [[nodiscard]] Matrix<STATES, 1UL>
+        operator()(this LQR_Infinite& self, Matrix<1UL, INPUTS> const& input, Matrix<STATES, 1UL> const& state)
         {
             try {
                 return input - self.state_gain * state;

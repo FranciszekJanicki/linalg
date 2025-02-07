@@ -5,7 +5,7 @@
 
 namespace Linalg::Regulators {
 
-    template <std::floating_point Value>
+    template <std::floating_point T>
     struct ADRC {};
 
 }; // namespace Linalg::Regulators

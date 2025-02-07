@@ -11,59 +11,57 @@
 
 namespace Linalg::Stack {
 
-    template <std::floating_point Value, std::size_t ELEMS>
+    template <std::floating_point T, std::size_t N>
     struct Vector {
-        using Data = std::array<Value, ELEMS>;
-
-        [[nodiscard]] auto operator[](this Vector const& self, std::size_t const elem) -> Value const&
+        [[nodiscard]] T const& operator[](this Vector const& self, std::size_t const elem)
         {
-            if (elem >= ELEMS) {
+            if (elem >= N) {
                 throw std::runtime_error{"Out of bounds\n"};
             }
             return self.data[elem];
         }
 
-        [[nodiscard]] auto operator[](this Vector& self, std::size_t const elem) -> Value&
+        [[nodiscard]] T& operator[](this Vector& self, std::size_t const elem)
         {
-            if (elem >= ELEMS) {
+            if (elem >= N) {
                 throw std::runtime_error{"Out of bounds\n"};
             }
             return self.data[elem];
         }
 
-        [[nodiscard]] auto size(this Vector const& self) noexcept -> std::size_t
+        [[nodiscard]] std::size_t size(this Vector const& self) noexcept
         {
-            return ELEMS;
+            return N;
         }
 
-        [[nodiscard]] auto operator+=(this Vector& self, Vector const& other) noexcept -> Vector&
+        [[nodiscard]] Vector& operator+=(this Vector& self, Vector const& other) noexcept
         {
             self = vector_sum(self, other);
             return self;
         }
 
-        [[nodiscard]] auto operator-=(this Vector& self, Vector const& other) noexcept -> Vector&
+        [[nodiscard]] Vector& operator-=(this Vector& self, Vector const& other) noexcept
         {
             self = vector_difference(self, other);
             return self;
         }
 
-        [[nodiscard]] auto operator*=(this Vector& self, Value const scale) noexcept -> Vector&
+        [[nodiscard]] Vector& operator*=(this Vector& self, T const scale) noexcept
         {
             self = vector_scale(self, scale);
             return self;
         }
 
-        [[nodiscard]] auto operator/=(this Vector& self, Value const scale) -> Vector&
+        [[nodiscard]] Vector& operator/=(this Vector& self, T const scale)
         {
-            if (scale == Value{0.0}) {
+            if (scale == static_cast<T>(0)) {
                 throw std::runtime_error{"Division by 0!\n"};
             }
             self = vector_scale(self, 1 / scale);
             return self;
         }
 
-        auto print(this Vector const& self) noexcept -> void
+        void print(this Vector const& self) noexcept
         {
             std::print("[");
             for (auto& elem : self.data) {
@@ -75,72 +73,72 @@ namespace Linalg::Stack {
             std::print("]\n");
         }
 
-        Data data{};
+        std::array<T, N> data{};
     };
 
-    template <std::floating_point Value, std::size_t ELEMS>
-    [[nodiscard]] auto vector_sum(Vector<Value, ELEMS> const& left, Vector<Value, ELEMS> const& right) noexcept
-        -> Vector<Value, ELEMS>
+    template <std::floating_point T, std::size_t N>
+    [[nodiscard]] Vector<T, N> vector_sum(Vector<T, N> const& left, Vector<T, N> const& right) noexcept
+
     {
-        Vector<Value, ELEMS> result;
-        for (std::size_t i{}; i < ELEMS; ++i) {
+        Vector<T, N> result;
+        for (std::size_t i{}; i < N; ++i) {
             result[i] = left[i] + right[i];
         }
         return result;
     }
 
-    template <std::floating_point Value, std::size_t ELEMS>
-    [[nodiscard]] auto vector_difference(Vector<Value, ELEMS> const& left, Vector<Value, ELEMS> const& right) noexcept
-        -> Vector<Value, ELEMS>
+    template <std::floating_point T, std::size_t N>
+    [[nodiscard]] Vector<T, N> vector_difference(Vector<T, N> const& left, Vector<T, N> const& right) noexcept
+
     {
-        Vector<Value, ELEMS> result;
-        for (std::size_t i{}; i < ELEMS; ++i) {
+        Vector<T, N> result;
+        for (std::size_t i{}; i < N; ++i) {
             result[i] = left[i] - right[i];
         }
         return result;
     }
 
-    template <std::floating_point Value, std::size_t ELEMS>
-    [[nodiscard]] auto vector_scale(Vector<Value, ELEMS> const& vector, Vector<Value, ELEMS> const scale) noexcept
-        -> Vector<Value, ELEMS>
+    template <std::floating_point T, std::size_t N>
+    [[nodiscard]] Vector<T, N> vector_scale(Vector<T, N> const& vector, Vector<T, N> const scale) noexcept
+
     {
-        Vector<Value, ELEMS> result;
-        for (std::size_t i{}; i < ELEMS; ++i) {
+        Vector<T, N> result;
+        for (std::size_t i{}; i < N; ++i) {
             result[i] = vector[i] * scale;
         }
         return result;
     }
 
-    template <std::floating_point Value, std::size_t ELEMS>
-    [[nodiscard]] auto operator+(Vector<Value, ELEMS> const& left, Vector<Value, ELEMS> const& right) noexcept
-        -> Vector<Value, ELEMS>
+    template <std::floating_point T, std::size_t N>
+    [[nodiscard]] Vector<T, N> operator+(Vector<T, N> const& left, Vector<T, N> const& right) noexcept
+
     {
         return vector_sum(left, right);
     }
 
-    template <std::floating_point Value, std::size_t ELEMS>
-    [[nodiscard]] auto operator-(Vector<Value, ELEMS> const& left, Vector<Value, ELEMS> const& right) noexcept
-        -> Vector<Value, ELEMS>
+    template <std::floating_point T, std::size_t N>
+    [[nodiscard]] Vector<T, N> operator-(Vector<T, N> const& left, Vector<T, N> const& right) noexcept
+
     {
         return vector_difference(left, right);
     }
 
-    template <std::floating_point Value, std::size_t ELEMS>
-    [[nodiscard]] auto operator*(Value const scale, Vector<Value, ELEMS> const& vector) noexcept -> Vector<Value, ELEMS>
+    template <std::floating_point T, std::size_t N>
+    [[nodiscard]] Vector<T, N> operator*(T const scale, Vector<T, N> const& vector) noexcept
     {
         return vector_scale(vector, scale);
     }
 
-    template <std::floating_point Value, std::size_t ELEMS>
-    [[nodiscard]] auto operator*(Vector<Value, ELEMS> const& vector, Value const scale) noexcept -> Vector<Value, ELEMS>
+    template <std::floating_point T, std::size_t N>
+    [[nodiscard]] Vector<T, N> operator*(Vector<T, N> const& vector, T const scale) noexcept
     {
         return vector_scale(vector, scale);
     }
 
-    template <std::floating_point Value, std::size_t ELEMS>
-    [[nodiscard]] auto operator/(Vector<Value, ELEMS> const& vector, Value const scale) -> Vector<Value, ELEMS>
+    template <std::floating_point T, std::size_t N>
+    [[nodiscard]] Vector<T, N> operator/(Vector<T, N> const& vector, T const scale)
     {
-        if (scale == Value{0.0}) {
+        if (scale == static_cast<T>(0)) {
             throw std::runtime_error{"Division by 0!\n"};
         }
 

@@ -11,21 +11,20 @@
 
 namespace Linalg {
 
-    template <std::floating_point Value>
+    template <std::floating_point T>
     struct Vector3D {
-        [[nodiscard]] auto distance(this Vector3D const& self, Vector3D const& other) noexcept -> Value
+        [[nodiscard]] T distance(this Vector3D const& self, Vector3D const& other) noexcept
         {
             return std::sqrt(std::pow(self.x - other.x, 2) + std::pow(self.y - other.y, 2) +
                              std::pow(self.z - other.z, 2));
         }
 
-        [[nodiscard]] auto magnitude(this Vector3D const& self) noexcept -> Value
+        [[nodiscard]] T magnitude(this Vector3D const& self) noexcept
         {
             return std::sqrt(std::pow(self.x, 2) + std::pow(self.y, 2) + std::pow(self.z, 2));
         }
 
-        [[nodiscard]] auto rotated(this Vector3D const& self, Quaternion3D<Value> const& quaternion) noexcept
-            -> Vector3D
+        [[nodiscard]] Vector3D rotated(this Vector3D const& self, Quaternion3D<T> const& quaternion) noexcept
         {
             Quaternion3D p(0, self.x, self.y, self.z);
             p *= quaternion;
@@ -33,7 +32,7 @@ namespace Linalg {
             return Vector3D{p.x, p.y, p.z};
         }
 
-        auto rotate(this Vector3D& self, Quaternion3D<Value> const& quaternion) noexcept -> void
+        void rotate(this Vector3D& self, Quaternion3D<T> const& quaternion) noexcept
         {
             Quaternion3D p(0, self.x, self.y, self.z);
             p *= quaternion;
@@ -43,19 +42,19 @@ namespace Linalg {
             self.z = p.z;
         }
 
-        [[nodiscard]] auto normalized(this Vector3D const& self) noexcept -> Vector3D
+        [[nodiscard]] Vector3D normalized(this Vector3D const& self) noexcept
         {
-            const auto im{Value{1} / self.magnitude()};
+            const auto im{T{1} / self.magnitude()};
             return Vector3D{self.x * im, self.y * im, self.z * im};
         }
 
-        auto normalize(this Vector3D& self) noexcept -> void
+        void normalize(this Vector3D& self) noexcept
         {
-            const auto im{Value{1} / self.magnitude()};
+            const auto im{T{1} / self.magnitude()};
             self *= im;
         }
 
-        [[nodiscard]] auto operator+=(this Vector3D& self, Vector3D const& other) noexcept -> Vector3D&
+        [[nodiscard]] Vector3D& operator+=(this Vector3D& self, Vector3D const& other) noexcept
         {
             self.x += other.x;
             self.y += other.y;
@@ -63,7 +62,7 @@ namespace Linalg {
             return self;
         }
 
-        [[nodiscard]] auto operator-=(this Vector3D& self, Vector3D const& other) noexcept -> Vector3D&
+        [[nodiscard]] Vector3D& operator-=(this Vector3D& self, Vector3D const& other) noexcept
         {
             self.x -= other.x;
             self.y -= other.y;
@@ -71,7 +70,7 @@ namespace Linalg {
             return self;
         }
 
-        [[nodiscard]] auto operator*=(this Vector3D& self, Value const factor) -> Vector3D&
+        [[nodiscard]] Vector3D& operator*=(this Vector3D& self, T const factor)
         {
             self.x *= factor;
             self.y *= factor;
@@ -79,9 +78,9 @@ namespace Linalg {
             return self;
         }
 
-        [[nodiscard]] auto operator/=(this Vector3D& self, Value const factor) -> Vector3D&
+        [[nodiscard]] Vector3D& operator/=(this Vector3D& self, T const factor)
         {
-            if (factor == Value{0.0}) {
+            if (factor == static_cast<T>(0)) {
                 throw std::runtime_error{"Disivion by 0\n"};
             }
 
@@ -91,53 +90,51 @@ namespace Linalg {
             return self;
         }
 
-        template <std::floating_point Converted>
-        [[nodiscard]] explicit operator Vector3D<Converted>(this Vector3D const& self) noexcept
+        template <std::floating_point C>
+        [[nodiscard]] explicit operator Vector3D<C>(this Vector3D const& self) noexcept
         {
-            return Vector3D<Converted>{static_cast<Converted>(self.x),
-                                       static_cast<Converted>(self.y),
-                                       static_cast<Converted>(self.z)};
+            return Vector3D<C>{static_cast<C>(self.x), static_cast<C>(self.y), static_cast<C>(self.z)};
         }
 
         [[nodiscard]] bool operator<=>(this Vector3D const& self, Vector3D const& other) noexcept = default;
 
-        Value x{};
-        Value y{};
-        Value z{};
+        T x{};
+        T y{};
+        T z{};
     };
 
-    template <std::floating_point Value>
-    [[nodiscard]] auto operator+(Vector3D<Value> const& left, Vector3D<Value> const& right) noexcept
+    template <std::floating_point T>
+    [[nodiscard]] Vector3D<T> operator+(Vector3D<T> const& left, Vector3D<T> const& right) noexcept
     {
-        return Vector3D<Value>{left.x + right.x, left.y + right.y, left.z + right.z};
+        return Vector3D<T>{left.x + right.x, left.y + right.y, left.z + right.z};
     }
 
-    template <std::floating_point Value>
-    [[nodiscard]] auto operator-(Vector3D<Value> const& left, Vector3D<Value> const& right) noexcept
+    template <std::floating_point T>
+    [[nodiscard]] Vector3D<T> operator-(Vector3D<T> const& left, Vector3D<T> const& right) noexcept
     {
-        return Vector3D<Value>{left.x - right.x, left.y - right.y, left.z - right.z};
+        return Vector3D<T>{left.x - right.x, left.y - right.y, left.z - right.z};
     }
 
-    template <std::floating_point Value>
-    [[nodiscard]] auto operator*(Value const factor, Vector3D<Value> const& vector)
+    template <std::floating_point T>
+    [[nodiscard]] Vector3D<T> operator*(T const factor, Vector3D<T> const& vector)
     {
-        return Vector3D<Value>{vector.x * factor, vector.y * factor, vector.z * factor};
+        return Vector3D<T>{vector.x * factor, vector.y * factor, vector.z * factor};
     }
 
-    template <std::floating_point Value>
-    [[nodiscard]] auto operator*(Vector3D<Value> const& vector, Value const factor)
+    template <std::floating_point T>
+    [[nodiscard]] Vector3D<T> operator*(Vector3D<T> const& vector, T const factor)
     {
         return factor * vector;
     }
 
-    template <std::floating_point Value>
-    [[nodiscard]] auto operator/(Vector3D<Value> const& vector, Value const factor)
+    template <std::floating_point T>
+    [[nodiscard]] Vector3D<T> operator/(Vector3D<T> const& vector, T const factor)
     {
-        if (factor == Value{0.0}) {
+        if (factor == static_cast<T>(0)) {
             throw std::runtime_error{"Division by zero\n"};
         }
 
-        return Vector3D<Value>{vector.x / factor, vector.y / factor, vector.z / factor};
+        return Vector3D<T>{vector.x / factor, vector.y / factor, vector.z / factor};
     }
 
 }; // namespace Linalg

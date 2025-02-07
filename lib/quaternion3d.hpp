@@ -11,38 +11,38 @@
 
 namespace Linalg {
 
-    template <std::floating_point Value>
+    template <std::floating_point T>
     struct Quaternion3D {
-        [[nodiscard]] inline auto conjugated(this Quaternion3D const& self) noexcept -> Quaternion3D
+        [[nodiscard]] inline Quaternion3D conjugated(this Quaternion3D const& self) noexcept
         {
             return Quaternion3D{self.w, -self.x, -self.y, -self.z};
         }
 
-        inline auto conjugate(this Quaternion3D& self) noexcept -> void
+        inline void conjugate(this Quaternion3D& self) noexcept
         {
             self.x = -self.x;
             self.y = -self.y;
             self.z = -self.z;
         }
 
-        [[nodiscard]] inline auto magnitude(this Quaternion3D const& self) noexcept -> Value
+        [[nodiscard]] inline T magnitude(this Quaternion3D const& self) noexcept
         {
             return std::sqrt(std::pow(self.w, 2) + std::pow(self.x, 2) + std::pow(self.y, 2) + std::pow(self.z, 2));
         }
 
-        [[nodiscard]] inline auto normalized(this Quaternion3D const& self) noexcept -> Quaternion3D
+        [[nodiscard]] inline Quaternion3D normalized(this Quaternion3D const& self) noexcept
         {
-            const auto im{static_cast<Value>(1) / self.magnitude()};
+            const auto im{static_cast<T>(1) / self.magnitude()};
             return Quaternion3D{self.w * im, self.x * im, self.y * im, self.z * im};
         }
 
-        inline auto normalize(this Quaternion3D& self) noexcept -> void
+        inline void normalize(this Quaternion3D& self) noexcept
         {
-            const auto im{static_cast<Value>(1) / self.magnitude()};
+            const auto im{static_cast<T>(1) / self.magnitude()};
             self *= im;
         }
 
-        [[nodiscard]] inline auto operator+=(this Quaternion3D& self, Quaternion3D const& other) -> Quaternion3D&
+        [[nodiscard]] inline Quaternion3D& operator+=(this Quaternion3D& self, Quaternion3D const& other)
         {
             self.w += other.w;
             self.x += other.x;
@@ -51,7 +51,7 @@ namespace Linalg {
             return self;
         }
 
-        [[nodiscard]] inline auto operator-=(this Quaternion3D& self, Quaternion3D const& other) -> Quaternion3D&
+        [[nodiscard]] inline Quaternion3D& operator-=(this Quaternion3D& self, Quaternion3D const& other)
         {
             self.w -= other.w;
             self.x -= other.x;
@@ -60,7 +60,7 @@ namespace Linalg {
             return self;
         }
 
-        [[nodiscard]] inline auto operator*=(this Quaternion3D& self, Quaternion3D const& other) -> Quaternion3D&
+        [[nodiscard]] inline Quaternion3D& operator*=(this Quaternion3D& self, Quaternion3D const& other)
         {
             self.w = self.w * other.w - self.x * other.x - self.y * other.y - self.z * other.z;
             self.x = self.w * other.x + self.x * other.w + self.y * other.z - self.z * other.y;
@@ -69,7 +69,7 @@ namespace Linalg {
             return self;
         }
 
-        [[nodiscard]] inline auto operator*=(this Quaternion3D& self, Value const factor) -> Quaternion3D&
+        [[nodiscard]] inline Quaternion3D& operator*=(this Quaternion3D& self, T const factor)
         {
             self.w *= factor;
             self.x *= factor;
@@ -78,9 +78,9 @@ namespace Linalg {
             return self;
         }
 
-        [[nodiscard]] inline auto operator/=(this Quaternion3D& self, Value const factor) -> Quaternion3D&
+        [[nodiscard]] inline Quaternion3D& operator/=(this Quaternion3D& self, T const factor)
         {
-            if (factor == Value{0.0}) {
+            if (factor == static_cast<T>(0)) {
                 throw std::runtime_error{"Division by zero\n"};
             }
 
@@ -91,71 +91,71 @@ namespace Linalg {
             return self;
         }
 
-        template <std::floating_point Converted>
-        [[nodiscard]] explicit inline operator Quaternion3D<Converted>(this Quaternion3D const& self) noexcept
+        template <std::floating_point C>
+        [[nodiscard]] explicit inline operator Quaternion3D<C>(this Quaternion3D const& self) noexcept
         {
-            return Quaternion3D<Converted>{static_cast<Converted>(self.w),
-                                           static_cast<Converted>(self.x),
-                                           static_cast<Converted>(self.y),
-                                           static_cast<Converted>(self.z)};
+            return Quaternion3D<C>{static_cast<C>(self.w),
+                                   static_cast<C>(self.x),
+                                   static_cast<C>(self.y),
+                                   static_cast<C>(self.z)};
         }
 
         [[nodiscard]] inline bool operator<=>(this Quaternion3D const& self,
                                               Quaternion3D const& other) noexcept = default;
 
-        Value w{};
-        Value x{};
-        Value y{};
-        Value z{};
+        T w{};
+        T x{};
+        T y{};
+        T z{};
     };
 
-    template <std::floating_point Value>
-    [[nodiscard]] inline auto operator+(Quaternion3D<Value> const& left, Quaternion3D<Value> const& right) noexcept
+    template <std::floating_point T>
+    [[nodiscard]] inline Quaternion3D<T> operator+(Quaternion3D<T> const& left, Quaternion3D<T> const& right) noexcept
     {
-        return Quaternion3D<Value>{left.w + right.w, left.x + right.x, left.y + right.y, left.z + right.z};
+        return Quaternion3D<T>{left.w + right.w, left.x + right.x, left.y + right.y, left.z + right.z};
     }
 
-    template <std::floating_point Value>
-    [[nodiscard]] inline auto operator-(Quaternion3D<Value> const& left, Quaternion3D<Value> const& right) noexcept
+    template <std::floating_point T>
+    [[nodiscard]] inline Quaternion3D<T> operator-(Quaternion3D<T> const& left, Quaternion3D<T> const& right) noexcept
     {
-        return Quaternion3D<Value>{left.w - right.w, left.x - right.x, left.y - right.y, left.z + right.z};
+        return Quaternion3D<T>{left.w - right.w, left.x - right.x, left.y - right.y, left.z + right.z};
     }
 
-    template <std::floating_point Value>
-    [[nodiscard]] inline auto operator*(Quaternion3D<Value> const& left, Quaternion3D<Value> const& right) noexcept
+    template <std::floating_point T>
+    [[nodiscard]] inline Quaternion3D<T> operator*(Quaternion3D<T> const& left, Quaternion3D<T> const& right) noexcept
     {
-        return Quaternion3D<Value>{left.w * right.w - left.x * right.x - left.y * right.y - left.z * right.z,
-                                   left.w * right.x + left.x * right.w + left.y * right.z - left.z * right.y,
-                                   left.w * right.y - left.x * right.z + left.y * right.w + left.z * right.x,
-                                   left.w * right.z + left.x * right.y - left.y * right.x + left.z * right.w};
+        return Quaternion3D<T>{left.w * right.w - left.x * right.x - left.y * right.y - left.z * right.z,
+                               left.w * right.x + left.x * right.w + left.y * right.z - left.z * right.y,
+                               left.w * right.y - left.x * right.z + left.y * right.w + left.z * right.x,
+                               left.w * right.z + left.x * right.y - left.y * right.x + left.z * right.w};
     }
 
-    template <std::floating_point Value>
-    [[nodiscard]] inline auto operator*(Quaternion3D<Value> const& quaternion, Value const factor)
+    template <std::floating_point T>
+    [[nodiscard]] inline Quaternion3D<T> operator*(Quaternion3D<T> const& quaternion, T const factor)
     {
-        return Quaternion3D<Value>{quaternion.w * factor,
-                                   quaternion.x * factor,
-                                   quaternion.y * factor,
-                                   quaternion.z * factor};
+        return Quaternion3D<T>{quaternion.w * factor,
+                               quaternion.x * factor,
+                               quaternion.y * factor,
+                               quaternion.z * factor};
     }
 
-    template <std::floating_point Value>
-    [[nodiscard]] inline auto operator*(Value const factor, Quaternion3D<Value> const& quaternion)
+    template <std::floating_point T>
+    [[nodiscard]] inline Quaternion3D<T> operator*(T const factor, Quaternion3D<T> const& quaternion)
     {
         return quaternion * factor;
     }
 
-    template <std::floating_point Value>
-    [[nodiscard]] inline auto operator/(Quaternion3D<Value> const& quaternion, Value const factor)
+    template <std::floating_point T>
+    [[nodiscard]] inline Quaternion3D<T> operator/(Quaternion3D<T> const& quaternion, T const factor)
     {
-        if (factor == Value{0.0}) {
+        if (factor == static_cast<T>(0)) {
             throw std::runtime_error{"Disivion by zero\n"};
         }
 
-        return Quaternion3D<Value>{quaternion.w / factor,
-                                   quaternion.x / factor,
-                                   quaternion.y / factor,
-                                   quaternion.z / factor};
+        return Quaternion3D<T>{quaternion.w / factor,
+                               quaternion.x / factor,
+                               quaternion.y / factor,
+                               quaternion.z / factor};
     }
 
 }; // namespace Linalg

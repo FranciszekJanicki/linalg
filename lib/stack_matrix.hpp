@@ -12,18 +12,18 @@
 
 namespace Linalg::Stack {
 
-    template <std::floating_point Value, std::size_t ROWS, std::size_t COLS>
+    template <std::floating_point T, std::size_t N, std::size_t M>
     struct Matrix {
-        using Data = std::array<std::array<Value, COLS>, ROWS>;
-        using Init = std::initializer_list<std::initializer_list<Value>>;
-        using Row = std::array<Value, COLS>;
-        using Column = std::array<Value, ROWS>;
+        using Data = std::array<std::array<T, M>, N>;
+        using Init = std::initializer_list<std::initializer_list<T>>;
+        using Row = std::array<T, M>;
+        using Column = std::array<T, N>;
 
-        [[nodiscard]] static auto make_data(Init const init) noexcept -> Data
+        [[nodiscard]] static Data make_data(Init const init) noexcept
         {
             Data result;
-            for (std::size_t i{}; i < ROWS; ++i) {
-                for (std::size_t j{}; j < COLS; ++j) {
+            for (std::size_t i{}; i < N; ++i) {
+                for (std::size_t j{}; j < M; ++j) {
                     result[i][j] = *((init.begin() + i)->begin() + j);
                 }
             }
@@ -38,53 +38,52 @@ namespace Linalg::Stack {
         Matrix(Matrix&& other) noexcept = default;
         Matrix(Matrix const& other) noexcept = default;
 
-        [[nodiscard]] auto operator=(Matrix&& other) noexcept -> Matrix& = default;
-        [[nodiscard]] auto operator=(Matrix const& other) noexcept -> Matrix& = default;
+        [[nodiscard]] Matrix& operator=(Matrix&& other) noexcept = default;
+        [[nodiscard]] Matrix& operator=(Matrix const& other) noexcept = default;
 
         ~Matrix() noexcept = default;
 
-        [[nodiscard]] auto operator[](this Matrix const& self, std::size_t const row) -> Row const&
+        [[nodiscard]] Row const& operator[](this Matrix const& self, std::size_t const row)
         {
-            if (row > ROWS) {
+            if (row > N) {
                 throw std::runtime_error{"Out of bounds\n"};
             }
             return self.data[row];
         }
 
-        [[nodiscard]] auto operator[](this Matrix& self, std::size_t const row) -> Row&
+        [[nodiscard]] Row& operator[](this Matrix& self, std::size_t const row)
         {
-            if (row > ROWS) {
+            if (row > N) {
                 throw std::runtime_error{"Out of bounds\n"};
             }
             return self.data[row];
         }
 
-        [[nodiscard]] auto operator[](this Matrix const& self, std::size_t const row, std::size_t const col)
-            -> Value const&
+        [[nodiscard]] T const& operator[](this Matrix const& self, std::size_t const row, std::size_t const col)
         {
-            if (row > ROWS || col > COLS) {
+            if (row > N || col > M) {
                 throw std::runtime_error{"Out of bounds\n"};
             }
             return self.data[row][col];
         }
 
-        [[nodiscard]] auto operator[](this Matrix& self, std::size_t const row, std::size_t const col) -> Value&
+        [[nodiscard]] T& operator[](this Matrix& self, std::size_t const row, std::size_t const col)
         {
-            if (row > ROWS || col > COLS) {
+            if (row > N || col > M) {
                 throw std::runtime_error{"Out of bounds\n"};
             }
             return self.data[row][col];
         }
 
-        [[nodiscard]] auto operator<=>(this Matrix const& self, Matrix const& other) noexcept -> bool = default;
+        [[nodiscard]] bool operator<=>(this Matrix const& self, Matrix const& other) noexcept = default;
 
-        [[nodiscard]] auto operator=(this Matrix& self, Init const init) -> Matrix
+        [[nodiscard]] Matrix& operator=(this Matrix& self, Init const init)
         {
             self.data = make_data(init);
             return self;
         }
 
-        auto print(this Matrix const& self) noexcept -> void
+        void print(this Matrix const& self) noexcept
         {
             std::print("[");
             if (!self.data.empty()) {
@@ -107,48 +106,48 @@ namespace Linalg::Stack {
             std::print("]\n");
         }
 
-        [[nodiscard]] auto is_square(this Matrix const& self) noexcept -> bool
+        [[nodiscard]] bool is_square(this Matrix const& self) noexcept
         {
-            return ROWS == COLS;
+            return N == M;
         }
 
-        [[nodiscard]] auto rows(this Matrix const& self) noexcept -> std::size_t
+        [[nodiscard]] std::size_t rows(this Matrix const& self) noexcept
         {
-            return ROWS;
+            return N;
         }
 
-        [[nodiscard]] auto cols(this Matrix const& self) noexcept -> std::size_t
+        [[nodiscard]] std::size_t cols(this Matrix const& self) noexcept
         {
-            return COLS;
+            return M;
         }
 
-        [[nodiscard]] auto operator+=(this Matrix& self, Matrix const& other) noexcept -> Matrix
+        [[nodiscard]] Matrix& operator+=(this Matrix& self, Matrix const& other) noexcept
         {
             self = matrix_sum(self, other);
             return self;
         }
 
-        [[nodiscard]] auto operator-=(this Matrix& self, Matrix const& other) noexcept -> Matrix
+        [[nodiscard]] Matrix& operator-=(this Matrix& self, Matrix const& other) noexcept
         {
             self = matrix_difference(self, other);
             return self;
         }
 
-        [[nodiscard]] auto operator*=(this Matrix& self, Matrix const& other) -> Matrix
+        [[nodiscard]] Matrix& operator*=(this Matrix& self, Matrix const& other)
         {
             self = matrix_product(self, other);
             return self;
         }
 
-        [[nodiscard]] auto operator*=(this Matrix& self, Value const scale) noexcept -> Matrix
+        [[nodiscard]] Matrix& operator*=(this Matrix& self, T const scale) noexcept
         {
             self = matrix_scale(self, scale);
             return self;
         }
 
-        [[nodiscard]] auto operator/=(this Matrix& self, Value const scale) -> Matrix
+        [[nodiscard]] Matrix& operator/=(this Matrix& self, T const scale)
         {
-            if (scale == Value{0.0}) {
+            if (scale == static_cast<T>(0)) {
                 throw std::runtime_error{"Division by 0!\n"};
             }
 
@@ -156,7 +155,7 @@ namespace Linalg::Stack {
             return self;
         }
 
-        [[nodiscard]] auto operator/=(this Matrix& self, Matrix const& other) -> Matrix
+        [[nodiscard]] Matrix& operator/=(this Matrix& self, Matrix const& other)
         {
             try {
                 self = matrix_product(self, matrix_inverse(other));
@@ -166,7 +165,7 @@ namespace Linalg::Stack {
             }
         }
 
-        [[nodiscard]] auto operator^=(this Matrix& self, Value const power) -> Matrix
+        [[nodiscard]] Matrix& operator^=(this Matrix& self, T const power)
         {
             self = matrix_power(self, power);
             return self;
@@ -175,61 +174,38 @@ namespace Linalg::Stack {
         Data data{};
     };
 
-    template <std::floating_point Value, std::size_t COLS>
-    using Row = Matrix<Value, 1, COLS>;
-
-    template <std::floating_point Value, std::size_t ROWS>
-    using Column = Matrix<Value, ROWS, 1>;
-
-    template <std::floating_point Value, std::size_t DIMS>
-    using Square = Matrix<Value, DIMS, DIMS>;
-
-    template <std::floating_point Value>
-    using Scalar = Matrix<Value, 1, 1>;
-
-    template <std::floating_point Value,
-              std::size_t LEFT_ROWS,
-              std::size_t LEFT_COLS_RIGHT_ROWS,
-              std::size_t RIGHT_COLS>
-    using Product = Matrix<Value, LEFT_ROWS, RIGHT_COLS>;
-
-    template <std::floating_point Value, std::size_t ROWS, std::size_t COLS>
-    using Transpose = Matrix<Value, COLS, ROWS>;
-
-    template <std::floating_point Value, std::size_t DIMS>
-    using Minor = Square<Value, DIMS - 1>;
-
-    template <std::floating_point Value, std::size_t DIMS>
-    [[nodiscard]] auto make_eye() noexcept -> Square<Value, DIMS>
+    template <std::floating_point T, std::size_t N>
+    [[nodiscard]] Matrix<T, N, N> make_eye() noexcept
     {
-        Square<Value, DIMS> result;
-        for (std::size_t i{}; i < DIMS; ++i) {
-            for (std::size_t j{}; j < DIMS; ++j) {
-                result[i, j] = (i == j) ? Value{1} : Value{0};
+        Matrix<T, N, N> result;
+        for (std::size_t i{}; i < N; ++i) {
+            for (std::size_t j{}; j < N; ++j) {
+                result[i, j] = (i == j) ? T{1} : static_cast<T>(0);
             }
         }
         return result;
     }
 
-    template <std::floating_point Value, std::size_t DIMS>
-    [[nodiscard]] auto matrix_minor(Square<Value, DIMS> const& matrix, std::size_t const row, std::size_t const column)
+    template <std::floating_point T, std::size_t N>
+    [[nodiscard]] Matrix<T, N - 1, N - 1>
+    matrix_minor(Matrix<T, N, N> const& matrix, std::size_t const row, std::size_t const column)
     {
-        if (row >= DIMS || column >= DIMS) {
+        if (row >= N || column >= N) {
             throw std::runtime_error{"Wrong dimensions\n"};
         }
-        if constexpr (DIMS == 1) {
+        if constexpr (N == 1) {
             return matrix;
         }
 
-        if constexpr (DIMS > 1) {
+        if constexpr (N > 1) {
             std::size_t cof_i{};
             std::size_t cof_j{};
-            Square<Value, DIMS - 1> result{};
-            for (std::size_t i{}; i < DIMS - 1; ++i) {
-                for (std::size_t j{}; j < DIMS - 1; ++j) {
+            Matrix<T, N - 1, N - 1> result{};
+            for (std::size_t i{}; i < N - 1; ++i) {
+                for (std::size_t j{}; j < N - 1; ++j) {
                     if (i != row && j != column) {
                         result[cof_i, cof_j++] = matrix[i, j];
-                        if (cof_j == DIMS - 1) {
+                        if (cof_j == N - 1) {
                             cof_j = 0;
                             ++cof_i;
                         }
@@ -240,17 +216,17 @@ namespace Linalg::Stack {
         }
     }
 
-    template <std::floating_point Value, std::size_t DIMS>
-    [[nodiscard]] auto matrix_complement(Square<Value, DIMS> const& matrix) -> Square<Value, DIMS>
+    template <std::floating_point T, std::size_t N>
+    [[nodiscard]] Matrix<T, N, N> matrix_complement(Matrix<T, N, N> const& matrix)
     {
-        if constexpr (DIMS == 1) {
+        if constexpr (N == 1) {
             return matrix;
         }
 
-        if constexpr (DIMS > 1) {
-            Square<Value, DIMS> result{};
-            for (std::size_t i{}; i < DIMS; ++i) {
-                for (std::size_t j{}; j < DIMS; ++j) {
+        if constexpr (N > 1) {
+            Matrix<T, N, N> result{};
+            for (std::size_t i{}; i < N; ++i) {
+                for (std::size_t j{}; j < N; ++j) {
                     try {
                         result[i, j] = ((i + j) % 2 == 0 ? 1 : -1) * matrix_det(matrix_minor(matrix, i, j));
                     } catch (std::runtime_error const& error) {
@@ -262,8 +238,8 @@ namespace Linalg::Stack {
         }
     }
 
-    template <std::floating_point Value, std::size_t DIMS>
-    [[nodiscard]] auto matrix_adjoint(Square<Value, DIMS> const& matrix) -> Square<Value, DIMS>
+    template <std::floating_point T, std::size_t N>
+    [[nodiscard]] Matrix<T, N, N> matrix_adjoint(Matrix<T, N, N> const& matrix)
     {
         try {
             return matrix_transpose(matrix_complement(matrix));
@@ -272,33 +248,33 @@ namespace Linalg::Stack {
         }
     }
 
-    template <std::floating_point Value, std::size_t ROWS, std::size_t COLS>
-    [[nodiscard]] auto matrix_transpose(Matrix<Value, ROWS, COLS> const& matrix) noexcept -> Matrix<Value, COLS, ROWS>
+    template <std::floating_point T, std::size_t N, std::size_t M>
+    [[nodiscard]] Matrix<T, M, N> matrix_transpose(Matrix<T, N, M> const& matrix) noexcept
     {
-        Matrix<Value, COLS, ROWS> result{};
-        for (std::size_t i{}; i < ROWS; ++i) {
-            for (std::size_t j{}; j < COLS; ++j) {
+        Matrix<T, M, N> result{};
+        for (std::size_t i{}; i < N; ++i) {
+            for (std::size_t j{}; j < M; ++j) {
                 result[i, j] = matrix[j, i];
             }
         }
         return result;
     }
 
-    template <std::floating_point Value, std::size_t DIMS>
-    [[nodiscard]] auto matrix_det(Square<Value, DIMS> const& matrix) -> Value
+    template <std::floating_point T, std::size_t N>
+    [[nodiscard]] T matrix_det(Matrix<T, N, N> const& matrix)
     {
-        if constexpr (DIMS == 1) {
+        if constexpr (N == 1) {
             return matrix[0, 0];
         }
 
-        if constexpr (DIMS == 2) {
+        if constexpr (N == 2) {
             return (matrix[0, 0] * matrix[1, 1]) - (matrix[1, 0] * matrix[0, 1]);
         }
 
-        if constexpr (DIMS > 2) {
+        if constexpr (N > 2) {
             try {
-                Value det{};
-                for (std::size_t i{}; i < DIMS; ++i) {
+                T det{};
+                for (std::size_t i{}; i < N; ++i) {
                     det += (i % 2 == 0 ? 1 : -1) * matrix[0, i] * matrix_det(matrix_minor(matrix, 0, i));
                 }
                 return det;
@@ -308,8 +284,8 @@ namespace Linalg::Stack {
         }
     }
 
-    template <std::floating_point Value, std::size_t DIMS>
-    [[nodiscard]] auto matrix_inverse(Square<Value, DIMS> const& matrix) -> Square<Value, DIMS>
+    template <std::floating_point T, std::size_t N>
+    [[nodiscard]] Matrix<T, N, N> matrix_inverse(Matrix<T, N, N> const& matrix)
     {
         try {
             return matrix_scale(matrix_adjoint(matrix), 1 / matrix_det(matrix));
@@ -318,8 +294,8 @@ namespace Linalg::Stack {
         }
     }
 
-    template <std::floating_point Value, std::size_t DIMS>
-    [[nodiscard]] auto matrix_upper_triangular(Square<Value, DIMS> const& matrix) -> Square<Value, DIMS>
+    template <std::floating_point T, std::size_t N>
+    [[nodiscard]] Matrix<T, N, N> matrix_upper_triangular(Matrix<T, N, N> const& matrix)
     {
         try {
             return matrix_transpose(matrix_lower_triangular(matrix));
@@ -328,18 +304,18 @@ namespace Linalg::Stack {
         }
     }
 
-    template <std::floating_point Value, std::size_t DIMS>
-    [[nodiscard]] auto matrix_lower_triangular(Square<Value, DIMS> const& matrix) -> Square<Value, DIMS>
+    template <std::floating_point T, std::size_t N>
+    [[nodiscard]] Matrix<T, N, N> matrix_lower_triangular(Matrix<T, N, N> const& matrix)
     {
-        if constexpr (DIMS == 1) {
+        if constexpr (N == 1) {
             return matrix;
         }
 
-        if constexpr (DIMS > 1) {
-            Square<Value, DIMS> result;
-            for (std::size_t i{}; i < DIMS; ++i) {
+        if constexpr (N > 1) {
+            Matrix<T, N, N> result;
+            for (std::size_t i{}; i < N; ++i) {
                 for (std::size_t j{}; j <= i; ++j) {
-                    Value sum{};
+                    T sum{};
                     for (std::size_t k{}; k < j; ++k) {
                         if (j == i) {
                             sum += std::pow(result[j, k], 2);
@@ -355,62 +331,53 @@ namespace Linalg::Stack {
         }
     }
 
-    template <std::floating_point Value, std::size_t ROWS, std::size_t COLS>
-    [[nodiscard]] auto matrix_sum(Matrix<Value, ROWS, COLS> const& left,
-                                  Matrix<Value, ROWS, COLS> const& right) noexcept -> Matrix<Value, ROWS, COLS>
+    template <std::floating_point T, std::size_t N, std::size_t M>
+    [[nodiscard]] Matrix<T, N, M> matrix_sum(Matrix<T, N, M> const& left, Matrix<T, N, M> const& right) noexcept
+
     {
-        Matrix<Value, ROWS, COLS> result;
-        for (std::size_t i{}; i < ROWS; ++i) {
-            for (std::size_t j{}; j < COLS; ++j) {
+        Matrix<T, N, M> result;
+        for (std::size_t i{}; i < N; ++i) {
+            for (std::size_t j{}; j < M; ++j) {
                 result[i, j] = left[i, j] + right[i, j];
             }
         }
         return result;
     }
 
-    template <std::floating_point Value, std::size_t ROWS, std::size_t COLS>
-    [[nodiscard]] auto matrix_difference(Matrix<Value, ROWS, COLS> const& left,
-                                         Matrix<Value, ROWS, COLS> const& right) noexcept -> Matrix<Value, ROWS, COLS>
+    template <std::floating_point T, std::size_t N, std::size_t M>
+    [[nodiscard]] Matrix<T, N, M> matrix_difference(Matrix<T, N, M> const& left, Matrix<T, N, M> const& right) noexcept
+
     {
-        Matrix<Value, ROWS, COLS> result;
-        for (std::size_t i{}; i < ROWS; ++i) {
-            for (std::size_t j{}; j < COLS; ++j) {
+        Matrix<T, N, M> result;
+        for (std::size_t i{}; i < N; ++i) {
+            for (std::size_t j{}; j < M; ++j) {
                 result[i, j] = left[i, j] - right[i, j];
             }
         }
         return result;
     }
 
-    template <std::floating_point Value, std::size_t ROWS, std::size_t COLS>
-    [[nodiscard]] auto matrix_scale(Matrix<Value, ROWS, COLS> const& matrix, Value const scale)
-        -> Matrix<Value, ROWS, COLS>
+    template <std::floating_point T, std::size_t N, std::size_t M>
+    [[nodiscard]] Matrix<T, N, M> matrix_scale(Matrix<T, N, M> const& matrix, T const scale) noexcept
     {
-        if (scale == std::numeric_limits<Value>::max()) {
-            throw std::runtime_error{"Multiplication by inf!\n"};
-        }
-
-        Matrix<Value, ROWS, COLS> result;
-        for (std::size_t i{}; i < ROWS; ++i) {
-            for (std::size_t j{}; j < COLS; ++j) {
+        Matrix<T, N, M> result;
+        for (std::size_t i{}; i < N; ++i) {
+            for (std::size_t j{}; j < M; ++j) {
                 result[i, j] = matrix[i, j] * scale;
             }
         }
         return result;
     }
 
-    template <std::floating_point Value,
-              std::size_t LEFT_ROWS,
-              std::size_t LEFT_COLS_RIGHT_ROWS,
-              std::size_t RIGHT_COLS>
-    [[nodiscard]] auto matrix_product(Matrix<Value, LEFT_ROWS, LEFT_COLS_RIGHT_ROWS> const& left,
-                                      Matrix<Value, LEFT_COLS_RIGHT_ROWS, RIGHT_COLS> const& right) noexcept
-        -> Matrix<Value, LEFT_ROWS, RIGHT_COLS>
+    template <std::floating_point T, std::size_t N, std::size_t M, std::size_t P>
+    [[nodiscard]] Matrix<T, N, P> matrix_product(Matrix<T, N, M> const& left, Matrix<T, M, P> const& right) noexcept
+
     {
-        Matrix<Value, LEFT_ROWS, RIGHT_COLS> result;
-        for (std::size_t i{}; i < LEFT_ROWS; ++i) {
-            for (std::size_t j{}; j < RIGHT_COLS; ++j) {
-                Value sum{};
-                for (std::size_t k{}; k < LEFT_COLS_RIGHT_ROWS; ++k) {
+        Matrix<T, N, P> result;
+        for (std::size_t i{}; i < N; ++i) {
+            for (std::size_t j{}; j < P; ++j) {
+                T sum{};
+                for (std::size_t k{}; k < M; ++k) {
                     sum += left[i, k] * right[k, j];
                 }
                 result[i, j] = sum;
@@ -419,97 +386,85 @@ namespace Linalg::Stack {
         return result;
     }
 
-    template <std::floating_point Value, std::size_t DIMS>
-    [[nodiscard]] auto matrix_power(Square<Value, DIMS> const& matrix, Value const power) noexcept
-        -> Square<Value, DIMS>
+    template <std::floating_point T, std::size_t N>
+    [[nodiscard]] Matrix<T, N, N> matrix_power(Matrix<T, N, N> const& matrix, T const power) noexcept
     {
         if (power == 1) {
             return matrix;
         }
 
-        Square<Value, DIMS> result{matrix};
+        Matrix<T, N, N> result{matrix};
         for (std::size_t i{}; i < power - 1; ++i) {
             result = matrix_product(result, matrix);
         }
         return result;
     }
 
-    template <std::floating_point Value, std::size_t ROWS, std::size_t COLS>
-    [[nodiscard]] auto matrix_rank(Matrix<Value, ROWS, COLS> const& matrix) noexcept -> std::size_t
+    template <std::floating_point T, std::size_t N, std::size_t M>
+    [[nodiscard]] std::size_t matrix_rank(Matrix<T, N, M> const& matrix) noexcept
     {
-        if constexpr (ROWS == COLS) {
-            if (auto det{matrix_det(matrix)}; std::abs(det) < 0.00001F) {
-                return ROWS - 1UL;
+        if constexpr (N == M) {
+            if (auto det{matrix_det(matrix)}; det <= std::numeric_limits<T>::epsilon()) {
+                return N - 1UL;
             }
-            return ROWS;
+            return N;
         }
-        if constexpr (ROWS > COLS) {
-            return COLS;
+        if constexpr (N > M) {
+            return M;
         }
-        if constexpr (ROWS < COLS) {
-            return ROWS;
+        if constexpr (N < M) {
+            return N;
         }
     }
 
-    template <std::floating_point Value, std::size_t ELEMS>
-    using Eigvals = std::array<Value, ELEMS>;
-
-    template <std::floating_point Value, std::size_t DIMS>
-    [[nodiscard]] auto matrix_eigvals(Square<Value, DIMS> const& matrix) noexcept -> Eigvals<Value, DIMS>
+    template <std::floating_point T, std::size_t N>
+    [[nodiscard]] std::array<T, N> matrix_eigvals(Matrix<T, N, N> const& matrix) noexcept
     {}
 
-    template <std::floating_point Value, std::size_t ROWS, std::size_t COLS>
-    [[nodiscard]] auto operator+(Matrix<Value, ROWS, COLS> const& left, Matrix<Value, ROWS, COLS> const& right) noexcept
-        -> Matrix<Value, ROWS, COLS>
+    template <std::floating_point T, std::size_t N, std::size_t M>
+    [[nodiscard]] Matrix<T, N, M> operator+(Matrix<T, N, M> const& left, Matrix<T, N, M> const& right) noexcept
+
     {
         return matrix_sum(left, right);
     }
 
-    template <std::floating_point Value, std::size_t ROWS, std::size_t COLS>
-    [[nodiscard]] auto operator-(Matrix<Value, ROWS, COLS> const& left, Matrix<Value, ROWS, COLS> const& right) noexcept
-        -> Matrix<Value, ROWS, COLS>
+    template <std::floating_point T, std::size_t N, std::size_t M>
+    [[nodiscard]] Matrix<T, N, M> operator-(Matrix<T, N, M> const& left, Matrix<T, N, M> const& right) noexcept
+
     {
         return matrix_difference(left, right);
     }
 
-    template <std::floating_point Value,
-              std::size_t LEFT_ROWS,
-              std::size_t LEFT_COLS_RIGHT_ROWS,
-              std::size_t RIGHT_COLS>
-    [[nodiscard]] auto operator*(Matrix<Value, LEFT_ROWS, LEFT_COLS_RIGHT_ROWS> const& left,
-                                 Matrix<Value, LEFT_COLS_RIGHT_ROWS, RIGHT_COLS> const& right) noexcept
-        -> Matrix<Value, LEFT_ROWS, RIGHT_COLS>
+    template <std::floating_point T, std::size_t N, std::size_t M, std::size_t P>
+    [[nodiscard]] Matrix<T, N, P> operator*(Matrix<T, N, M> const& left, Matrix<T, M, P> const& right) noexcept
+
     {
         return matrix_product(left, right);
     }
 
-    template <std::floating_point Value, std::size_t ROWS, std::size_t COLS>
-    [[nodiscard]] auto operator*(Value const scale, Matrix<Value, ROWS, COLS> const& matrix) noexcept
-        -> Matrix<Value, ROWS, COLS>
+    template <std::floating_point T, std::size_t N, std::size_t M>
+    [[nodiscard]] Matrix<T, N, M> operator*(T const scale, Matrix<T, N, M> const& matrix) noexcept
     {
         return matrix_scale(matrix, scale);
     }
 
-    template <std::floating_point Value, std::size_t ROWS, std::size_t COLS>
-    [[nodiscard]] auto operator*(Matrix<Value, ROWS, COLS> const& matrix, Value const scale) noexcept
-        -> Matrix<Value, ROWS, COLS>
+    template <std::floating_point T, std::size_t N, std::size_t M>
+    [[nodiscard]] Matrix<T, N, M> operator*(Matrix<T, N, M> const& matrix, T const scale) noexcept
     {
         return matrix_scale(matrix, scale);
     }
 
-    template <std::floating_point Value, std::size_t ROWS, std::size_t COLS>
-    [[nodiscard]] auto operator/(Matrix<Value, ROWS, COLS> const& matrix, Value const scale)
-        -> Matrix<Value, ROWS, COLS>
+    template <std::floating_point T, std::size_t N, std::size_t M>
+    [[nodiscard]] Matrix<T, N, M> operator/(Matrix<T, N, M> const& matrix, T const scale)
     {
-        if (scale == Value{0.0}) {
+        if (scale == static_cast<T>(0)) {
             throw std::runtime_error{"Division by 0!\n"};
         }
         return matrix_scale(matrix, 1 / scale);
     }
 
-    template <std::floating_point Value, std::size_t DIMS>
-    [[nodiscard]] auto operator/(Square<Value, DIMS> const& left, Square<Value, DIMS> const& right)
-        -> Square<Value, DIMS>
+    template <std::floating_point T, std::size_t N>
+    [[nodiscard]] Matrix<T, N, N> operator/(Matrix<T, N, N> const& left, Matrix<T, N, N> const& right)
     {
         try {
             return matrix_product(left, matrix_inverse(right));
@@ -518,12 +473,12 @@ namespace Linalg::Stack {
         }
     }
 
-    template <std::floating_point Value, std::size_t DIMS>
-    [[nodiscard]] auto operator^(Square<Value, DIMS> const& matrix, Value const power) -> Square<Value, DIMS>
+    template <std::floating_point T, std::size_t N>
+    [[nodiscard]] Matrix<T, N, N> operator^(Matrix<T, N, N> const& matrix, T const power)
     {
         return matrix_power(matrix, power);
     }
 
 }; // namespace Linalg::Stack
 
-#endif // STACK_VECTOR_HPP
+#endif // STACK_MATRIX_HPP

@@ -6,15 +6,15 @@
 
 namespace Linalg::Observers {
 
-    template <std::floating_point Value, std::size_t STATES, std::size_t CONTROLS = 1UL, std::size_t MEASUREMENTS = 1UL>
+    template <std::floating_point T, std::size_t STATES, std::size_t CONTROLS = 1UL, std::size_t MEASUREMENTS = 1UL>
     struct Observer {
     public:
         template <std::size_t ROWS, std::size_t COLS>
-        using Matrix = Stack::Matrix<Value, ROWS, COLS>;
+        using Matrix = Stack::Matrix<T, ROWS, COLS>;
 
-        [[nodiscard]] auto operator()(this Observer& self,
-                                      Matrix<1UL, CONTROLS> const& control,
-                                      Matrix<1UL, MEASUREMENTS> const& measurement) -> Matrix<STATES, 1UL>
+        [[nodiscard]] Matrix<STATES, 1UL> operator()(this Observer& self,
+                                                     Matrix<1UL, CONTROLS> const& control,
+                                                     Matrix<1UL, MEASUREMENTS> const& measurement)
         {
             try {
                 self.predict(control);
@@ -25,7 +25,7 @@ namespace Linalg::Observers {
             }
         }
 
-        auto predict(this Observer& self, Matrix<1UL, CONTROLS> const& control) -> void
+        void predict(this Observer& self, Matrix<1UL, CONTROLS> const& control)
         {
             try {
                 self.state = self.state_transition * self.state + self.control_transition * control;
@@ -34,7 +34,7 @@ namespace Linalg::Observers {
             }
         }
 
-        auto predict(this Observer& self, Matrix<1UL, MEASUREMENTS> const& measurement) -> void
+        void predict(this Observer& self, Matrix<1UL, MEASUREMENTS> const& measurement)
         {
             try {
                 self.state = self.state + self.state_gain * (measurement - self.measurement_transition * self.state);

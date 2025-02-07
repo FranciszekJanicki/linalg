@@ -1,5 +1,5 @@
-#ifndef SIGSAMPLESALS_HPP
-#define SIGSAMPLESALS_HPP
+#ifndef SIGNALS_HPP
+#define SIGNALS_HPP
 
 #include <algorithm>
 #include <array>
@@ -14,43 +14,40 @@
 
 namespace Signals {
 
-    template <std::floating_point Value, std::size_t SAMPLES, typename Formula>
-    [[nodiscard]] constexpr auto make_values(Formula&& formula) noexcept -> std::array<Value, SAMPLES>
+    template <std::floating_point T, std::size_t N, typename Formula>
+    [[nodiscard]] std::array<T, N> make_values(Formula&& formula) noexcept
     {
-        std::array<Value, SAMPLES> values{};
+        std::array<T, N> values{};
         for (auto& [time, value] : std::views::enumerate(values)) {
             value = std::invoke(std::forward<Formula>(formula), time);
         }
         return values;
     }
 
-    template <std::floating_point Value, std::size_t SAMPLES>
-    [[nodiscard]] constexpr auto make_tangens(Value const amplitude, std::uint32_t const frequency) noexcept
-        -> std::array<Value, SAMPLES>
+    template <std::floating_point T, std::size_t N>
+    [[nodiscard]] std::array<T, N> make_tangens(T const amplitude, std::uint32_t const frequency) noexcept
+
     {
-        return make_values(
-            [amplitude, omega = static_cast<Value>(2.0) * static_cast<Value>(M_PI) * static_cast<Value>(frequency)](
-                auto const time) { return amplitude * std::tan(omega * static_cast<Value>(time)); });
+        return make_values([amplitude, omega = static_cast<T>(2.0) * static_cast<T>(M_PI) * static_cast<T>(frequency)](
+                               auto const time) { return amplitude * std::tan(omega * static_cast<T>(time)); });
     }
 
-    template <std::floating_point Value, std::size_t SAMPLES>
-    [[nodiscard]] constexpr auto make_sine(Value const amplitude, std::uint32_t const frequency) noexcept
-        -> std::array<Value, SAMPLES>
+    template <std::floating_point T, std::size_t N>
+    [[nodiscard]] std::array<T, N> make_sine(T const amplitude, std::uint32_t const frequency) noexcept
+
     {
-        return make_values(
-            [amplitude, omega = static_cast<Value>(2.0) * static_cast<Value>(M_PI) * static_cast<Value>(frequency)](
-                auto const time) { return amplitude * std::sin(omega * static_cast<Value>(time)); });
+        return make_values([amplitude, omega = static_cast<T>(2.0) * static_cast<T>(M_PI) * static_cast<T>(frequency)](
+                               auto const time) { return amplitude * std::sin(omega * static_cast<T>(time)); });
     }
 
-    template <std::floating_point Value, std::size_t SAMPLES>
-    [[nodiscard]] constexpr auto make_cosine(Value const amplitude, std::uint32_t const frequency) noexcept
-        -> std::array<Value, SAMPLES>
+    template <std::floating_point T, std::size_t N>
+    [[nodiscard]] std::array<T, N> make_cosine(T const amplitude, std::uint32_t const frequency) noexcept
+
     {
-        return make_values(
-            [amplitude, omega = static_cast<Value>(2.0) * static_cast<Value>(M_PI) * static_cast<Value>(frequency)](
-                auto const time) { return amplitude * std::cos(omega * static_cast<Value>(time)); });
+        return make_values([amplitude, omega = static_cast<T>(2.0) * static_cast<T>(M_PI) * static_cast<T>(frequency)](
+                               auto const time) { return amplitude * std::cos(omega * static_cast<T>(time)); });
     }
 
 }; // namespace Signals
 
-#endif // SIGSAMPLESALS_HPP
+#endif // SIGNALS_HPP

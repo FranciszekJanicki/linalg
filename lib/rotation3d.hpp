@@ -11,9 +11,9 @@
 
 namespace Linalg {
 
-    template <std::floating_point Value>
+    template <std::floating_point T>
     struct Rotation3D {
-        [[nodiscard]] auto operator+=(this Rotation3D& self, Rotation3D const& other) noexcept -> Rotation3D&
+        [[nodiscard]] Rotation3D& operator+=(this Rotation3D& self, Rotation3D const& other) noexcept
         {
             self.x += other.x;
             self.y += other.y;
@@ -21,7 +21,7 @@ namespace Linalg {
             return self;
         }
 
-        [[nodiscard]] auto operator-=(this Rotation3D& self, Rotation3D const& other) noexcept -> Rotation3D&
+        [[nodiscard]] Rotation3D& operator-=(this Rotation3D& self, Rotation3D const& other) noexcept
         {
             self.x -= other.x;
             self.y -= other.y;
@@ -29,21 +29,21 @@ namespace Linalg {
             return self;
         }
 
-        [[nodiscard]] auto operator*=(this Rotation3D& self, Rotation3D const& other) noexcept -> Rotation3D&
+        [[nodiscard]] Rotation3D& operator*=(this Rotation3D& self, Rotation3D const& other) noexcept
         {
-            self.x = Vector3D<Value>{self.x * other.x + self.y * other.x + self.z * other.x,
-                                     self.x * other.y + self.y * other.y + self.z * other.y,
-                                     self.x * other.z + self.y * other.z + self.z * other.z};
-            self.y = Vector3D<Value>{self.x * other.x + self.y * other.x + self.z * other.x,
-                                     self.x * other.y + self.y * other.y + self.z * other.y,
-                                     self.x * other.z + self.y * other.z + self.z * other.z};
-            self.z = Vector3D<Value>{self.x * other.x + self.y * other.x + self.z * other.x,
-                                     self.x * other.y + self.y * other.y + self.z * other.y,
-                                     self.x * other.z + self.y * other.z + self.z * other.z};
+            self.x = Vector3D<T>{self.x * other.x + self.y * other.x + self.z * other.x,
+                                 self.x * other.y + self.y * other.y + self.z * other.y,
+                                 self.x * other.z + self.y * other.z + self.z * other.z};
+            self.y = Vector3D<T>{self.x * other.x + self.y * other.x + self.z * other.x,
+                                 self.x * other.y + self.y * other.y + self.z * other.y,
+                                 self.x * other.z + self.y * other.z + self.z * other.z};
+            self.z = Vector3D<T>{self.x * other.x + self.y * other.x + self.z * other.x,
+                                 self.x * other.y + self.y * other.y + self.z * other.y,
+                                 self.x * other.z + self.y * other.z + self.z * other.z};
             return self;
         }
 
-        [[nodiscard]] auto operator*=(this Rotation3D& self, Value const factor) noexcept -> Rotation3D&
+        [[nodiscard]] Rotation3D& operator*=(this Rotation3D& self, T const factor) noexcept
         {
             self.x *= factor;
             self.y *= factor;
@@ -51,7 +51,7 @@ namespace Linalg {
             return self;
         }
 
-        [[nodiscard]] auto operator/=(this Rotation3D& self, Value const factor) noexcept -> Rotation3D&
+        [[nodiscard]] Rotation3D& operator/=(this Rotation3D& self, T const factor) noexcept
         {
             self.x /= factor;
             self.y /= factor;
@@ -61,56 +61,53 @@ namespace Linalg {
 
         [[nodiscard]] bool operator<=>(this Rotation3D const& self, Rotation3D const& other) noexcept = default;
 
-        Vector3D<Value> x{};
-        Vector3D<Value> y{};
-        Vector3D<Value> z{};
+        Vector3D<T> x{};
+        Vector3D<T> y{};
+        Vector3D<T> z{};
     };
 
-    template <std::floating_point Value>
-    [[nodiscard]] auto operator+(Rotation3D<Value> const& left, Rotation3D<Value> const& right) noexcept
-        -> Rotation3D<Value>
+    template <std::floating_point T>
+    [[nodiscard]] Rotation3D<T> operator+(Rotation3D<T> const& left, Rotation3D<T> const& right) noexcept
     {
-        return Rotation3D<Value>{left.x + right.x, left.y + right.y, left.z + right.z};
+        return Rotation3D<T>{left.x + right.x, left.y + right.y, left.z + right.z};
     }
 
-    template <std::floating_point Value>
-    [[nodiscard]] auto operator-(Rotation3D<Value> const& left, Rotation3D<Value> const& right) noexcept
-        -> Rotation3D<Value>
+    template <std::floating_point T>
+    [[nodiscard]] Rotation3D<T> operator-(Rotation3D<T> const& left, Rotation3D<T> const& right) noexcept
     {
-        return Rotation3D<Value>{left.x - right.x, left.y - right.y, left.z - right.z};
+        return Rotation3D<T>{left.x - right.x, left.y - right.y, left.z - right.z};
     }
 
-    template <std::floating_point Value>
-    [[nodiscard]] auto operator*(Rotation3D<Value> const& left, Rotation3D<Value> const& right) noexcept
-        -> Rotation3D<Value>
+    template <std::floating_point T>
+    [[nodiscard]] Rotation3D<T> operator*(Rotation3D<T> const& left, Rotation3D<T> const& right) noexcept
     {
-        return Rotation3D<Value>{Vector3D<Value>{left.x * right.x + left.y * right.x + left.z * right.x,
-                                                 left.x * right.y + left.y * right.y + left.z * right.y,
-                                                 left.x * right.z + left.y * right.z + left.z * right.z},
-                                 Vector3D<Value>{left.x * right.x + left.y * right.x + left.z * right.x,
-                                                 left.x * right.y + left.y * right.y + left.z * right.y,
-                                                 left.x * right.z + left.y * right.z + left.z * right.z},
-                                 Vector3D<Value>{left.x * right.x + left.y * right.x + left.z * right.x,
-                                                 left.x * right.y + left.y * right.y + left.z * right.y,
-                                                 left.x * right.z + left.y * right.z + left.z * right.z}};
+        return Rotation3D<T>{Vector3D<T>{left.x * right.x + left.y * right.x + left.z * right.x,
+                                         left.x * right.y + left.y * right.y + left.z * right.y,
+                                         left.x * right.z + left.y * right.z + left.z * right.z},
+                             Vector3D<T>{left.x * right.x + left.y * right.x + left.z * right.x,
+                                         left.x * right.y + left.y * right.y + left.z * right.y,
+                                         left.x * right.z + left.y * right.z + left.z * right.z},
+                             Vector3D<T>{left.x * right.x + left.y * right.x + left.z * right.x,
+                                         left.x * right.y + left.y * right.y + left.z * right.y,
+                                         left.x * right.z + left.y * right.z + left.z * right.z}};
     }
 
-    template <std::floating_point Value>
-    [[nodiscard]] auto operator*(Value const factor, Rotation3D<Value> const& matrix) noexcept -> Rotation3D<Value>
+    template <std::floating_point T>
+    [[nodiscard]] Rotation3D<T> operator*(T const factor, Rotation3D<T> const& matrix) noexcept
     {
-        return Rotation3D<Value>{matrix.x * factor, matrix.y * factor, matrix.z * factor};
+        return Rotation3D<T>{matrix.x * factor, matrix.y * factor, matrix.z * factor};
     }
 
-    template <std::floating_point Value>
-    [[nodiscard]] auto operator*(Rotation3D<Value> const& matrix, Value const factor) noexcept -> Rotation3D<Value>
+    template <std::floating_point T>
+    [[nodiscard]] Rotation3D<T> operator*(Rotation3D<T> const& matrix, T const factor) noexcept
     {
-        return Rotation3D<Value>{matrix.x * factor, matrix.y * factor, matrix.z * factor};
+        return Rotation3D<T>{matrix.x * factor, matrix.y * factor, matrix.z * factor};
     }
 
-    template <std::floating_point Value>
-    [[nodiscard]] auto operator/(Rotation3D<Value> const& matrix, Value const factor) noexcept -> Rotation3D<Value>
+    template <std::floating_point T>
+    [[nodiscard]] Rotation3D<T> operator/(Rotation3D<T> const& matrix, T const factor) noexcept
     {
-        return Rotation3D<Value>{matrix.x / factor, matrix.y / factor, matrix.z / factor};
+        return Rotation3D<T>{matrix.x / factor, matrix.y / factor, matrix.z / factor};
     }
 
 }; // namespace Linalg

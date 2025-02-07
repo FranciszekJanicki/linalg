@@ -1,96 +1,71 @@
 #ifndef PID_HPP
 #define PID_HPP
 
+#include "utility.hpp"
 #include <algorithm>
 #include <concepts>
-#include <numeric>
-#include <stdexcept>
 #include <utility>
 
 namespace Linalg::Regulators {
 
-    template <std::floating_point Value>
-    [[nodiscard]] auto differentiate(Value const value,
-                                  Value const prev_value,
-                                  Value const sampling_time,
-                                  Value const prev_derivative,
-                                  Value const time_constant) -> Value
-    {
-        if (time_constant + sampling_time == static_cast<Value>(0.0F)) {
-            throw std::runtime_error{"Division by 0!"};
-        }
-        return (value - prev_value + prev_derivative * time_constant) / (time_constant + sampling_time);
-    }
-
-    template <std::floating_point Value>
-    [[nodiscard]] auto differentiate(Value const value, Value const prev_value, Value const sampling_time) -> Value
-    {
-        if (sampling_time == static_cast<Value>(0.0F)) {
-            throw std::runtime_error{"Division by 0!"};
-        }
-        return (value - prev_value) / sampling_time;
-    }
-
-    template <std::floating_point Value>
-    [[nodiscard]] auto integrate(Value const value, Value const prev_value, Value const sampling_time) noexcept -> Value
-    {
-        return (value + prev_value) * static_cast<Value>(0.5F) * sampling_time;
-    }
-
-    template <std::floating_point Value>
+    template <std::floating_point T>
     struct PID {
-        [[nodiscard]] auto operator()(this PID& self, Value const error, Value const sampling_time) noexcept -> Value
+        [[nodiscard]] T operator()(this PID& self, T const error, T const sampling_time) noexcept
         {
             return self.get_control(error, sampling_time);
         }
 
-        auto get_control(this PID& self, Value const error, Value const sampling_time) noexcept -> Value
+        [[nodiscard]] T get_control(this PID& self, T const error, T const sampling_time) noexcept
         {
-            auto control{self.get_proportion(error) + self.get_integral(error, sampling_time) +
-                         self.get_derivative(error, sampling_time)};
-            auto saturated_control{std::clamp(control, -self.saturation, self.saturation)};
+            T control{self.get_proportion(error) + self.get_integral(error, sampling_time) +
+                      self.get_derivative(error, sampling_time)};
+            T saturated_control{std::clamp(control, -self.saturation, self.saturation)};
             self.prev_sat_error = std::exchange(self.sat_error, control - saturated_control);
             self.prev_error = error;
             return saturated_control;
         }
 
-        auto get_proportion(this PID& self, Value const error) noexcept -> Value {
+        [[nodiscard]] T get_proportion(this PID& self, T const error) noexcept
+        {
             return self.proportion_gain * error;
         }
 
-        auto get_derivative(this PID& self, Value const error, Value const sampling_time) noexcept -> Value
+        [[nodiscard]] T get_derivative(this PID& self, T const error, T const sampling_time) noexcept
         {
-            self.error_derivative =
-                differentiate(error, self.prev_error, sampling_time, self.error_derivative, self.time_constant);
+            self.error_derivative = Utility::differentiate(error,
+                                                           self.prev_error,
+                                                           sampling_time,
+                                                           self.error_derivative,
+                                                           self.time_constant);
             return self.derivative_gain * self.error_derivative;
         }
 
-        auto get_integral(this PID& self, Value const error, Value const sampling_time) noexcept -> Value
+        [[nodiscard]] T get_integral(this PID& self, T const error, T const sampling_time) noexcept
         {
-            self.error_integral += integrate(error, self.prev_error, sampling_time);
-            self.sat_error_integral += integrate(self.sat_error, self.prev_sat_error, sampling_time);
+            self.error_integral += Utility::integrate(error, self.prev_error, sampling_time);
+            self.sat_error_integral += Utility::integrate(self.sat_error, self.prev_sat_error, sampling_time);
             return self.integral_gain * self.error_integral - self.control_gain * self.sat_error_integral;
         }
 
         // basic PID parameters
-        Value proportion_gain{};
-        Value integral_gain{};
-        Value derivative_gain{};
-        Value time_constant{};
+        T proportion_gain{};
+        T integral_gain{};
+        T derivative_gain{};
+        T time_constant{};
 
         // anti windup parameters
-        Value control_gain{};
-        Value saturation{};
-       
+        T control_gain{};
+        T saturation{};
+
         // basic PID internal state
-        Value prev_error{0.0F};
-        Value error_integral{0.0F};
-        Value error_derivative{0.0F};
+        T prev_error{};
+        T error_integral{};
+        T error_derivative{};
 
         // anti windup internal state
-        Value sat_error{0.0F};
-        Value prev_sat_error{0.0F};
-        Value sat_error_integral{0.0F};
+        T sat_error{};
+        T prev_sat_error{};
+        T sat_error_integral{};
     };
 
 }; // namespace Linalg::Regulators

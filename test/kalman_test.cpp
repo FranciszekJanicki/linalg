@@ -9,7 +9,7 @@
 #include <print>
 #include <stdfloat>
 
-auto main([[maybe_unused]] int const argc, [[maybe_unused]] char const* const argv[]) -> int
+int main([[maybe_unused]] int const argc, [[maybe_unused]] char const* const argv[])
 {
     using namespace Linalg::Observers;
     using Kalman = Kalman<std::float_t, 2UL>;

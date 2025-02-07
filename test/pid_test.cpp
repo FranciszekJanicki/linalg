@@ -3,7 +3,7 @@
 #include <print>
 #include <ranges>
 
-auto main([[maybe_unused]] int const argc, [[maybe_unused]] char const* const argv[]) -> int
+int main([[maybe_unused]] int const argc, [[maybe_unused]] char const* const argv[])
 {
     using namespace Linalg::Regulators;
 
@@ -12,7 +12,11 @@ auto main([[maybe_unused]] int const argc, [[maybe_unused]] char const* const ar
         input = static_cast<float>(index);
     }
 
-    PID pid{.proportion_gain = 100.0F, .integral_gain = 0.0F, .derivative_gain = 0.0F, .control_gain = 0.0F, .saturation = 100.0F};
+    PID pid{.proportion_gain = 100.0F,
+            .integral_gain = 0.0F,
+            .derivative_gain = 0.0F,
+            .control_gain = 0.0F,
+            .saturation = 100.0F};
 
     auto output = 0.0F;
     auto dt = 0.01F;

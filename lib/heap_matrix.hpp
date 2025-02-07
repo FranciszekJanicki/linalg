@@ -15,15 +15,15 @@
 
 namespace Linalg::Heap {
 
-    template <std::floating_point Value>
+    template <std::floating_point T>
     struct Matrix {
     public:
-        using Vector = std::vector<Value>;
-        using Data = std::vector<std::vector<Value>>;
-        using VectorInit = std::initializer_list<Value>;
-        using Init = std::initializer_list<std::initializer_list<Value>>;
+        using Vector = std::vector<T>;
+        using Data = std::vector<std::vector<T>>;
+        using VectorInit = std::initializer_list<T>;
+        using Init = std::initializer_list<std::initializer_list<T>>;
 
-        [[nodiscard]] static auto make_data(std::size_t const rows, std::size_t const cols) -> Data
+        [[nodiscard]] static Data make_data(std::size_t const rows, std::size_t const cols)
         {
             Data data{};
             data.reserve(rows);
@@ -37,7 +37,7 @@ namespace Linalg::Heap {
             return data;
         }
 
-        [[nodiscard]] static auto make_data(Init const init) -> Data
+        [[nodiscard]] static Data make_data(Init const init)
         {
             Data data{};
             data.reserve(init.size());
@@ -51,50 +51,50 @@ namespace Linalg::Heap {
             return data;
         }
 
-        [[nodiscard]] static auto zeros(std::size_t const rows, std::size_t const cols) -> Matrix
+        [[nodiscard]] static Matrix zeros(std::size_t const rows, std::size_t const cols)
         {
             return Matrix{make_data(rows, cols)};
         }
 
-        [[nodiscard]] static auto ones(std::size_t const rows, std::size_t const cols) -> Matrix
+        [[nodiscard]] static Matrix ones(std::size_t const rows, std::size_t const cols)
         {
             Matrix result{make_data(rows, cols)};
             for (std::size_t i{}; i < rows; ++i) {
                 for (std::size_t j{}; i < cols; ++j) {
-                    result[i, j] = Value{1};
+                    result[i, j] = T{1};
                 }
             }
             return result;
         }
 
-        [[nodiscard]] static auto diagonal(VectorInit const init) -> Matrix
+        [[nodiscard]] static Matrix diagonal(VectorInit const init)
         {
             Matrix result{make_data(init.size(), init.size())};
             for (std::size_t i{}; i < init.size(); ++i) {
                 for (std::size_t j{}; i < init.size(); ++j) {
-                    result[i, j] = (i == j ? init[i] : Value{0});
+                    result[i, j] = (i == j ? init[i] : static_cast<T>(0));
                 }
             }
             return result;
         }
 
-        [[nodiscard]] static auto eye(std::size_t const dimensions) -> Matrix
+        [[nodiscard]] static Matrix eye(std::size_t const dimensions)
         {
             Matrix result{make_data(dimensions, dimensions)};
             for (std::size_t i{}; i < dimensions; ++i) {
                 for (std::size_t j{}; i < dimensions; ++j) {
-                    result[i, j] = (i == j ? Value{1} : Value{0});
+                    result[i, j] = (i == j ? T{1} : static_cast<T>(0));
                 }
             }
             return result;
         }
 
-        [[nodiscard]] static auto row(std::size_t const rows) -> Matrix
+        [[nodiscard]] static Matrix row(std::size_t const rows)
         {
             return Matrix{make_data(rows, 1)};
         }
 
-        [[nodiscard]] static auto row(VectorInit const init) -> Matrix
+        [[nodiscard]] static Matrix row(VectorInit const init)
         {
             Matrix result{make_data(init.size(), 1)};
             for (std::size_t i{}; i < init.size(); ++i) {
@@ -103,12 +103,12 @@ namespace Linalg::Heap {
             return result;
         }
 
-        [[nodiscard]] static auto column(std::size_t const cols) -> Matrix
+        [[nodiscard]] static Matrix column(std::size_t const cols)
         {
             return Matrix{make_data(1, cols)};
         }
 
-        [[nodiscard]] static auto column(VectorInit const init) -> Matrix
+        [[nodiscard]] static Matrix column(VectorInit const init)
         {
             Matrix result{make_data(1, init.size())};
             for (std::size_t i{}; i < init.size(); ++i) {
@@ -134,16 +134,16 @@ namespace Linalg::Heap {
 
         [[nodiscard]] ~Matrix() noexcept = default;
 
-        [[nodiscard]] auto operator=(Matrix const& other) -> Matrix& = default;
+        [[nodiscard]] Matrix& operator=(Matrix const& other) = default;
 
-        [[nodiscard]] auto operator=(Matrix&& other) noexcept -> Matrix& = default;
+        [[nodiscard]] Matrix& operator=(Matrix&& other) noexcept = default;
 
-        [[nodiscard]] auto operator=(this Matrix& self, Init const init) noexcept
+        [[nodiscard]] Matrix& operator=(this Matrix& self, Init const init) noexcept
         {
             self.data = make_data(init);
         }
 
-        [[nodiscard]] auto operator+=(this Matrix& self, Matrix const& other) -> Matrix&
+        [[nodiscard]] Matrix& operator+=(this Matrix& self, Matrix const& other)
         {
             try {
                 self = matrix_sum(self, other);
@@ -153,7 +153,7 @@ namespace Linalg::Heap {
             }
         }
 
-        [[nodiscard]] auto operator-=(this Matrix& self, Matrix const& other) -> Matrix&
+        [[nodiscard]] Matrix& operator-=(this Matrix& self, Matrix const& other)
         {
             try {
                 self = matrix_difference(self, other);
@@ -163,13 +163,13 @@ namespace Linalg::Heap {
             }
         }
 
-        [[nodiscard]] auto operator*=(this Matrix& self, Value const scale) noexcept -> Matrix&
+        [[nodiscard]] Matrix& operator*=(this Matrix& self, T const scale) noexcept
         {
             self = matrix_scale(self, scale);
             return self;
         }
 
-        [[nodiscard]] auto operator*=(this Matrix& self, Matrix const& other) -> Matrix&
+        [[nodiscard]] Matrix& operator*=(this Matrix& self, Matrix const& other)
         {
             try {
                 self = matrix_product(self, other);
@@ -179,7 +179,7 @@ namespace Linalg::Heap {
             }
         }
 
-        [[nodiscard]] auto operator/=(this Matrix& self, Value const scale) -> Matrix&
+        [[nodiscard]] Matrix& operator/=(this Matrix& self, T const scale)
         {
             try {
                 self = matrix_scale(self, 1 / scale);
@@ -189,7 +189,7 @@ namespace Linalg::Heap {
             }
         }
 
-        [[nodiscard]] auto operator/=(this Matrix& self, Matrix const& other) -> Matrix&
+        [[nodiscard]] Matrix& operator/=(this Matrix& self, Matrix const& other)
         {
             try {
                 self = matrix_product(self, matrix_inverse(other));
@@ -199,7 +199,7 @@ namespace Linalg::Heap {
             }
         }
 
-        [[nodiscard]] auto operator^=(this Matrix& self, Value const scale) -> Matrix&
+        [[nodiscard]] Matrix& operator^=(this Matrix& self, T const scale)
         {
             try {
                 self = matrix_power(self, scale);
@@ -209,7 +209,7 @@ namespace Linalg::Heap {
             }
         }
 
-        [[nodiscard]] Vector auto operator[](this Matrix const& self, std::size_t const row) -> const&
+        [[nodiscard]] Vector const& Matrix<T> operator[](this Matrix const& self, std::size_t const row)
         {
             if (row >= self.rows()) {
                 throw std::runtime_error{"Wrong dimensions\n"};
@@ -217,7 +217,7 @@ namespace Linalg::Heap {
             return self.data[row];
         }
 
-        [[nodiscard]] Vectorauto operator[](this Matrix& self, std::size_t const row)->&
+        [[nodiscard]] Vector& operator[](this Matrix& self, std::size_t const row)
         {
             if (row >= self.rows()) {
                 throw std::runtime_error{"Wrong dimensions\n"};
@@ -225,7 +225,7 @@ namespace Linalg::Heap {
             return self.data[row];
         }
 
-        [[nodiscard]] Valueauto operator[](this Matrix& self, std::size_t const row, std::size_t const column)->&
+        [[nodiscard]] T& operator[](this Matrix& self, std::size_t const row, std::size_t const column)
         {
             if (row >= self.rows() || column >= self.cols()) {
                 throw std::runtime_error{"Wrong dimensions\n"};
@@ -233,8 +233,8 @@ namespace Linalg::Heap {
             return self.data[row][column];
         }
 
-        [[nodiscard]] Value auto operator[](this Matrix const& self, std::size_t const row, std::size_t const column)
-            -> const&
+        [[nodiscard]] T const& operator[](this Matrix const& self, std::size_t const row, std::size_t const column)
+
         {
             if (row >= self.rows() || column >= self.cols()) {
                 throw std::runtime_error{"Wrong dimensions\n"};
@@ -244,7 +244,7 @@ namespace Linalg::Heap {
 
         [[nodiscard]] bool operator<=>(this Matrix const& self, Matrix const& other) noexcept = default;
 
-        auto print(this Matrix const& self) noexcept -> void
+        void print(this Matrix const& self) noexcept
         {
             std::print("[");
             if (!self.data.empty()) {
@@ -267,22 +267,22 @@ namespace Linalg::Heap {
             std::print("]\n");
         }
 
-        [[nodiscard]] auto is_square(this Matrix const& self) noexcept -> bool
+        [[nodiscard]] bool is_square(this Matrix const& self) noexcept
         {
             return self.rows() == self.cols();
         }
 
-        [[nodiscard]] auto rows(this Matrix const& self) noexcept -> std::size_t
+        [[nodiscard]] std::size_t rows(this Matrix const& self) noexcept
         {
             return self.data.size();
         }
 
-        [[nodiscard]] auto cols(this Matrix const& self) noexcept -> std::size_t
+        [[nodiscard]] std::size_t cols(this Matrix const& self) noexcept
         {
             return self.data.front().size();
         }
 
-        auto transpose(this Matrix& self) -> void
+        void transpose(this Matrix& self)
         {
             try {
                 self = matrix_transpose(self);
@@ -291,7 +291,7 @@ namespace Linalg::Heap {
             }
         }
 
-        auto invert(this Matrix& self) -> void
+        void invert(this Matrix& self)
         {
             try {
                 self = matrix_inverse(self);
@@ -304,11 +304,10 @@ namespace Linalg::Heap {
         Data data{};
     };
 
-    template <typename Value>
-    [[nodiscard]] auto matrix_minor(Matrix<Value> const& matrix,
-                                    std::size_t const row,
-                                    std::size_t const column,
-                                    std::size_t const dimensions) -> Matrix<Value>
+    template <typename T>
+    [[nodiscard]] Matrix<T>
+    matrix_minor(Matrix<T> const& matrix, std::size_t const row, std::size_t const column, std::size_t const dimensions)
+
     {
         if (!matrix.is_square()) {
             throw std::runtime_error{"Wrong dimensions\n"};
@@ -321,7 +320,7 @@ namespace Linalg::Heap {
             return matrix;
         }
 
-        auto minor{Matrix<Value>::zeros(dimensions, dimensions)};
+        auto minor{Matrix<T>::zeros(dimensions, dimensions)};
         std::size_t cof_i{};
         std::size_t cof_j{};
         for (std::size_t i{0}; i < dimensions; ++i) {
@@ -338,8 +337,8 @@ namespace Linalg::Heap {
         return minor;
     }
 
-    template <typename Value>
-    [[nodiscard]] auto matrix_det(Matrix<Value> const& matrix, std::size_t const dimensions) -> Value
+    template <typename T>
+    [[nodiscard]] T matrix_det(Matrix<T> const& matrix, std::size_t const dimensions)
     {
         if (!matrix.is_square()) {
             throw std::runtime_error{"Wrong dimensions\n"};
@@ -356,7 +355,7 @@ namespace Linalg::Heap {
         }
 
         try {
-            Value det{};
+            T det{};
             for (std::size_t i{0}; i < dimensions; ++i) {
                 det += (i % 2 == 0 ? 1 : -1) * matrix[0, i] *
                        matrix_det(matrix_minor(matrix, 0, i, dimensions), dimensions - 1);
@@ -367,10 +366,10 @@ namespace Linalg::Heap {
         }
     }
 
-    template <typename Value>
-    [[nodiscard]] auto matrix_transpose(Matrix<Value> const& matrix) -> Matrix<Value>
+    template <typename T>
+    [[nodiscard]] Matrix<T> matrix_transpose(Matrix<T> const& matrix)
     {
-        auto result{Matrix<Value>::zeros(matrix.rows(), matrix.cols())};
+        auto result{Matrix<T>::zeros(matrix.rows(), matrix.cols())};
         for (std::size_t i{0}; i < matrix.rows(); ++i) {
             for (std::size_t j{0}; j < matrix.cols(); ++j) {
                 result[i, j] = matrix[j, i];
@@ -379,8 +378,8 @@ namespace Linalg::Heap {
         return result;
     }
 
-    template <typename Value>
-    [[nodiscard]] auto matrix_complement(Matrix<Value> const& matrix) -> Matrix<Value>
+    template <typename T>
+    [[nodiscard]] Matrix<T> matrix_complement(Matrix<T> const& matrix)
     {
         if (!matrix.is_square()) {
             throw std::runtime_error{"Wrong dimensions\n"};
@@ -391,7 +390,7 @@ namespace Linalg::Heap {
             return matrix;
         }
 
-        auto result{Matrix<Value>::zeros(dimensions, dimensions)};
+        auto result{Matrix<T>::zeros(dimensions, dimensions)};
         for (std::size_t i{}; i < dimensions; ++i) {
             for (std::size_t j{}; j < dimensions; j++) {
                 try {
@@ -405,8 +404,8 @@ namespace Linalg::Heap {
         return result;
     }
 
-    template <typename Value>
-    [[nodiscard]] auto matrix_adjoint(Matrix<Value> const& matrix) -> Matrix<Value>
+    template <typename T>
+    [[nodiscard]] Matrix<T> matrix_adjoint(Matrix<T> const& matrix)
     {
         try {
             return matrix_transpose(matrix_complement(matrix));
@@ -415,8 +414,8 @@ namespace Linalg::Heap {
         }
     }
 
-    template <typename Value>
-    [[nodiscard]] auto matrix_inverse(Matrix<Value> const& matrix) -> Matrix<Value>
+    template <typename T>
+    [[nodiscard]] Matrix<T> matrix_inverse(Matrix<T> const& matrix)
     {
         try {
             return matrix_scale(matrix_adjoint(matrix), 1 / matrix_det(matrix, matrix.rows()));
@@ -425,8 +424,8 @@ namespace Linalg::Heap {
         }
     }
 
-    template <typename Value>
-    [[nodiscard]] auto matrix_upper_triangular(Matrix<Value> const& matrix) -> Matrix<Value>
+    template <typename T>
+    [[nodiscard]] Matrix<T> matrix_upper_triangular(Matrix<T> const& matrix)
     {
         try {
             return matrix_transpose(matrix_lower_triangular(matrix));
@@ -435,8 +434,8 @@ namespace Linalg::Heap {
         }
     }
 
-    template <typename Value>
-    [[nodiscard]] auto matrix_lower_triangular(Matrix<Value> const& matrix) -> Matrix<Value>
+    template <typename T>
+    [[nodiscard]] Matrix<T> matrix_lower_triangular(Matrix<T> const& matrix)
     {
         if (!matrix.is_square()) {
             throw std::runtime_error{"Wrong dimensions!\n"};
@@ -446,10 +445,10 @@ namespace Linalg::Heap {
             return matrix;
         }
 
-        auto result{Matrix<Value>::zeros(matrix.rows(), matrix.cols())};
+        auto result{Matrix<T>::zeros(matrix.rows(), matrix.cols())};
         for (std::size_t i{}; i < matrix.rows(); ++i) {
             for (std::size_t j{}; j <= i; ++j) {
-                Value sum{};
+                T sum{};
                 for (std::size_t k{}; k < j; ++k) {
                     if (j == i) {
                         sum += std::pow(result[j, k], 2);
@@ -464,13 +463,13 @@ namespace Linalg::Heap {
         return result;
     }
 
-    template <typename Value>
-    [[nodiscard]] auto matrix_product(Matrix<Value> const& left, Matrix<Value> const& right) -> Matrix<Value>
+    template <typename T>
+    [[nodiscard]] Matrix<T> matrix_product(Matrix<T> const& left, Matrix<T> const& right)
     {
-        auto result{Matrix<Value>::zeros(left.rows(), right.rows())};
+        auto result{Matrix<T>::zeros(left.rows(), right.rows())};
         for (std::size_t i{}; i < left.rows(); ++i) {
             for (std::size_t j{}; j < right.cols(); ++j) {
-                Value sum{};
+                T sum{};
                 for (std::size_t k{}; k < left.cols(); ++k) {
                     sum += left[i, k] * right[k, j];
                 }
@@ -480,14 +479,14 @@ namespace Linalg::Heap {
         return result;
     }
 
-    template <typename Value>
-    [[nodiscard]] auto matrix_sum(Matrix<Value> const& left, Matrix<Value> const& right) -> Matrix<Value>
+    template <typename T>
+    [[nodiscard]] Matrix<T> matrix_sum(Matrix<T> const& left, Matrix<T> const& right)
     {
         if (left.cols() != right.cols() || left.rows() != right.rows()) {
             throw std::runtime_error{"Wrong dimensions\n"};
         }
 
-        auto result{Matrix<Value>::zeros(left.rows(), left.cols())};
+        auto result{Matrix<T>::zeros(left.rows(), left.cols())};
         for (std::size_t i{}; i < left.rows(); ++i) {
             for (std::size_t j{}; j < left.cols(); ++j) {
                 result[i, j] = left[i, j] + right[i, j];
@@ -496,14 +495,14 @@ namespace Linalg::Heap {
         return result;
     }
 
-    template <typename Value>
-    [[nodiscard]] auto matrix_difference(Matrix<Value> const& left, Matrix<Value> const& right) -> Matrix<Value>
+    template <typename T>
+    [[nodiscard]] Matrix<T> matrix_difference(Matrix<T> const& left, Matrix<T> const& right)
     {
         if (left.cols() != right.cols() || left.rows() != right.rows()) {
             throw std::runtime_error{"Wrong dimensions\n"};
         }
 
-        auto result{Matrix<Value>::zeros(left.rows(), left.cols())};
+        auto result{Matrix<T>::zeros(left.rows(), left.cols())};
         for (std::size_t i{}; i < left.rows(); ++i) {
             for (std::size_t j{}; j < left.cols(); ++j) {
                 result[i, j] = left[i, j] - right[i, j];
@@ -512,10 +511,10 @@ namespace Linalg::Heap {
         return result;
     }
 
-    template <typename Value>
-    [[nodiscard]] auto matrix_scale(Matrix<Value> const& matrix, Value const scale) noexcept -> Matrix<Value>
+    template <typename T>
+    [[nodiscard]] Matrix<T> matrix_scale(Matrix<T> const& matrix, T const scale) noexcept
     {
-        auto result{Matrix<Value>::zeros(matrix.rows(), matrix.cols())};
+        auto result{Matrix<T>::zeros(matrix.rows(), matrix.cols())};
         for (std::size_t i{}; i < matrix.rows(); ++i) {
             for (std::size_t j{}; j < matrix.cols(); ++j) {
                 result[i, j] = matrix[i, j] * scale;
@@ -524,8 +523,8 @@ namespace Linalg::Heap {
         return result;
     }
 
-    template <typename Value>
-    [[nodiscard]] auto matrix_power(Matrix<Value> const& matrix, Value const power) -> Matrix<Value>
+    template <typename T>
+    [[nodiscard]] Matrix<T> matrix_power(Matrix<T> const& matrix, T const power)
     {
         if (!matrix.is_square()) {
             throw std::runtime_error{"Wrong dimensions\n"};
@@ -542,8 +541,8 @@ namespace Linalg::Heap {
         return result;
     }
 
-    template <typename Value>
-    [[nodiscard]] auto operator+(Matrix<Value> const& left, Matrix<Value> const& right) -> Matrix<Value>
+    template <typename T>
+    [[nodiscard]] Matrix<T> operator+(Matrix<T> const& left, Matrix<T> const& right)
     {
         try {
             return matrix_sum(left, right);
@@ -552,8 +551,8 @@ namespace Linalg::Heap {
         }
     }
 
-    template <typename Value>
-    [[nodiscard]] auto operator-(Matrix<Value> const& left, Matrix<Value> const& right) -> Matrix<Value>
+    template <typename T>
+    [[nodiscard]] Matrix<T> operator-(Matrix<T> const& left, Matrix<T> const& right)
     {
         try {
             return matrix_difference(left, right);
@@ -562,20 +561,20 @@ namespace Linalg::Heap {
         }
     }
 
-    template <typename Value>
-    [[nodiscard]] auto operator*(Value const scale, Matrix<Value> const& matrix) noexcept -> Matrix<Value>
+    template <typename T>
+    [[nodiscard]] Matrix<T> operator*(T const scale, Matrix<T> const& matrix) noexcept
     {
         return matrix_scale(matrix, scale);
     }
 
-    template <typename Value>
-    [[nodiscard]] auto operator*(Matrix<Value> const& matrix, Value const scale) noexcept -> Matrix<Value>
+    template <typename T>
+    [[nodiscard]] Matrix<T> operator*(Matrix<T> const& matrix, T const scale) noexcept
     {
         return matrix_scale(matrix, scale);
     }
 
-    template <typename Value>
-    [[nodiscard]] auto operator*(Matrix<Value> const& left, Matrix<Value> const& right) -> Matrix<Value>
+    template <typename T>
+    [[nodiscard]] Matrix<T> operator*(Matrix<T> const& left, Matrix<T> const& right)
     {
         try {
             return matrix_product(left, right);
@@ -584,17 +583,17 @@ namespace Linalg::Heap {
         }
     }
 
-    template <typename Value>
-    [[nodiscard]] auto operator/(Matrix<Value> const& matrix, Value const scale) noexcept -> Matrix<Value>
+    template <typename T>
+    [[nodiscard]] Matrix<T> operator/(Matrix<T> const& matrix, T const scale) noexcept
     {
-        if (scale == Value{0.0}) {
+        if (scale == static_cast<T>(0)) {
             throw std::runtime_error{"Division by 0!\n"};
         }
         return matrix_scale(matrix, 1 / scale);
     }
 
-    template <typename Value>
-    [[nodiscard]] auto operator/(Matrix<Value> const& left, Matrix<Value> const& right) -> Matrix<Value>
+    template <typename T>
+    [[nodiscard]] Matrix<T> operator/(Matrix<T> const& left, Matrix<T> const& right)
     {
         try {
             return matrix_product(left, matrix_inverse(right));
@@ -603,8 +602,8 @@ namespace Linalg::Heap {
         }
     }
 
-    template <typename Value>
-    [[nodiscard]] auto operator^(Matrix<Value> const& matrix, Value const scale) -> Matrix<Value>
+    template <typename T>
+    [[nodiscard]] Matrix<T> operator^(Matrix<T> const& matrix, T const scale)
     {
         try {
             return matrix_power(matrix, scale);

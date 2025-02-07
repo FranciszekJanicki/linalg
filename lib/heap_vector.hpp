@@ -14,13 +14,13 @@
 
 namespace Linalg::Heap {
 
-    template <std::floating_point Value>
+    template <std::floating_point T>
     struct Vector {
     public:
-        using Data = std::vector<Value>;
-        using Init = std::initializer_list<Value>;
+        using Data = std::vector<T>;
+        using Init = std::initializer_list<T>;
 
-        [[nodiscard]] static auto make_data(Init const init) -> Data
+        [[nodiscard]] static Data make_data(Init const init)
         {
             // Data data{};
 
@@ -33,7 +33,7 @@ namespace Linalg::Heap {
             return Data{init};
         }
 
-        [[nodiscard]] static auto make_data(std::size_t const elems) -> Data
+        [[nodiscard]] static Data make_data(std::size_t const elems)
         {
             // Data data{};
 
@@ -43,25 +43,25 @@ namespace Linalg::Heap {
             // }
 
             // return data;
-            return Data(elems, Value{0});
+            return Data(elems, static_cast<T>(0));
         }
 
-        [[nodiscard]] auto zeros(std::size_t const elems) -> Vector
+        [[nodiscard]] Vector zeros(std::size_t const elems)
         {
             // return Vector{make_data(elems)};
-            return Data(elems, Value{0});
+            return Data(elems, static_cast<T>(0));
         }
 
-        [[nodiscard]] auto ones(std::size_t const elems) -> Vector
+        [[nodiscard]] Vector ones(std::size_t const elems)
         {
             // Vector result{make_data(elems)};
 
             // for (auto& elem : result) {
-            //     elem = Value{1};
+            //     elem = T{1};
             // }
 
             // return result;
-            return Data(elems, Value{1});
+            return Data(elems, T{1});
         }
 
         [[nodiscard]] Vector() noexcept = default;
@@ -81,17 +81,17 @@ namespace Linalg::Heap {
 
         [[nodiscard]] ~Vector() noexcept = default;
 
-        [[nodiscard]] auto operator=(Vector const& other) -> Vector& = default;
+        [[nodiscard]] Vector& operator=(Vector const& other) = default;
 
-        [[nodiscard]] auto operator=(Vector&& other) noexcept -> Vector& = default;
+        [[nodiscard]] Vector& operator=(Vector&& other) noexcept = default;
 
-        auto operator=(this Vector& self, Init const init) -> Vector&
+        Vector& operator=(this Vector& self, Init const init)
         {
             self.data = data;
             return self;
         }
 
-        [[nodiscard]] auto operator+=(this Vector& self, Vector const& other) -> Vector&
+        [[nodiscard]] Vector& operator+=(this Vector& self, Vector const& other)
         {
             try {
                 self = vector_sum(self, other);
@@ -101,7 +101,7 @@ namespace Linalg::Heap {
             }
         }
 
-        [[nodiscard]] auto operator-=(this Vector& self, Vector const& other) -> Vector&
+        [[nodiscard]] Vector& operator-=(this Vector& self, Vector const& other)
         {
             try {
                 self = vector_difference(self, other);
@@ -111,22 +111,22 @@ namespace Linalg::Heap {
             }
         }
 
-        [[nodiscard]] auto operator*=(this Vector& self, Value const scale) -> Vector&
+        [[nodiscard]] Vector& operator*=(this Vector& self, T const scale)
         {
             self = vector_scale(self, scale);
             return self;
         }
 
-        [[nodiscard]] auto operator/=(this Vector& self, Value const scale) -> Vector&
+        [[nodiscard]] Vector& operator/=(this Vector& self, T const scale)
         {
-            if (scale == Value{0.0}) {
+            if (scale == static_cast<T>(0)) {
                 throw std::runtime_error{"Division by 0!\n"};
             }
             self = vector_scale(self, 1 / scale);
             return self;
         }
 
-        [[nodiscard]] Valueauto operator[](this Vector& self, std::size_t const elem)->&
+        [[nodiscard]] T& operator[](this Vector& self, std::size_t const elem) ->
         {
             if (elem > self.elems()) {
                 throw std::runtime_error{"Wrong dimensions\n"};
@@ -134,7 +134,7 @@ namespace Linalg::Heap {
             return self.data[elem];
         }
 
-        [[nodiscard]] Value auto operator[](this Vector const& self, std::size_t const elem) noexcept -> const&
+        [[nodiscard]] T auto operator[](this Vector const& self, std::size_t const elem) noexcept const&
         {
             if (elem > self.elems()) {
                 throw std::runtime_error{"Wrong dimensions\n"};
@@ -144,7 +144,7 @@ namespace Linalg::Heap {
 
         [[nodiscard]] bool operator<=>(this Vector const& self, Vector const& other) noexcept = default;
 
-        auto print(this Vector const& self) noexcept -> void
+        void print(this Vector const& self) noexcept
         {
             std::print("[");
             for (auto& elem : self.data) {
@@ -156,7 +156,7 @@ namespace Linalg::Heap {
             std::print("]\n");
         }
 
-        [[nodiscard]] auto elems(this Vector const& self) noexcept -> std::size_t
+        [[nodiscard]] std::size_t elems(this Vector const& self) noexcept
         {
             return self.data.size();
         }
@@ -164,46 +164,46 @@ namespace Linalg::Heap {
         Data data{};
     };
 
-    template <typename Value>
-    [[nodiscard]] auto vector_sum(Vector<Value> const& left, Vector<Value> const& right) -> Vector<Value>
+    template <typename T>
+    [[nodiscard]] Vector<T> vector_sum(Vector<T> const& left, Vector<T> const& right)
     {
         if (left.elems() != right.elems()) {
             throw std::runtime_error{"Incorrect dimensions!\n"};
         }
 
-        auto result{Vector<Value>::make_zeros(left.elems())};
+        auto result{Vector<T>::make_zeros(left.elems())};
         for (std::size_t i{0}; i < left.elems(); ++i) {
             result[i] = left[i] + right[i];
         }
         return result;
     }
 
-    template <typename Value>
-    [[nodiscard]] auto vector_difference(Vector<Value> const& left, Vector<Value> const& right) -> Vector<Value>
+    template <typename T>
+    [[nodiscard]] Vector<T> vector_difference(Vector<T> const& left, Vector<T> const& right)
     {
         if (left.elems() != right.elems()) {
             throw std::runtime_error{"Incorrect dimensions!\n"};
         }
 
-        auto result{Vector<Value>::make_zeros(left.elems())};
+        auto result{Vector<T>::make_zeros(left.elems())};
         for (std::size_t i{0}; i < left.elems(); ++i) {
             result[i] = left[i] - right[i];
         }
         return result;
     }
 
-    template <typename Value>
-    [[nodiscard]] auto vector_scale(Vector<Value> const& vector, Value const scale) noexcept -> Vector<Value>
+    template <typename T>
+    [[nodiscard]] Vector<T> vector_scale(Vector<T> const& vector, T const scale) noexcept
     {
-        auto result{Vector<Value>::make_zeros(vector.elems())};
+        auto result{Vector<T>::make_zeros(vector.elems())};
         for (std::size_t i{0}; i < vector.elems(); ++i) {
             result[i] = vector[i] * scale;
         }
         return result;
     }
 
-    template <typename Value>
-    [[nodiscard]] auto operator+(Vector<Value> const& left, Vector<Value> const& right) -> Vector<Value>
+    template <typename T>
+    [[nodiscard]] Vector<T> operator+(Vector<T> const& left, Vector<T> const& right)
     {
         try {
             return vector_sum(left, right);
@@ -212,8 +212,8 @@ namespace Linalg::Heap {
         }
     }
 
-    template <typename Value>
-    [[nodiscard]] auto operator-(Vector<Value> const& left, Vector<Value> const& right) -> Vector<Value>
+    template <typename T>
+    [[nodiscard]] Vector<T> operator-(Vector<T> const& left, Vector<T> const& right)
     {
         try {
             return vector_difference(left, right);
@@ -222,22 +222,22 @@ namespace Linalg::Heap {
         }
     }
 
-    template <typename Value>
-    [[nodiscard]] auto operator*(Value const scale, Vector<Value> const& vector) noexcept -> Vector<Value>
+    template <typename T>
+    [[nodiscard]] Vector<T> operator*(T const scale, Vector<T> const& vector) noexcept
     {
         return vector_scale(vector, scale);
     }
 
-    template <typename Value>
-    [[nodiscard]] auto operator*(Vector<Value> const& vector, Value const scale) noexcept -> Vector<Value>
+    template <typename T>
+    [[nodiscard]] Vector<T> operator*(Vector<T> const& vector, T const scale) noexcept
     {
         return vector_scale(vector, scale);
     }
 
-    template <typename Value>
-    [[nodiscard]] auto operator/(Vector<Value> const& vector, Value const scale) -> Vector<Value>
+    template <typename T>
+    [[nodiscard]] Vector<T> operator/(Vector<T> const& vector, T const scale)
     {
-        if (scale == Value{0.0}) {
+        if (scale == static_cast<T>(0)) {
             throw std::runtime_error{"Division by 0!\n"};
         }
         return vector_scale(vector, 1 / scale);

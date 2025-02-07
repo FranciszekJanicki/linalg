@@ -1,7 +1,7 @@
 #include "polynomial.hpp"
 #include <stdfloat>
 
-auto main([[maybe_unused]] int const argc, [[maybe_unused]] char const* const argv[]) -> int
+int main([[maybe_unused]] int const argc, [[maybe_unused]] char const* const argv[])
 {
     using namespace Linalg;
 

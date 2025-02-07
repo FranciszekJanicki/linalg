@@ -18,7 +18,7 @@ namespace Linalg::Transform {
     using IDFT = std::array<T, N>;
 
     template <std::floating_point T, std::size_t N>
-    [[nodiscard]] auto dft(IDFT<T, N> const& idft) noexcept -> DFT<T, N>
+    [[nodiscard]] DFT<T, N> dft(IDFT<T, N> const& idft) noexcept
     {
         DFT<T, N> dft{};
         for (auto [k, X] : std::views::enumerate(dft)) {
@@ -32,7 +32,7 @@ namespace Linalg::Transform {
     }
 
     template <std::floating_point T, std::size_t N>
-    [[nodiscard]] auto idft(DFT<T, N> const& dft) noexcept -> IDFT<T, N>
+    [[nodiscard]] IDFT<T, N> idft(DFT<T, N> const& dft) noexcept
     {
         IDFT<T, N> idft{};
         for (auto [n, x] : std::views::enumerate(idft)) {

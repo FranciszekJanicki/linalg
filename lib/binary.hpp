@@ -5,19 +5,19 @@
 
 namespace Linalg::Regulators {
 
-    template <std::floating_point Value>
+    template <std::floating_point T>
     struct Binary {
         enum struct State {
             POSITIVE,
             ZERO,
         };
 
-        [[nodiscard]] auto operator()(this Ternary& self, Value const error) noexcept -> State
+        [[nodiscard]] State operator()(this Ternary& self, T const error) noexcept
         {
             return self.state = self.get_state(error);
         }
 
-        auto get_state(this Ternary const& self, Value const error) noexcept -> State
+        State get_state(this Ternary const& self, T const error) noexcept
         {
             switch (self.state) {
                 case State::POSITIVE:
@@ -29,8 +29,8 @@ namespace Linalg::Regulators {
             }
         }
 
-        Value hysteresis_up{};
-        Value hysteresis_down{};
+        T hysteresis_up{};
+        T hysteresis_down{};
 
         State state{State::ZERO};
     };

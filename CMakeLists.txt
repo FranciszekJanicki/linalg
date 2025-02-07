@@ -29,6 +29,7 @@ add_library(Lib STATIC
     "lib/polynomial.hpp"
     "lib/transforms.hpp"
     "lib/signals.hpp"
+    "lib/utility.hpp"
 )
 
 set_target_properties(Lib PROPERTIES LINKER_LANGUAGE CXX)

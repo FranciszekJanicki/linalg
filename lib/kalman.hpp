@@ -13,14 +13,14 @@ namespace Linalg::Observers {
         using namespace Stack;
     };
 
-    template <std::floating_point Value, std::size_t STATES, std::size_t CONTROLS = 1UL, std::size_t MEASUREMENTS = 1UL>
+    template <std::floating_point T, std::size_t STATES, std::size_t CONTROLS = 1UL, std::size_t MEASUREMENTS = 1UL>
     struct Kalman {
         template <std::size_t ROWS, std::size_t COLS>
-        using Matrix = Matrix<Value, ROWS, COLS>;
+        using Matrix = Matrix<T, ROWS, COLS>;
 
-        [[nodiscard]] auto operator()(this Kalman& self,
-                                      Matrix<1UL, CONTROLS> const& control,
-                                      Matrix<1UL, MEASUREMENTS> const& measurement) -> Matrix<STATES, 1UL>
+        [[nodiscard]] Matrix<STATES, 1UL> operator()(this Kalman& self,
+                                                     Matrix<1UL, CONTROLS> const& control,
+                                                     Matrix<1UL, MEASUREMENTS> const& measurement)
         {
             try {
                 self.predict(control);
@@ -31,7 +31,7 @@ namespace Linalg::Observers {
             }
         }
 
-        auto predict(this Kalman& self, Matrix<1UL, CONTROLS> const& control) -> void
+        void predict(this Kalman& self, Matrix<1UL, CONTROLS> const& control)
         {
             try {
                 self.state = (self.state_transition * self.state) + (self.control_transition * control);
@@ -43,7 +43,7 @@ namespace Linalg::Observers {
             }
         }
 
-        auto correct(this Kalman& self, Matrix<1UL, MEASUREMENTS> const& measurement) -> void
+        void correct(this Kalman& self, Matrix<1UL, MEASUREMENTS> const& measurement)
         {
             try {
                 auto const innovation{measurement - (self.measurement_transition * self.state)};
@@ -54,7 +54,7 @@ namespace Linalg::Observers {
                                        matrix_inverse(residual_covariance)};
                 self.state = self.state + (kalman_gain * innovation);
                 self.state_covariance =
-                    (make_eye<Value, STATES>() - kalman_gain * self.measurement_transition) * self.state_covariance;
+                    (make_eye<T, STATES>() - kalman_gain * self.measurement_transition) * self.state_covariance;
             } catch (std::runtime_error const& error) {
                 throw error;
             }
