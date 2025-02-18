@@ -46,7 +46,7 @@ namespace Linalg::Stack {
         [[nodiscard]] Row const& operator[](this Matrix const& self, std::size_t const row)
         {
             if (row > N) {
-                throw std::runtime_error{"Out of bounds\n"};
+                throw std::runtime_error{"Out of bounds"};
             }
             return self.data[row];
         }
@@ -54,7 +54,7 @@ namespace Linalg::Stack {
         [[nodiscard]] Row& operator[](this Matrix& self, std::size_t const row)
         {
             if (row > N) {
-                throw std::runtime_error{"Out of bounds\n"};
+                throw std::runtime_error{"Out of bounds"};
             }
             return self.data[row];
         }
@@ -62,7 +62,7 @@ namespace Linalg::Stack {
         [[nodiscard]] T const& operator[](this Matrix const& self, std::size_t const row, std::size_t const col)
         {
             if (row > N || col > M) {
-                throw std::runtime_error{"Out of bounds\n"};
+                throw std::runtime_error{"Out of bounds"};
             }
             return self.data[row][col];
         }
@@ -70,7 +70,7 @@ namespace Linalg::Stack {
         [[nodiscard]] T& operator[](this Matrix& self, std::size_t const row, std::size_t const col)
         {
             if (row > N || col > M) {
-                throw std::runtime_error{"Out of bounds\n"};
+                throw std::runtime_error{"Out of bounds"};
             }
             return self.data[row][col];
         }
@@ -148,7 +148,7 @@ namespace Linalg::Stack {
         [[nodiscard]] Matrix& operator/=(this Matrix& self, T const scale)
         {
             if (scale == static_cast<T>(0)) {
-                throw std::runtime_error{"Division by 0!\n"};
+                throw std::runtime_error{"Division by 0!"};
             }
 
             self = matrix_scale(self, 1 / scale);
@@ -191,7 +191,7 @@ namespace Linalg::Stack {
     matrix_minor(Matrix<T, N, N> const& matrix, std::size_t const row, std::size_t const column)
     {
         if (row >= N || column >= N) {
-            throw std::runtime_error{"Wrong dimensions\n"};
+            throw std::runtime_error{"Wrong dimensions"};
         }
         if constexpr (N == 1) {
             return matrix;
@@ -458,7 +458,7 @@ namespace Linalg::Stack {
     [[nodiscard]] Matrix<T, N, M> operator/(Matrix<T, N, M> const& matrix, T const scale)
     {
         if (scale == static_cast<T>(0)) {
-            throw std::runtime_error{"Division by 0!\n"};
+            throw std::runtime_error{"Division by 0!"};
         }
         return matrix_scale(matrix, 1 / scale);
     }

@@ -212,7 +212,7 @@ namespace Linalg::Heap {
         [[nodiscard]] Vector const& Matrix<T> operator[](this Matrix const& self, std::size_t const row)
         {
             if (row >= self.rows()) {
-                throw std::runtime_error{"Wrong dimensions\n"};
+                throw std::runtime_error{"Wrong dimensions"};
             }
             return self.data[row];
         }
@@ -220,7 +220,7 @@ namespace Linalg::Heap {
         [[nodiscard]] Vector& operator[](this Matrix& self, std::size_t const row)
         {
             if (row >= self.rows()) {
-                throw std::runtime_error{"Wrong dimensions\n"};
+                throw std::runtime_error{"Wrong dimensions"};
             }
             return self.data[row];
         }
@@ -228,7 +228,7 @@ namespace Linalg::Heap {
         [[nodiscard]] T& operator[](this Matrix& self, std::size_t const row, std::size_t const column)
         {
             if (row >= self.rows() || column >= self.cols()) {
-                throw std::runtime_error{"Wrong dimensions\n"};
+                throw std::runtime_error{"Wrong dimensions"};
             }
             return self.data[row][column];
         }
@@ -237,7 +237,7 @@ namespace Linalg::Heap {
 
         {
             if (row >= self.rows() || column >= self.cols()) {
-                throw std::runtime_error{"Wrong dimensions\n"};
+                throw std::runtime_error{"Wrong dimensions"};
             }
             return self.data[row][column];
         }
@@ -310,10 +310,10 @@ namespace Linalg::Heap {
 
     {
         if (!matrix.is_square()) {
-            throw std::runtime_error{"Wrong dimensions\n"};
+            throw std::runtime_error{"Wrong dimensions"};
         }
         if (row >= dimensions || column >= dimensions) {
-            throw std::runtime_error{"Wrong dimensions\n"};
+            throw std::runtime_error{"Wrong dimensions"};
         }
 
         if (dimensions == 1) {
@@ -341,10 +341,10 @@ namespace Linalg::Heap {
     [[nodiscard]] T matrix_det(Matrix<T> const& matrix, std::size_t const dimensions)
     {
         if (!matrix.is_square()) {
-            throw std::runtime_error{"Wrong dimensions\n"};
+            throw std::runtime_error{"Wrong dimensions"};
         }
         if (matrix.rows() < dimensions || matrix.cols() < dimensions) {
-            throw std::runtime_error{"Wrong dimensions\n"};
+            throw std::runtime_error{"Wrong dimensions"};
         }
 
         if (dimensions == 1) {
@@ -382,7 +382,7 @@ namespace Linalg::Heap {
     [[nodiscard]] Matrix<T> matrix_complement(Matrix<T> const& matrix)
     {
         if (!matrix.is_square()) {
-            throw std::runtime_error{"Wrong dimensions\n"};
+            throw std::runtime_error{"Wrong dimensions"};
         }
 
         std::size_t const dimensions{matrix.rows()};
@@ -438,7 +438,7 @@ namespace Linalg::Heap {
     [[nodiscard]] Matrix<T> matrix_lower_triangular(Matrix<T> const& matrix)
     {
         if (!matrix.is_square()) {
-            throw std::runtime_error{"Wrong dimensions!\n"};
+            throw std::runtime_error{"Wrong dimensions!"};
         }
 
         if (matrix.rows() == 1) {
@@ -483,7 +483,7 @@ namespace Linalg::Heap {
     [[nodiscard]] Matrix<T> matrix_sum(Matrix<T> const& left, Matrix<T> const& right)
     {
         if (left.cols() != right.cols() || left.rows() != right.rows()) {
-            throw std::runtime_error{"Wrong dimensions\n"};
+            throw std::runtime_error{"Wrong dimensions"};
         }
 
         auto result{Matrix<T>::zeros(left.rows(), left.cols())};
@@ -499,7 +499,7 @@ namespace Linalg::Heap {
     [[nodiscard]] Matrix<T> matrix_difference(Matrix<T> const& left, Matrix<T> const& right)
     {
         if (left.cols() != right.cols() || left.rows() != right.rows()) {
-            throw std::runtime_error{"Wrong dimensions\n"};
+            throw std::runtime_error{"Wrong dimensions"};
         }
 
         auto result{Matrix<T>::zeros(left.rows(), left.cols())};
@@ -527,7 +527,7 @@ namespace Linalg::Heap {
     [[nodiscard]] Matrix<T> matrix_power(Matrix<T> const& matrix, T const power)
     {
         if (!matrix.is_square()) {
-            throw std::runtime_error{"Wrong dimensions\n"};
+            throw std::runtime_error{"Wrong dimensions"};
         }
 
         if (power == 1) {
@@ -587,7 +587,7 @@ namespace Linalg::Heap {
     [[nodiscard]] Matrix<T> operator/(Matrix<T> const& matrix, T const scale) noexcept
     {
         if (scale == static_cast<T>(0)) {
-            throw std::runtime_error{"Division by 0!\n"};
+            throw std::runtime_error{"Division by 0!"};
         }
         return matrix_scale(matrix, 1 / scale);
     }

@@ -81,7 +81,7 @@ namespace Linalg {
         [[nodiscard]] Vector3D& operator/=(this Vector3D& self, T const factor)
         {
             if (factor == static_cast<T>(0)) {
-                throw std::runtime_error{"Disivion by 0\n"};
+                throw std::runtime_error{"Disivion by 0"};
             }
 
             self.x *= factor;
@@ -131,7 +131,7 @@ namespace Linalg {
     [[nodiscard]] Vector3D<T> operator/(Vector3D<T> const& vector, T const factor)
     {
         if (factor == static_cast<T>(0)) {
-            throw std::runtime_error{"Division by zero\n"};
+            throw std::runtime_error{"Division by zero"};
         }
 
         return Vector3D<T>{vector.x / factor, vector.y / factor, vector.z / factor};

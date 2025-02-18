@@ -1,6 +1,7 @@
 #ifndef UTILITY_HPP
 #define UTILITY_HPP
 
+#include <algorithm>
 #include <array>
 #include <bit>
 #include <bitset>
@@ -9,6 +10,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
+#include <numbers>
 #include <numeric>
 #include <stdexcept>
 #include <utility>
@@ -17,6 +19,9 @@ namespace Linalg::Utility {
 
     template <typename T>
     concept Trivial = std::is_trivial_v<T>;
+
+    template <typename T>
+    concept Arithmetic = std::is_arithmetic_v<T>;
 
     template <std::floating_point T>
     [[nodiscard]] T differentiate(T const value,
@@ -49,13 +54,13 @@ namespace Linalg::Utility {
     template <std::floating_point T>
     [[nodiscard]] T degrees_to_radians(T const degrees) noexcept
     {
-        return degrees * static_cast<T>(M_PI) / static_cast<T>(360.0);
+        return degrees * std::numbers::pi_v<T> / static_cast<T>(360.0);
     }
 
     template <std::floating_point T>
     [[nodiscard]] T radians_to_degrees(T const radians) noexcept
     {
-        return radians * static_cast<T>(360.0) / static_cast<T>(M_PI);
+        return radians * static_cast<T>(360.0) / std::numbers::pi_v<T>;
     }
 
     template <std::floating_point Float, std::integral Int>
@@ -99,33 +104,37 @@ namespace Linalg::Utility {
         return value;
     }
 
-    inline void set_bits(std::uint8_t& byte,
-                         std::uint8_t const write_data,
-                         std::size_t const size,
-                         std::uint8_t const position) noexcept
+    template <std::unsigned_integral UInt>
+    inline void write_bits(UInt& data,
+                           UInt const write_data,
+                           std::uint8_t const write_size,
+                           std::uint8_t const write_position) noexcept
     {
-        std::uint8_t mask = ((1U << size) - 1) << (position - size + 1);
-        std::uint8_t temp = (write_data << (position - size + 1)) & mask;
-        byte &= ~mask;
-        byte |= temp;
+        UInt mask = ((1U << write_size) - 1U) << (write_position - write_size + 1U);
+        UInt temp = (write_data << (write_position - write_size + 1U)) & mask;
+        data &= ~mask;
+        data |= temp;
     }
 
-    inline void set_bit(std::uint8_t& byte, bool const write_data, std::uint8_t const position) noexcept
+    template <std::unsigned_integral UInt>
+    inline void write_bit(UInt& data, bool const write_data, std::uint8_t const write_position) noexcept
     {
-        write_data ? (byte |= (1U << position)) : (byte &= ~(1U << position));
+        write_data ? (data |= (1U << write_position)) : (data &= ~(1U << write_position));
     }
 
-    inline std::uint8_t get_bits(std::uint8_t byte, std::size_t const size, std::uint8_t const position) noexcept
+    template <std::unsigned_integral UInt>
+    inline UInt read_bits(UInt data, std::uint8_t const read_size, std::uint8_t const read_position) noexcept
     {
-        std::uint8_t mask = ((1U << size) - 1) << (position - size + 1);
-        byte &= mask;
-        byte >>= (position - size + 1);
-        return byte;
+        UInt mask = ((1U << read_size) - 1U) << (read_position - read_size + 1U);
+        data &= mask;
+        data >>= (read_position - read_size + 1U);
+        return data;
     }
 
-    inline bool get_bit(std::uint8_t byte, std::uint8_t const position) noexcept
+    template <std::unsigned_integral UInt>
+    inline bool read_bit(UInt data, std::uint8_t const read_position) noexcept
     {
-        return (byte & (1U << position)) ? true : false;
+        return (data & (1U << read_position)) ? true : false;
     }
 
     template <std::size_t SIZE>
@@ -156,8 +165,8 @@ namespace Linalg::Utility {
     inline std::uint8_t bits_to_byte(std::bitset<8UL> const bits) noexcept
     {
         std::uint8_t byte{};
-        for (std::size_t i{}; i < 8UL; ++i) {
-            set_bit(byte, bits[i], i);
+        for (std::uint8_t i{}; i < 8UL; ++i) {
+            write_bit(byte, bits[i], i);
         }
         return byte;
     }
@@ -165,8 +174,8 @@ namespace Linalg::Utility {
     inline std::bitset<8UL> byte_to_bits(std::uint8_t const byte) noexcept
     {
         std::bitset<8UL> bits{};
-        for (std::size_t i{}; i < 8UL; ++i) {
-            bits[i] = get_bit(byte, i);
+        for (std::uint8_t i{}; i < 8UL; ++i) {
+            bits[i] = read_bit(byte, i);
         }
         return bits;
     }
@@ -352,6 +361,15 @@ namespace Linalg::Utility {
     {
         return endian == std::endian::little ? dwords_to_little_endian_bytes_endian(dwords)
                                              : dwords_to_big_endian_bytes(dwords);
+    }
+
+    template <Arithmetic From, Arithmetic To>
+    inline To
+    rescale(From const from_value, From const from_min, From const from_max, To const to_min, To const to_max) noexcept
+    {
+        return static_cast<To>(std::clamp(from_value, from_min, from_max) - from_min) * (to_max - to_min) /
+                   static_cast<To>(from_max - from_min) -
+               to_min;
     }
 
 }; // namespace Linalg::Utility

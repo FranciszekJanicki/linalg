@@ -120,7 +120,7 @@ namespace Linalg::Heap {
         [[nodiscard]] Vector& operator/=(this Vector& self, T const scale)
         {
             if (scale == static_cast<T>(0)) {
-                throw std::runtime_error{"Division by 0!\n"};
+                throw std::runtime_error{"Division by 0!"};
             }
             self = vector_scale(self, 1 / scale);
             return self;
@@ -129,7 +129,7 @@ namespace Linalg::Heap {
         [[nodiscard]] T& operator[](this Vector& self, std::size_t const elem) ->
         {
             if (elem > self.elems()) {
-                throw std::runtime_error{"Wrong dimensions\n"};
+                throw std::runtime_error{"Wrong dimensions"};
             }
             return self.data[elem];
         }
@@ -137,7 +137,7 @@ namespace Linalg::Heap {
         [[nodiscard]] T auto operator[](this Vector const& self, std::size_t const elem) noexcept const&
         {
             if (elem > self.elems()) {
-                throw std::runtime_error{"Wrong dimensions\n"};
+                throw std::runtime_error{"Wrong dimensions"};
             }
             return self.data[elem];
         }
@@ -168,7 +168,7 @@ namespace Linalg::Heap {
     [[nodiscard]] Vector<T> vector_sum(Vector<T> const& left, Vector<T> const& right)
     {
         if (left.elems() != right.elems()) {
-            throw std::runtime_error{"Incorrect dimensions!\n"};
+            throw std::runtime_error{"Incorrect dimensions!"};
         }
 
         auto result{Vector<T>::make_zeros(left.elems())};
@@ -182,7 +182,7 @@ namespace Linalg::Heap {
     [[nodiscard]] Vector<T> vector_difference(Vector<T> const& left, Vector<T> const& right)
     {
         if (left.elems() != right.elems()) {
-            throw std::runtime_error{"Incorrect dimensions!\n"};
+            throw std::runtime_error{"Incorrect dimensions!"};
         }
 
         auto result{Vector<T>::make_zeros(left.elems())};
@@ -238,7 +238,7 @@ namespace Linalg::Heap {
     [[nodiscard]] Vector<T> operator/(Vector<T> const& vector, T const scale)
     {
         if (scale == static_cast<T>(0)) {
-            throw std::runtime_error{"Division by 0!\n"};
+            throw std::runtime_error{"Division by 0!"};
         }
         return vector_scale(vector, 1 / scale);
     }

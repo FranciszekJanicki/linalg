@@ -7,7 +7,7 @@
 #include <stdexcept>
 #include <utility>
 
-namespace Linalg::Observers {
+namespace Linalg::Filters {
 
     namespace {
         using namespace Stack;
@@ -71,6 +71,6 @@ namespace Linalg::Observers {
         Matrix<STATES, STATES> process_noise{};
     };
 
-}; // namespace Linalg::Observers
+}; // namespace Linalg::Filters
 
 #endif // KALMAN_HPP

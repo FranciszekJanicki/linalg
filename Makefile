@@ -8,25 +8,25 @@ TEST_DIR := ${PROJECT_DIR }/test
 build: 
 	cd ${BUILD_DIR} && make
 
-.PHONY: run-kalman
-run-kalman:
-	cd ${BUILD_DIR} && ./Kalman
-
 .PHONY: run-polynomial
 run-polynomial:
-	cd ${BUILD_DIR} && ./Polynomial
+	cd ${BUILD_DIR} && ./polynomial
 
-.PHONY: run-pid
+.PHONY: run-regulators
 run-pid:
-	cd ${BUILD_DIR} && ./Pid
+	cd ${BUILD_DIR} && ./regulators
 
-.PHONY: run-dft
+.PHONY: run-transforms
 run-dft:
-	cd ${BUILD_DIR} && ./Dft
+	cd ${BUILD_DIR} && ./transforms
 
 .PHONY: run-filters
 run-filters:
-	cd ${BUILD_DIR} && ./Filters
+	cd ${BUILD_DIR} && ./filters
+
+.PHONY: run-signals
+run-signals:
+	cd ${BUILD_DIR} && ./signals
 
 .PHONY: clean
 clean:
@@ -35,15 +35,6 @@ clean:
 .PHONY: cmake
 cmake:
 	cd ${PROJECT_DIR} && make clean && mkdir ${BUILD_DIR} && cmake -S . -B ${BUILD_DIR}
-
-.PHONY: setup-external
-setup-external:
-	cd $(PROJECT_DIR) && touch .gitmodules && $(MAKE) setup-eigen
-
-.PHONY: clean-external
-clean-external: clean-eigen
-	git submodule deinit --all
-	rm -rf .gitmodules
 
 .PHONY: clang-format
 clang-format:
@@ -56,9 +47,5 @@ clang-tidy:
 	for ext in h c cpp hpp; do \
 		find $(SOURCE_DIR) -iname "*.$$ext" -print0 | xargs -0 clang-tidy --fix --fix-errors --config-file=.clang-tidy; \
 	done
-
-.PHONY: all
-all:
-	make clang-format && make build && make run-kalman
 
 	

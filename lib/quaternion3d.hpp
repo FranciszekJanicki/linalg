@@ -13,36 +13,36 @@ namespace Linalg {
 
     template <std::floating_point T>
     struct Quaternion3D {
-        [[nodiscard]]  Quaternion3D conjugated(this Quaternion3D const& self) noexcept
+        [[nodiscard]] Quaternion3D conjugated(this Quaternion3D const& self) noexcept
         {
             return Quaternion3D{self.w, -self.x, -self.y, -self.z};
         }
 
-         void conjugate(this Quaternion3D& self) noexcept
+        void conjugate(this Quaternion3D& self) noexcept
         {
             self.x = -self.x;
             self.y = -self.y;
             self.z = -self.z;
         }
 
-        [[nodiscard]]  T magnitude(this Quaternion3D const& self) noexcept
+        [[nodiscard]] T magnitude(this Quaternion3D const& self) noexcept
         {
             return std::sqrt(std::pow(self.w, 2) + std::pow(self.x, 2) + std::pow(self.y, 2) + std::pow(self.z, 2));
         }
 
-        [[nodiscard]]  Quaternion3D normalized(this Quaternion3D const& self) noexcept
+        [[nodiscard]] Quaternion3D normalized(this Quaternion3D const& self) noexcept
         {
             const auto im{static_cast<T>(1) / self.magnitude()};
             return Quaternion3D{self.w * im, self.x * im, self.y * im, self.z * im};
         }
 
-         void normalize(this Quaternion3D& self) noexcept
+        void normalize(this Quaternion3D& self) noexcept
         {
             const auto im{static_cast<T>(1) / self.magnitude()};
             self *= im;
         }
 
-        [[nodiscard]]  Quaternion3D& operator+=(this Quaternion3D& self, Quaternion3D const& other)
+        [[nodiscard]] Quaternion3D& operator+=(this Quaternion3D& self, Quaternion3D const& other)
         {
             self.w += other.w;
             self.x += other.x;
@@ -51,7 +51,7 @@ namespace Linalg {
             return self;
         }
 
-        [[nodiscard]]  Quaternion3D& operator-=(this Quaternion3D& self, Quaternion3D const& other)
+        [[nodiscard]] Quaternion3D& operator-=(this Quaternion3D& self, Quaternion3D const& other)
         {
             self.w -= other.w;
             self.x -= other.x;
@@ -60,7 +60,7 @@ namespace Linalg {
             return self;
         }
 
-        [[nodiscard]]  Quaternion3D& operator*=(this Quaternion3D& self, Quaternion3D const& other)
+        [[nodiscard]] Quaternion3D& operator*=(this Quaternion3D& self, Quaternion3D const& other)
         {
             self.w = self.w * other.w - self.x * other.x - self.y * other.y - self.z * other.z;
             self.x = self.w * other.x + self.x * other.w + self.y * other.z - self.z * other.y;
@@ -69,7 +69,7 @@ namespace Linalg {
             return self;
         }
 
-        [[nodiscard]]  Quaternion3D& operator*=(this Quaternion3D& self, T const factor)
+        [[nodiscard]] Quaternion3D& operator*=(this Quaternion3D& self, T const factor)
         {
             self.w *= factor;
             self.x *= factor;
@@ -78,10 +78,10 @@ namespace Linalg {
             return self;
         }
 
-        [[nodiscard]]  Quaternion3D& operator/=(this Quaternion3D& self, T const factor)
+        [[nodiscard]] Quaternion3D& operator/=(this Quaternion3D& self, T const factor)
         {
             if (factor == static_cast<T>(0)) {
-                throw std::runtime_error{"Division by zero\n"};
+                throw std::runtime_error{"Division by zero"};
             }
 
             self.w /= factor;
@@ -92,7 +92,7 @@ namespace Linalg {
         }
 
         template <std::floating_point C>
-        [[nodiscard]] explicit  operator Quaternion3D<C>(this Quaternion3D const& self) noexcept
+        [[nodiscard]] explicit operator Quaternion3D<C>(this Quaternion3D const& self) noexcept
         {
             return Quaternion3D<C>{static_cast<C>(self.w),
                                    static_cast<C>(self.x),
@@ -100,8 +100,7 @@ namespace Linalg {
                                    static_cast<C>(self.z)};
         }
 
-        [[nodiscard]]  bool operator<=>(this Quaternion3D const& self,
-                                              Quaternion3D const& other) noexcept = default;
+        [[nodiscard]] bool operator<=>(this Quaternion3D const& self, Quaternion3D const& other) noexcept = default;
 
         T w{};
         T x{};
@@ -110,19 +109,19 @@ namespace Linalg {
     };
 
     template <std::floating_point T>
-    [[nodiscard]]  Quaternion3D<T> operator+(Quaternion3D<T> const& left, Quaternion3D<T> const& right) noexcept
+    [[nodiscard]] Quaternion3D<T> operator+(Quaternion3D<T> const& left, Quaternion3D<T> const& right) noexcept
     {
         return Quaternion3D<T>{left.w + right.w, left.x + right.x, left.y + right.y, left.z + right.z};
     }
 
     template <std::floating_point T>
-    [[nodiscard]]  Quaternion3D<T> operator-(Quaternion3D<T> const& left, Quaternion3D<T> const& right) noexcept
+    [[nodiscard]] Quaternion3D<T> operator-(Quaternion3D<T> const& left, Quaternion3D<T> const& right) noexcept
     {
         return Quaternion3D<T>{left.w - right.w, left.x - right.x, left.y - right.y, left.z + right.z};
     }
 
     template <std::floating_point T>
-    [[nodiscard]]  Quaternion3D<T> operator*(Quaternion3D<T> const& left, Quaternion3D<T> const& right) noexcept
+    [[nodiscard]] Quaternion3D<T> operator*(Quaternion3D<T> const& left, Quaternion3D<T> const& right) noexcept
     {
         return Quaternion3D<T>{left.w * right.w - left.x * right.x - left.y * right.y - left.z * right.z,
                                left.w * right.x + left.x * right.w + left.y * right.z - left.z * right.y,
@@ -131,7 +130,7 @@ namespace Linalg {
     }
 
     template <std::floating_point T>
-    [[nodiscard]]  Quaternion3D<T> operator*(Quaternion3D<T> const& quaternion, T const factor)
+    [[nodiscard]] Quaternion3D<T> operator*(Quaternion3D<T> const& quaternion, T const factor)
     {
         return Quaternion3D<T>{quaternion.w * factor,
                                quaternion.x * factor,
@@ -140,16 +139,16 @@ namespace Linalg {
     }
 
     template <std::floating_point T>
-    [[nodiscard]]  Quaternion3D<T> operator*(T const factor, Quaternion3D<T> const& quaternion)
+    [[nodiscard]] Quaternion3D<T> operator*(T const factor, Quaternion3D<T> const& quaternion)
     {
         return quaternion * factor;
     }
 
     template <std::floating_point T>
-    [[nodiscard]]  Quaternion3D<T> operator/(Quaternion3D<T> const& quaternion, T const factor)
+    [[nodiscard]] Quaternion3D<T> operator/(Quaternion3D<T> const& quaternion, T const factor)
     {
         if (factor == static_cast<T>(0)) {
-            throw std::runtime_error{"Disivion by zero\n"};
+            throw std::runtime_error{"Disivion by zero"};
         }
 
         return Quaternion3D<T>{quaternion.w / factor,

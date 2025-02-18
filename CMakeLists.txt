@@ -9,7 +9,7 @@ project(${MAKE_PROJECT_NAME})
 set(CMAKE_CXX_COMPILER "/usr/bin/g++")
 set(CMAKE_CXX_STANDARD 23)
 
-add_library(Lib STATIC
+add_library(lib STATIC
     "lib/kalman.hpp"
     "lib/heap_matrix.hpp"
     "lib/vector3d.hpp"
@@ -29,56 +29,8 @@ add_library(Lib STATIC
     "lib/polynomial.hpp"
     "lib/transforms.hpp"
     "lib/signals.hpp"
-    "lib/utility.hpp"
-)
-
-set_target_properties(Lib PROPERTIES LINKER_LANGUAGE CXX)
-
-target_include_directories(Lib PUBLIC
-    "lib"
-)
-
-add_executable(Kalman
-    "test/kalman_test.cpp"
-)
-
-target_link_libraries(Kalman PRIVATE
-    Lib
-)
-
-add_executable(Polynomial
-    "test/polynomial_test.cpp"
-)
-
-target_link_libraries(Polynomial PRIVATE
-    Lib
-)
-
-add_executable(Pid
-    "test/pid_test.cpp"
-)
-
-target_link_libraries(Pid PRIVATE
-    Lib
-)
-
-add_executable(Dft
-    "test/dft_test.cpp"
-)
-
-target_link_libraries(Dft PRIVATE
-    Lib
-)
-
-add_executable(Filters
-    "test/filter_test.cpp"    
-)
-
-target_link_libraries(Filters PRIVATE
-    Lib
-)
-
-target_compile_options(Lib PUBLIC
+    "lib/utility.hpp")
+target_compile_options(lib PUBLIC
     -O3
     -std=c++23
     -fconcepts
@@ -102,5 +54,22 @@ target_compile_options(Lib PUBLIC
     -Wdouble-promotion
     -Wformat=2
     -Wimplicit-fallthrough
-    -Wcast-align
-)
+    -Wcast-align)
+set_target_properties(lib PROPERTIES LINKER_LANGUAGE CXX)
+target_include_directories(lib PUBLIC "lib")
+
+
+add_executable(polynomial "test/polynomial.cpp")
+target_link_libraries(polynomial PRIVATE lib)
+
+add_executable(regulators "test/regulators.cpp")
+target_link_libraries(regulators PRIVATE lib)
+
+add_executable(transforms "test/transforms.cpp")
+target_link_libraries(transforms PRIVATE lib)
+
+add_executable(filters "test/filters.cpp")
+target_link_libraries(filters PRIVATE lib)
+
+add_executable(signals "test/signals.cpp")
+target_link_libraries(signals PRIVATE lib)

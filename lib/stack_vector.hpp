@@ -16,7 +16,7 @@ namespace Linalg::Stack {
         [[nodiscard]] T const& operator[](this Vector const& self, std::size_t const elem)
         {
             if (elem >= N) {
-                throw std::runtime_error{"Out of bounds\n"};
+                throw std::runtime_error{"Out of bounds"};
             }
             return self.data[elem];
         }
@@ -24,7 +24,7 @@ namespace Linalg::Stack {
         [[nodiscard]] T& operator[](this Vector& self, std::size_t const elem)
         {
             if (elem >= N) {
-                throw std::runtime_error{"Out of bounds\n"};
+                throw std::runtime_error{"Out of bounds"};
             }
             return self.data[elem];
         }
@@ -55,7 +55,7 @@ namespace Linalg::Stack {
         [[nodiscard]] Vector& operator/=(this Vector& self, T const scale)
         {
             if (scale == static_cast<T>(0)) {
-                throw std::runtime_error{"Division by 0!\n"};
+                throw std::runtime_error{"Division by 0!"};
             }
             self = vector_scale(self, 1 / scale);
             return self;
@@ -139,7 +139,7 @@ namespace Linalg::Stack {
     [[nodiscard]] Vector<T, N> operator/(Vector<T, N> const& vector, T const scale)
     {
         if (scale == static_cast<T>(0)) {
-            throw std::runtime_error{"Division by 0!\n"};
+            throw std::runtime_error{"Division by 0!"};
         }
 
         return vector_scale(vector, 1 / scale);
