@@ -2,8 +2,17 @@
 #define MATRIX_MATRIX_H
 
 #include "math.h"
+#include <assert.h>
 #include <stddef.h>
 #include <stdint.h>
+
+#define matrix_index(matrix, row, column)                               \
+    (__extension__({                                                    \
+        assert((matrix) != NULL);                                       \
+        assert((row) < (matrix)->data.rows);                            \
+        assert((column) < (matrix)->data.columns);                      \
+        (matrix)->data.data[(row) * (matrix)->data.columns + (column)]; \
+    }))
 
 typedef float matrix_elem_t;
 
@@ -12,20 +21,22 @@ typedef uint32_t matrix_size_t;
 typedef enum {
     MATRIX_ERR_OK = 0,
     MATRIX_ERR_FAIL,
+    MATRIX_ERR_NULL,
+    MATRIX_ERR_BOUNDS,
+    MATRIX_ERR_SINGULAR,
 } matrix_err_t;
 
+typedef matrix_elem_t* (*matrix_alloc_t)(matrix_size_t);
+typedef void (*matrix_dealloc_t)(matrix_elem_t*);
 typedef void (*matrix_print_t)(char const*, ...);
 typedef void (*matrix_copy_t)(matrix_elem_t*,
                               matrix_elem_t const*,
                               matrix_size_t);
-typedef matrix_elem_t* (*matrix_alloc_t)(matrix_size_t);
-typedef void (*matrix_dealloc_t)(matrix_elem_t*);
-
 typedef struct {
-    matrix_print_t print;
-    matrix_copy_t copy;
     matrix_alloc_t alloc;
     matrix_dealloc_t dealloc;
+    matrix_print_t print;
+    matrix_copy_t copy;
 } matrix_interface_t;
 
 typedef struct {
@@ -43,11 +54,13 @@ matrix_err_t matrix_initialize(matrix_t* matrix,
                                matrix_size_t rows,
                                matrix_size_t columns,
                                matrix_interface_t const* interfacem);
+
 matrix_err_t matrix_deinitialize(matrix_t* matrix);
 
 matrix_err_t matrix_print(matrix_t const* matrix);
 
 matrix_size_t matrix_rows(matrix_t const* matrix);
+
 matrix_size_t matrix_columns(matrix_t const* matrix);
 
 matrix_err_t matrix_minor(matrix_t const* matrix,
