@@ -45,6 +45,10 @@ matrix_err_t matrix_create(matrix_t* matrix,
                            matrix_size_t rows,
                            matrix_size_t columns);
 
+matrix_err_t matrix_create_with_zeros(matrix_t* matrix,
+                                      matrix_size_t rows,
+                                      matrix_size_t columns);
+
 matrix_err_t matrix_create_from_array(matrix_t* matrix,
                                       matrix_size_t rows,
                                       matrix_size_t columns,
@@ -56,18 +60,29 @@ matrix_err_t matrix_resize(matrix_t* matrix,
                            matrix_size_t rows,
                            matrix_size_t columns);
 
+matrix_err_t matrix_resize_with_zeros(matrix_t* matrix,
+                                      matrix_size_t rows,
+                                      matrix_size_t columns);
+
+matrix_err_t matrix_resize_from_array(matrix_t* matrix,
+                                      matrix_size_t rows,
+                                      matrix_size_t columns,
+                                      matrix_elem_t (*array)[rows][columns]);
+
 matrix_err_t matrix_clear(matrix_t* matrix);
 
-matrix_err_t matrix_fill_from_array(matrix_t* matrix,
-                                    matrix_size_t rows,
-                                    matrix_size_t columns,
-                                    matrix_elem_t (*array)[rows][columns]);
+matrix_err_t matrix_fill_with_zeros(matrix_t* matrix);
+
+matrix_err_t matrix_fill_from_array(
+    matrix_t* matrix,
+    matrix_elem_t (*array)[matrix->rows][matrix->columns]);
 
 matrix_err_t matrix_copy(matrix_t const* source, matrix_t* destination);
 matrix_err_t matrix_move(matrix_t* source, matrix_t* destination);
 
-matrix_size_t matrix_rows(matrix_t const* matrix);
-matrix_size_t matrix_columns(matrix_t const* matrix);
+matrix_err_t matrix_data(matrix_t const* matrix, matrix_elem_t** data);
+matrix_err_t matrix_rows(matrix_t const* matrix, matrix_size_t* rows);
+matrix_err_t matrix_columns(matrix_t const* matrix, matrix_size_t* columns);
 
 matrix_err_t matrix_minor(matrix_t const* matrix,
                           size_t row,

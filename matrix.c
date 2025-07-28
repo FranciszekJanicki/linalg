@@ -60,9 +60,13 @@ matrix_err_t matrix_create(matrix_t* matrix,
         return MATRIX_ERR_NULL;
     }
 
-    matrix_elem_t* data = matrix_allocate(matrix, rows * columns);
-    if (data == NULL) {
-        return MATRIX_ERR_ALLOC;
+    matrix_elem_t* data = NULL;
+
+    if (rows * columns > 0UL) {
+        data = matrix_allocate(matrix, rows * columns);
+        if (data == NULL) {
+            return MATRIX_ERR_ALLOC;
+        }
     }
 
     matrix->data = data;
@@ -70,6 +74,22 @@ matrix_err_t matrix_create(matrix_t* matrix,
     matrix->columns = columns;
 
     return MATRIX_ERR_OK;
+}
+
+matrix_err_t matrix_create_with_zeros(matrix_t* matrix,
+                                      matrix_size_t rows,
+                                      matrix_size_t columns)
+{
+    if (matrix == NULL) {
+        return MATRIX_ERR_NULL;
+    }
+
+    matrix_err_t err = matrix_create(matrix, rows, columns);
+    if (err != MATRIX_ERR_OK) {
+        return err;
+    }
+
+    return matrix_fill_with_zeros(matrix);
 }
 
 matrix_err_t matrix_create_from_array(matrix_t* matrix,
@@ -86,7 +106,7 @@ matrix_err_t matrix_create_from_array(matrix_t* matrix,
         return err;
     }
 
-    return matrix_fill_from_array(matrix, rows, columns, array);
+    return matrix_fill_from_array(matrix, array);
 }
 
 matrix_err_t matrix_delete(matrix_t* matrix)
@@ -114,13 +134,12 @@ matrix_err_t matrix_resize(matrix_t* matrix,
         return MATRIX_ERR_NULL;
     }
 
-    if (matrix->rows == rows && matrix->columns == columns) {
-        return MATRIX_ERR_OK;
-    }
-
-    if (matrix->rows == columns && matrix->columns == rows) {
-        matrix->rows = rows;
-        matrix->columns = columns;
+    if (matrix->data != NULL &&
+        (matrix->rows * matrix->columns == rows * columns)) {
+        if (matrix->rows == columns) {
+            matrix->rows = rows;
+            matrix->columns = columns;
+        }
 
         return MATRIX_ERR_OK;
     }
@@ -139,6 +158,39 @@ matrix_err_t matrix_resize(matrix_t* matrix,
     return MATRIX_ERR_OK;
 }
 
+matrix_err_t matrix_resize_with_zeros(matrix_t* matrix,
+                                      matrix_size_t rows,
+                                      matrix_size_t columns)
+{
+    if (matrix == NULL) {
+        return MATRIX_ERR_NULL;
+    }
+
+    matrix_err_t err = matrix_resize(matrix, rows, columns);
+    if (err != MATRIX_ERR_OK) {
+        return err;
+    }
+
+    return matrix_fill_with_zeros(matrix);
+}
+
+matrix_err_t matrix_resize_from_array(matrix_t* matrix,
+                                      matrix_size_t rows,
+                                      matrix_size_t columns,
+                                      matrix_elem_t (*array)[rows][columns])
+{
+    if (matrix == NULL || array == NULL) {
+        return MATRIX_ERR_NULL;
+    }
+
+    matrix_err_t err = matrix_resize(matrix, rows, columns);
+    if (err != MATRIX_ERR_OK) {
+        return err;
+    }
+
+    return matrix_fill_from_array(matrix, array);
+}
+
 matrix_err_t matrix_clear(matrix_t* matrix)
 {
     if (matrix == NULL) {
@@ -146,6 +198,34 @@ matrix_err_t matrix_clear(matrix_t* matrix)
     }
 
     return matrix_resize(matrix, 0UL, 0UL);
+}
+
+matrix_err_t matrix_fill_with_zeros(matrix_t* matrix)
+{
+    if (matrix == NULL) {
+        return MATRIX_ERR_NULL;
+    }
+
+    memset(matrix->data,
+           0,
+           sizeof(*matrix->data) * matrix->rows * matrix->columns);
+
+    return MATRIX_ERR_OK;
+}
+
+matrix_err_t matrix_fill_from_array(
+    matrix_t* matrix,
+    matrix_elem_t (*array)[matrix->rows][matrix->columns])
+{
+    if (matrix == NULL || array == NULL) {
+        return MATRIX_ERR_NULL;
+    }
+
+    memcpy(matrix->data,
+           array,
+           sizeof(*matrix->data) * matrix->rows * matrix->columns);
+
+    return MATRIX_ERR_OK;
 }
 
 matrix_err_t matrix_copy(matrix_t const* source, matrix_t* destination)
@@ -162,26 +242,7 @@ matrix_err_t matrix_copy(matrix_t const* source, matrix_t* destination)
 
     memcpy(destination->data,
            source->data,
-           sizeof(matrix_elem_t) * source->rows * source->columns);
-
-    return MATRIX_ERR_OK;
-}
-
-matrix_err_t matrix_fill_from_array(matrix_t* matrix,
-                                    matrix_size_t rows,
-                                    matrix_size_t columns,
-                                    matrix_elem_t (*array)[rows][columns])
-{
-    if (matrix == NULL || array == NULL) {
-        return MATRIX_ERR_NULL;
-    }
-
-    matrix_err_t err = matrix_resize(matrix, rows, columns);
-    if (err != MATRIX_ERR_OK) {
-        return err;
-    }
-
-    memcpy(matrix->data, array, sizeof(matrix_elem_t) * rows * columns);
+           sizeof(*source->data) * source->rows * source->columns);
 
     return MATRIX_ERR_OK;
 }
@@ -203,14 +264,37 @@ matrix_err_t matrix_move(matrix_t* source, matrix_t* destination)
     return MATRIX_ERR_OK;
 }
 
-matrix_size_t matrix_rows(matrix_t const* matrix)
+matrix_err_t matrix_data(matrix_t const* matrix, matrix_elem_t** data)
 {
-    return matrix->rows;
+    if (matrix == NULL || data == NULL) {
+        return MATRIX_ERR_NULL;
+    }
+
+    *data = matrix->data;
+
+    return MATRIX_ERR_OK;
 }
 
-matrix_size_t matrix_columns(matrix_t const* matrix)
+matrix_err_t matrix_rows(matrix_t const* matrix, matrix_size_t* rows)
 {
-    return matrix->columns;
+    if (matrix == NULL || rows == NULL) {
+        return MATRIX_ERR_NULL;
+    }
+
+    *rows = matrix->rows;
+
+    return MATRIX_ERR_OK;
+}
+
+matrix_err_t matrix_columns(matrix_t const* matrix, matrix_size_t* columns)
+{
+    if (matrix == NULL || columns == NULL) {
+        return MATRIX_ERR_NULL;
+    }
+
+    *columns = matrix->columns;
+
+    return MATRIX_ERR_OK;
 }
 
 matrix_err_t matrix_minor(matrix_t const* matrix,
