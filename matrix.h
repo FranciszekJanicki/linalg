@@ -3,11 +3,19 @@
 
 #include "math.h"
 #include <assert.h>
+#include <stdarg.h>
 #include <stddef.h>
 #include <stdint.h>
 
-#define MATRIX_INDEX(matrix, row, column) \
-    (matrix->data[(row) * (matrix)->columns + (column)])
+#define MATRIX_INDEX(MATRIX, ROW, COLUMN) \
+    ((MATRIX)->data[(ROW) * (MATRIX)->columns + (COLUMN)])
+
+#define MATRIX_RET_ON_ERR(ERR)        \
+    do {                              \
+        if ((ERR) != MATRIX_ERR_OK) { \
+            return (ERR);             \
+        }                             \
+    } while (0)
 
 typedef enum {
     MATRIX_ERR_OK = 0,
@@ -23,21 +31,25 @@ typedef enum {
 typedef float matrix_elem_t;
 typedef size_t matrix_size_t;
 
-typedef matrix_elem_t* (*matrix_allocate_t)(matrix_size_t);
-typedef void (*matrix_deallocate_t)(matrix_elem_t*);
+typedef void* (*matrix_allocate_t)(size_t);
+typedef void (*matrix_deallocate_t)(void*);
+typedef int (*matrix_vprint_t)(char const*, va_list);
 
 typedef struct {
-    matrix_size_t rows;
-    matrix_size_t columns;
-    matrix_elem_t* data;
-
+    matrix_vprint_t vprint;
     matrix_allocate_t allocate;
     matrix_deallocate_t deallocate;
+} matrix_interface_t;
+
+typedef struct {
+    matrix_elem_t* data;
+    matrix_size_t rows;
+    matrix_size_t columns;
+    matrix_interface_t interface;
 } matrix_t;
 
 matrix_err_t matrix_initialize(matrix_t* matrix,
-                               matrix_allocate_t allocate,
-                               matrix_deallocate_t deallocate);
+                               matrix_interface_t const* interface);
 
 matrix_err_t matrix_deinitialize(matrix_t* matrix);
 
@@ -74,6 +86,8 @@ matrix_err_t matrix_resize_from_array(matrix_t* matrix,
                                       matrix_elem_t (*array)[rows][columns]);
 
 matrix_err_t matrix_clear(matrix_t* matrix);
+
+matrix_err_t matrix_print(matrix_t const* matrix);
 
 matrix_err_t matrix_fill_with_zeros(matrix_t* matrix);
 
@@ -124,8 +138,12 @@ matrix_err_t matrix_product(matrix_t const* matrix1,
                             matrix_t const* matrix2,
                             matrix_t* product);
 
+matrix_err_t matrix_division(matrix_t const* matrix1,
+                             matrix_t const* matrix2,
+                             matrix_t* division);
+
 matrix_err_t matrix_power(matrix_t const* matrix,
-                          matrix_elem_t exponent,
+                          matrix_size_t exponent,
                           matrix_t* power);
 
 matrix_err_t matrix_rank(matrix_t const* matrix, matrix_size_t* rank);
