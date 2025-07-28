@@ -7,7 +7,7 @@
 #include <stdint.h>
 
 #define matrix_index(matrix, row, column) \
-    ((matrix)->data[(row) * (matrix)->columns + (column)])
+    (matrix_data(matrix)[(row) * (matrix)->columns + (column)])
 
 typedef enum {
     MATRIX_ERR_OK = 0,
@@ -80,10 +80,6 @@ matrix_err_t matrix_fill_from_array(
 matrix_err_t matrix_copy(matrix_t const* source, matrix_t* destination);
 matrix_err_t matrix_move(matrix_t* source, matrix_t* destination);
 
-matrix_err_t matrix_data(matrix_t const* matrix, matrix_elem_t** data);
-matrix_err_t matrix_rows(matrix_t const* matrix, matrix_size_t* rows);
-matrix_err_t matrix_columns(matrix_t const* matrix, matrix_size_t* columns);
-
 matrix_err_t matrix_minor(matrix_t const* matrix,
                           size_t row,
                           size_t column,
@@ -96,7 +92,8 @@ matrix_err_t matrix_adjoint(matrix_t const* matrix, matrix_t* adjoint);
 matrix_err_t matrix_transposition(matrix_t const* matrix,
                                   matrix_t* transposition);
 
-matrix_err_t matrix_det(matrix_t const* matrix, matrix_elem_t* det);
+matrix_err_t matrix_determinent(matrix_t const* matrix,
+                                matrix_elem_t* determinent);
 
 matrix_err_t matrix_inversion(matrix_t const* matrix, matrix_t* inversion);
 
