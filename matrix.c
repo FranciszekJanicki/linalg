@@ -323,14 +323,10 @@ matrix_err_t matrix_minor(matrix_t const* matrix,
         return MATRIX_ERR_NULL;
     }
 
-    if (minor_row >= matrix->rows || minor_column >= matrix->columns) {
-        return MATRIX_ERR_DIMENSION;
-    }
-
     matrix_size_t rows = matrix->rows;
     matrix_size_t columns = matrix->columns;
 
-    if (rows != columns) {
+    if (rows != columns || minor_row >= rows || minor_column >= columns) {
         return MATRIX_ERR_DIMENSION;
     }
 
@@ -340,12 +336,13 @@ matrix_err_t matrix_minor(matrix_t const* matrix,
     }
 
     matrix_size_t cof_row = 0UL;
-    matrix_size_t cof_column = 0UL;
 
     for (matrix_size_t row = 0UL; row < rows; ++row) {
         if (row == minor_row) {
             continue;
         }
+
+        matrix_size_t cof_column = 0UL;
 
         for (matrix_size_t column = 0UL; column < columns; ++column) {
             if (column == minor_column) {
@@ -355,11 +352,10 @@ matrix_err_t matrix_minor(matrix_t const* matrix,
             MATRIX_INDEX(minor, cof_row, cof_column) =
                 MATRIX_INDEX(matrix, row, column);
 
-            if (++cof_column == rows) {
-                cof_column = 0;
-                ++cof_row;
-            }
+            cof_column++;
         }
+
+        cof_row++;
     }
 
     return MATRIX_ERR_OK;
@@ -393,19 +389,21 @@ matrix_err_t matrix_complement(matrix_t const* matrix, matrix_t* complement)
         for (matrix_size_t column = 0UL; column < columns; ++column) {
             err = matrix_minor(matrix, row, column, &minor);
             if (err != MATRIX_ERR_OK) {
+                matrix_delete(&minor);
                 return err;
             }
 
-            matrix_elem_t determinant;
-            err = matrix_determinant(matrix, &determinant);
+            matrix_elem_t minor_determinant;
+            err = matrix_determinant(&minor, &minor_determinant);
             if (err != MATRIX_ERR_OK) {
+                matrix_delete(&minor);
                 return err;
             }
 
             if ((row + column) & 1UL) {
-                MATRIX_INDEX(complement, row, column) = -determinant;
+                MATRIX_INDEX(complement, row, column) = -minor_determinant;
             } else {
-                MATRIX_INDEX(complement, row, column) = determinant;
+                MATRIX_INDEX(complement, row, column) = minor_determinant;
             }
         }
     }
@@ -462,8 +460,8 @@ matrix_err_t matrix_transposition(matrix_t const* matrix,
 
     for (matrix_size_t row = 0UL; row < rows; ++row) {
         for (matrix_size_t column = 0UL; column < columns; ++column) {
-            MATRIX_INDEX(transposition, row, column) =
-                MATRIX_INDEX(matrix, column, row);
+            MATRIX_INDEX(transposition, column, row) =
+                MATRIX_INDEX(matrix, row, column);
         }
     }
 
@@ -591,6 +589,11 @@ matrix_err_t matrix_upper_triangular(matrix_t const* matrix,
         return err;
     }
 
+    err = matrix_lower_triangular(matrix, &lower_triangular);
+    if (err != MATRIX_ERR_OK) {
+        return err;
+    }
+
     err = matrix_transposition(&lower_triangular, upper_triangular);
     if (err != MATRIX_ERR_OK) {
         return err;
@@ -623,21 +626,26 @@ matrix_err_t matrix_lower_triangular(matrix_t const* matrix,
             matrix_elem_t sum = 0.0F;
 
             for (matrix_size_t lower = 0UL; lower < column; ++lower) {
-                if (row == column) {
-                    sum += powf(MATRIX_INDEX(lower_triangular, column, lower),
-                                2.0F);
-
-                    MATRIX_INDEX(lower_triangular, column, column) =
-                        sqrtf(MATRIX_INDEX(matrix, column, column) - sum);
-                } else {
-                    sum += (MATRIX_INDEX(lower_triangular, row, lower) *
-                            MATRIX_INDEX(lower_triangular, column, lower));
-
-                    MATRIX_INDEX(lower_triangular, row, column) =
-                        (MATRIX_INDEX(matrix, row, column) - sum) /
-                        MATRIX_INDEX(lower_triangular, column, column);
-                }
+                sum += MATRIX_INDEX(lower_triangular, row, lower) *
+                       MATRIX_INDEX(lower_triangular, column, lower);
             }
+
+            if (row == column) {
+                matrix_elem_t val = MATRIX_INDEX(matrix, row, row) - sum;
+                if (val <= 0.0F) {
+                    return MATRIX_ERR_DIMENSION;
+                }
+
+                MATRIX_INDEX(lower_triangular, row, column) = sqrtf(val);
+            } else {
+                MATRIX_INDEX(lower_triangular, row, column) =
+                    (1.0F / MATRIX_INDEX(lower_triangular, column, column)) *
+                    (MATRIX_INDEX(matrix, row, column) - sum);
+            }
+        }
+
+        for (matrix_size_t column = row + 1; column < rows; ++column) {
+            MATRIX_INDEX(lower_triangular, row, column) = 0.0F;
         }
     }
 
