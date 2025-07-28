@@ -107,6 +107,24 @@ matrix_err_t matrix_deinitialize(matrix_t* matrix)
     return MATRIX_ERR_OK;
 }
 
+matrix_size_t matrix_rows(matrix_t const* matrix)
+{
+    if (matrix == NULL) {
+        return 0UL;
+    }
+
+    return matrix->rows;
+}
+
+matrix_size_t matrix_columns(matrix_t const* matrix)
+{
+    if (matrix == NULL) {
+        return 0UL;
+    }
+
+    return matrix->columns;
+}
+
 matrix_err_t matrix_create(matrix_t* matrix,
                            matrix_size_t rows,
                            matrix_size_t columns)
@@ -317,10 +335,10 @@ matrix_err_t matrix_transposition(matrix_t const* matrix,
     return MATRIX_ERR_OK;
 }
 
-matrix_err_t matrix_determinent(matrix_t const* matrix,
-                                matrix_elem_t* determinent)
+matrix_err_t matrix_determinant(matrix_t const* matrix,
+                                matrix_elem_t* determinant)
 {
-    if (matrix == NULL || determinent == NULL) {
+    if (matrix == NULL || determinant == NULL) {
         return MATRIX_ERR_NULL;
     }
 
@@ -338,11 +356,19 @@ matrix_err_t matrix_inversion(matrix_t const* matrix, matrix_t* inversion)
 
 matrix_err_t matrix_upper_triangular(matrix_t const* matrix,
                                      matrix_t* upper_triangular)
-{}
+{
+    if (matrix == NULL || upper_triangular == NULL) {
+        return MATRIX_ERR_NULL;
+    }
+}
 
 matrix_err_t matrix_lower_triangular(matrix_t const* matrix,
                                      matrix_t* lower_triangular)
-{}
+{
+    if (matrix == NULL || lower_triangular == NULL) {
+        return MATRIX_ERR_NULL;
+    }
+}
 
 matrix_err_t matrix_sum(matrix_t const* matrix1,
                         matrix_t const* matrix2,
@@ -367,9 +393,9 @@ matrix_err_t matrix_sum(matrix_t const* matrix1,
 
     for (matrix_size_t row = 0UL; row < rows; ++row) {
         for (matrix_size_t column = 0UL; column < columns; ++column) {
-            matrix_index(sum, row, column) =
-                matrix_index(matrix1, row, column) +
-                matrix_index(matrix2, row, column);
+            MATRIX_INDEX(sum, row, column) =
+                MATRIX_INDEX(matrix1, row, column) +
+                MATRIX_INDEX(matrix2, row, column);
         }
     }
 
@@ -399,9 +425,9 @@ matrix_err_t matrix_difference(matrix_t const* matrix1,
 
     for (matrix_size_t row = 0UL; row < rows; ++row) {
         for (matrix_size_t column = 0UL; column < columns; ++column) {
-            matrix_index(difference, row, column) =
-                matrix_index(matrix1, row, column) -
-                matrix_index(matrix2, row, column);
+            MATRIX_INDEX(difference, row, column) =
+                MATRIX_INDEX(matrix1, row, column) -
+                MATRIX_INDEX(matrix2, row, column);
         }
     }
 
@@ -426,8 +452,8 @@ matrix_err_t matrix_scale(matrix_t const* matrix,
 
     for (matrix_size_t row = 0UL; row < rows; ++row) {
         for (matrix_size_t column = 0UL; column < columns; ++column) {
-            matrix_index(scale, row, column) =
-                scalar * matrix_index(matrix, row, column);
+            MATRIX_INDEX(scale, row, column) =
+                scalar * MATRIX_INDEX(matrix, row, column);
         }
     }
 
@@ -437,17 +463,33 @@ matrix_err_t matrix_scale(matrix_t const* matrix,
 matrix_err_t matrix_product(matrix_t const* matrix1,
                             matrix_t const* matrix2,
                             matrix_t* product)
-{}
+{
+    if (matrix1 == NULL || matrix2 == NULL || product == NULL) {
+        return MATRIX_ERR_NULL;
+    }
+}
 
 matrix_err_t matrix_power(matrix_t const* matrix,
                           matrix_elem_t exponent,
                           matrix_t* power)
-{}
+{
+    if (matrix == NULL || power == NULL) {
+        return MATRIX_ERR_NULL;
+    }
+}
 
-matrix_err_t matrix_rank(matrix_err_t const* matrix, matrix_size_t* rank)
-{}
+matrix_err_t matrix_rank(matrix_t const* matrix, matrix_size_t* rank)
+{
+    if (matrix == NULL || rank == NULL) {
+        return MATRIX_ERR_NULL;
+    }
+}
 
 matrix_err_t matrix_eigvals(matrix_t const* matrix,
                             matrix_elem_t** eigvals,
                             matrix_size_t* eigvals_num)
-{}
+{
+    if (matrix == NULL || eigvals == NULL || eigvals_num == NULL) {
+        return MATRIX_ERR_NULL;
+    }
+}

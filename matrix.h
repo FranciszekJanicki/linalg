@@ -6,8 +6,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define matrix_index(matrix, row, column) \
-    (matrix_data(matrix)[(row) * (matrix)->columns + (column)])
+#define MATRIX_INDEX(matrix, row, column) \
+    (matrix->data[(row) * (matrix)->columns + (column)])
 
 typedef enum {
     MATRIX_ERR_OK = 0,
@@ -40,6 +40,10 @@ matrix_err_t matrix_initialize(matrix_t* matrix,
                                matrix_deallocate_t deallocate);
 
 matrix_err_t matrix_deinitialize(matrix_t* matrix);
+
+matrix_size_t matrix_rows(matrix_t const* matrix);
+
+matrix_size_t matrix_columns(matrix_t const* matrix);
 
 matrix_err_t matrix_create(matrix_t* matrix,
                            matrix_size_t rows,
@@ -78,6 +82,7 @@ matrix_err_t matrix_fill_from_array(
     matrix_elem_t (*array)[matrix->rows][matrix->columns]);
 
 matrix_err_t matrix_copy(matrix_t const* source, matrix_t* destination);
+
 matrix_err_t matrix_move(matrix_t* source, matrix_t* destination);
 
 matrix_err_t matrix_minor(matrix_t const* matrix,
@@ -92,8 +97,8 @@ matrix_err_t matrix_adjoint(matrix_t const* matrix, matrix_t* adjoint);
 matrix_err_t matrix_transposition(matrix_t const* matrix,
                                   matrix_t* transposition);
 
-matrix_err_t matrix_determinent(matrix_t const* matrix,
-                                matrix_elem_t* determinent);
+matrix_err_t matrix_determinant(matrix_t const* matrix,
+                                matrix_elem_t* determinant);
 
 matrix_err_t matrix_inversion(matrix_t const* matrix, matrix_t* inversion);
 
@@ -123,7 +128,7 @@ matrix_err_t matrix_power(matrix_t const* matrix,
                           matrix_elem_t exponent,
                           matrix_t* power);
 
-matrix_err_t matrix_rank(matrix_err_t const* matrix, matrix_size_t* rank);
+matrix_err_t matrix_rank(matrix_t const* matrix, matrix_size_t* rank);
 
 matrix_err_t matrix_eigvals(matrix_t const* matrix,
                             matrix_elem_t** eigvals,
