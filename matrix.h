@@ -1,5 +1,5 @@
-#ifndef MATRIX_MATRIX_H
-#define MATRIX_MATRIX_H
+#ifndef LINALG_MATRIX_H
+#define LINALG_MATRIX_H
 
 #include "math.h"
 #include <assert.h>
@@ -10,19 +10,10 @@
 #define MATRIX_INDEX(MATRIX, ROW, COLUMN) \
     ((MATRIX)->data[(ROW) * (MATRIX)->columns + (COLUMN)])
 
-#define MATRIX_RET_ON_ERR(ERR)        \
-    do {                              \
-        if ((ERR) != MATRIX_ERR_OK) { \
-            return (ERR);             \
-        }                             \
-    } while (0)
-
 typedef enum {
     MATRIX_ERR_OK = 0,
     MATRIX_ERR_FAIL,
     MATRIX_ERR_NULL,
-    MATRIX_ERR_BOUNDS,
-    MATRIX_ERR_EMPTY,
     MATRIX_ERR_SINGULAR,
     MATRIX_ERR_ALLOC,
     MATRIX_ERR_DIMENSION,
@@ -61,6 +52,13 @@ matrix_err_t matrix_create(matrix_t* matrix,
                            matrix_size_t rows,
                            matrix_size_t columns);
 
+matrix_err_t matrix_create_eye(matrix_t* matrix, matrix_size_t dimensions);
+
+matrix_err_t matrix_create_with_elem(matrix_t* matrix,
+                                     matrix_size_t rows,
+                                     matrix_size_t columns,
+                                     matrix_elem_t elem);
+
 matrix_err_t matrix_create_with_zeros(matrix_t* matrix,
                                       matrix_size_t rows,
                                       matrix_size_t columns);
@@ -76,6 +74,13 @@ matrix_err_t matrix_resize(matrix_t* matrix,
                            matrix_size_t rows,
                            matrix_size_t columns);
 
+matrix_err_t matrix_resize_eye(matrix_t* matrix, matrix_size_t dimensions);
+
+matrix_err_t matrix_resize_with_elem(matrix_t* matrix,
+                                     matrix_size_t rows,
+                                     matrix_size_t columns,
+                                     matrix_elem_t elem);
+
 matrix_err_t matrix_resize_with_zeros(matrix_t* matrix,
                                       matrix_size_t rows,
                                       matrix_size_t columns);
@@ -85,9 +90,9 @@ matrix_err_t matrix_resize_from_array(matrix_t* matrix,
                                       matrix_size_t columns,
                                       matrix_elem_t (*array)[rows][columns]);
 
-matrix_err_t matrix_clear(matrix_t* matrix);
+matrix_err_t matrix_fill_eye(matrix_t* matrix);
 
-matrix_err_t matrix_print(matrix_t const* matrix);
+matrix_err_t matrix_fill_with_elem(matrix_t* matrix, matrix_elem_t elem);
 
 matrix_err_t matrix_fill_with_zeros(matrix_t* matrix);
 
@@ -152,4 +157,6 @@ matrix_err_t matrix_eigvals(matrix_t const* matrix,
                             matrix_elem_t** eigvals,
                             matrix_size_t* eigvals_num);
 
-#endif // MATRIX_MATRIX_H
+matrix_err_t matrix_print(matrix_t const* matrix);
+
+#endif // LINALG_MATRIX_H

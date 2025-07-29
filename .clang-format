@@ -1,0 +1,73 @@
+---
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 80
+
+ConstructorInitializerIndentWidth: 4
+AccessModifierOffset: -4
+IndentAccessModifiers: false
+IndentCaseLabels: true
+NamespaceIndentation: All
+
+AlignAfterOpenBracket: Align
+AlignConsecutiveDeclarations: false
+AlignConsecutiveAssignments: false
+AlignEscapedNewlines: Left
+AlignOperands: true
+AlignTrailingComments: true
+
+BinPackArguments: false
+BinPackParameters: false
+BraceWrapping:
+  SplitEmptyFunction: false
+  AfterClass: false  
+  AfterStruct: false
+  AfterControlStatement: false
+  AfterEnum: false
+  AfterNamespace: false
+  BeforeCatch: false
+  BeforeElse: false
+  IndentBraces: false
+  AfterFunction: true
+
+AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortBlocksOnASingleLine: false
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+
+AlwaysBreakBeforeMultilineStrings: false
+AlwaysBreakTemplateDeclarations: Yes
+AlwaysBreakAfterReturnType: None
+ContinuationIndentWidth: 4
+
+BreakBeforeBraces: Custom
+BreakBeforeBinaryOperators: None
+BreakBeforeTernaryOperators: true
+BreakConstructorInitializers: AfterColon
+BreakConstructorInitializersBeforeComma: true
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeParens: ControlStatements
+SpaceInEmptyParentheses: false
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeRangeBasedForLoopColon: true
+SpacesBeforeTrailingComments: 1
+SpacesInAngles: false
+SpacesInContainerLiterals: false
+SpacesInParentheses: false
+
+Cpp11BracedListStyle: true
+DerivePointerAlignment: false
+DisableFormat: false
+KeepEmptyLinesAtTheStartOfBlocks: false
+MaxEmptyLinesToKeep: 1
+PointerAlignment: Left
+IndentWrappedFunctionNames: false
+IndentFunctionDeclarationAfterType: true
+Standard: c++20
+
+PenaltyReturnTypeOnItsOwnLine: 1000

@@ -94,6 +94,37 @@ matrix_err_t matrix_create(matrix_t* matrix,
     return MATRIX_ERR_OK;
 }
 
+matrix_err_t matrix_create_eye(matrix_t* matrix, matrix_size_t dimensions)
+{
+    if (matrix == NULL) {
+        return MATRIX_ERR_NULL;
+    }
+
+    matrix_err_t err = matrix_create(matrix, dimensions, dimensions);
+    if (err != MATRIX_ERR_OK) {
+        return err;
+    }
+
+    return matrix_fill_eye(matrix);
+}
+
+matrix_err_t matrix_create_with_elem(matrix_t* matrix,
+                                     matrix_size_t rows,
+                                     matrix_size_t columns,
+                                     matrix_elem_t elem)
+{
+    if (matrix == NULL) {
+        return MATRIX_ERR_NULL;
+    }
+
+    matrix_err_t err = matrix_create(matrix, rows, columns);
+    if (err != MATRIX_ERR_OK) {
+        return err;
+    }
+
+    return matrix_fill_with_elem(matrix, elem);
+}
+
 matrix_err_t matrix_create_with_zeros(matrix_t* matrix,
                                       matrix_size_t rows,
                                       matrix_size_t columns)
@@ -182,6 +213,37 @@ matrix_err_t matrix_resize(matrix_t* matrix,
     return MATRIX_ERR_OK;
 }
 
+matrix_err_t matrix_resize_eye(matrix_t* matrix, matrix_size_t dimensions)
+{
+    if (matrix == NULL) {
+        return MATRIX_ERR_NULL;
+    }
+
+    matrix_err_t err = matrix_resize(matrix, dimensions, dimensions);
+    if (err != MATRIX_ERR_OK) {
+        return err;
+    }
+
+    return matrix_fill_eye(matrix);
+}
+
+matrix_err_t matrix_resize_with_elem(matrix_t* matrix,
+                                     matrix_size_t rows,
+                                     matrix_size_t columns,
+                                     matrix_elem_t elem)
+{
+    if (matrix == NULL) {
+        return MATRIX_ERR_NULL;
+    }
+
+    matrix_err_t err = matrix_resize(matrix, rows, columns);
+    if (err != MATRIX_ERR_OK) {
+        return err;
+    }
+
+    return matrix_fill_with_elem(matrix, elem);
+}
+
 matrix_err_t matrix_resize_with_zeros(matrix_t* matrix,
                                       matrix_size_t rows,
                                       matrix_size_t columns)
@@ -215,27 +277,41 @@ matrix_err_t matrix_resize_from_array(matrix_t* matrix,
     return matrix_fill_from_array(matrix, array);
 }
 
-matrix_err_t matrix_clear(matrix_t* matrix)
+matrix_err_t matrix_fill_eye(matrix_t* matrix)
 {
     if (matrix == NULL) {
         return MATRIX_ERR_NULL;
     }
 
-    return matrix_resize(matrix, 0UL, 0UL);
+    matrix_size_t rows = matrix->rows;
+    matrix_size_t columns = matrix->columns;
+
+    if (rows != columns) {
+        return MATRIX_ERR_DIMENSION;
+    }
+
+    for (matrix_size_t row = 0UL; row < rows; ++row) {
+        for (matrix_size_t column = 0UL; column < columns; ++column) {
+            if (row == column) {
+                MATRIX_INDEX(matrix, row, column) = 1.0F;
+            } else {
+                MATRIX_INDEX(matrix, row, column) = 0.0F;
+            }
+        }
+    }
 }
 
-matrix_err_t matrix_print(matrix_t const* matrix)
+matrix_err_t matrix_fill_with_elem(matrix_t* matrix, matrix_elem_t elem)
 {
     if (matrix == NULL) {
         return MATRIX_ERR_NULL;
     }
 
-    for (matrix_size_t row = 0UL; row < matrix->rows; ++row) {
-        for (matrix_size_t column = 0UL; column < matrix->columns; ++column) {
-            matrix_vprint(matrix, "%f ", MATRIX_INDEX(matrix, row, column));
-        }
+    matrix_size_t rows = matrix->rows;
+    matrix_size_t columns = matrix->columns;
 
-        matrix_vprint(matrix, "\n");
+    for (matrix_size_t index = 0UL; index < rows * columns; ++index) {
+        matrix->data[index] = elem;
     }
 
     return MATRIX_ERR_OK;
@@ -843,6 +919,25 @@ matrix_err_t matrix_eigvals(matrix_t const* matrix,
 
     *eigvals = NULL;
     *eigvals_num = 0UL;
+
+    return MATRIX_ERR_OK;
+}
+
+matrix_err_t matrix_print(matrix_t const* matrix)
+{
+    if (matrix == NULL) {
+        return MATRIX_ERR_NULL;
+    }
+
+    for (matrix_size_t row = 0UL; row < matrix->rows; ++row) {
+        for (matrix_size_t column = 0UL; column < matrix->columns; ++column) {
+            matrix_vprint(matrix, "%f ", MATRIX_INDEX(matrix, row, column));
+        }
+
+        matrix_vprint(matrix, "\n");
+    }
+
+    matrix_vprint(matrix, "\n");
 
     return MATRIX_ERR_OK;
 }
