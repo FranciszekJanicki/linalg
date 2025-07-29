@@ -6,7 +6,7 @@ target_sources(linalg PRIVATE
     quaternion3.c
     matrix3.c
     vector3.c
-    transformation3.c
+    transform3.c
 )
 
 target_include_directories(linalg PUBLIC
