@@ -358,11 +358,13 @@ vector_err_t vector_print(vector_t const* vector)
         return VECTOR_ERR_NULL;
     }
 
+    printf("[ ");
+
     for (vector_size_t index = 0UL; index < vector->size; ++index) {
-        printf(vector, "%f ", VECTOR_INDEX(vector, index));
+        printf("%f ", VECTOR_INDEX(vector, index));
     }
 
-    printf(vector, "\n");
+    printf("]\n");
 
     return VECTOR_ERR_OK;
 }

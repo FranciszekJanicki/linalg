@@ -1,31 +1,25 @@
 #include "vector3.h"
 #include <math.h>
 
-vector3_err_t vector3_initialize(vector3_t* vector,
-                                 vector3_data_t x,
-                                 vector3_data_t y,
-                                 vector3_data_t z)
+vector3_err_t vector3_fill_with_zeros(vector3_t* vector)
 {
     if (vector == NULL) {
         return VECTOR3_ERR_NULL;
     }
 
-    vector->x = x;
-    vector->y = y;
-    vector->z = z;
+    memset(vector->data, 0, sizeof(vector->data));
 
     return VECTOR3_ERR_OK;
 }
 
-vector3_err_t vector3_deinitialize(vector3_t* vector)
+vector3_err_t vector3_fill_from_array(vector3_t* vector,
+                                      vector3_data_t (*array)[3U])
 {
-    if (vector == NULL) {
+    if (vector == NULL || array == NULL) {
         return VECTOR3_ERR_NULL;
     }
 
-    vector->x = 0.0F;
-    vector->y = 0.0F;
-    vector->z = 0.0F;
+    memcpy(vector->data, array, sizeof(*array));
 
     return VECTOR3_ERR_OK;
 }
@@ -38,9 +32,9 @@ vector3_err_t vector3_sum(vector3_t const* vector2,
         return VECTOR3_ERR_NULL;
     }
 
-    sum->x = vector1->x + vector2->x;
-    sum->y = vector1->y + vector2->y;
-    sum->z = vector1->z + vector2->z;
+    for (vector3_size_t index = 0U; index < 3U; ++index) {
+        sum->data[index] = vector1->data[index] * vector2->data[index];
+    }
 
     return VECTOR3_ERR_OK;
 }
@@ -53,9 +47,9 @@ vector3_err_t vector3_difference(vector3_t const* vector1,
         return VECTOR3_ERR_NULL;
     }
 
-    difference->x = vector1->x - vector2->x;
-    difference->y = vector1->y - vector2->y;
-    difference->z = vector1->z - vector2->z;
+    for (vector3_size_t index = 0U; index < 3U; ++index) {
+        difference->data[index] = vector1->data[index] * vector2->data[index];
+    }
 
     return VECTOR3_ERR_OK;
 }
@@ -68,9 +62,9 @@ vector3_err_t vector3_scale(vector3_t const* vector,
         return VECTOR3_ERR_NULL;
     }
 
-    scale->x = vector->x * scalar;
-    scale->y = vector->y * scalar;
-    scale->z = vector->z * scalar;
+    for (vector3_size_t index = 0U; index < 3U; ++index) {
+        scale->data[index] = scalar * vector->data[index];
+    }
 
     return VECTOR3_ERR_OK;
 }
@@ -83,8 +77,10 @@ vector3_err_t vector3_dot(vector3_t const* vector1,
         return VECTOR3_ERR_NULL;
     }
 
-    *dot = vector1->x * vector2->x + vector1->y * vector2->y +
-           vector1->z * vector2->z;
+    *dot = 0.0F;
+    for (vector3_size_t index = 0U; index < 3U; ++index) {
+        *dot += vector1->data[index] * vector2->data[index];
+    }
 
     return VECTOR3_ERR_OK;
 }
@@ -97,9 +93,12 @@ vector3_err_t vector3_cross(vector3_t const* vector1,
         return VECTOR3_ERR_NULL;
     }
 
-    cross->x = vector1->y * vector2->z - vector1->z * vector2->y;
-    cross->y = vector1->z * vector2->x - vector1->x * vector2->z;
-    cross->z = vector1->x * vector2->y - vector1->y * vector2->x;
+    cross->data[0U] = vector1->data[1U] * vector2->data[2U] -
+                      vector1->data[2U] * vector2->data[1U];
+    cross->data[1U] = vector1->data[2U] * vector2->data[0U] -
+                      vector1->data[0U] * vector2->data[2U];
+    cross->data[2U] = vector1->data[0U] * vector2->data[1U] -
+                      vector1->data[1U] * vector2->data[0U];
 
     return VECTOR3_ERR_OK;
 }
@@ -111,8 +110,13 @@ vector3_err_t vector3_magnitude(vector3_t const* vector,
         return VECTOR3_ERR_NULL;
     }
 
-    *magnitude = sqrtf(vector->x * vector->x + vector->y * vector->y +
-                       vector->z * vector->z);
+    vector3_data_t dot;
+    vector3_err_t err = vector3_dot(vector, vector, &dot);
+    if (err != VECTOR3_ERR_OK) {
+        return err;
+    }
+
+    *magnitude = sqrtf(dot);
 
     return VECTOR3_ERR_OK;
 }
@@ -133,9 +137,9 @@ vector3_err_t vector3_normalized(vector3_t const* vector, vector3_t* normalized)
         return VECTOR3_ERR_FAIL;
     }
 
-    normalized->x = vector->x / magnitude;
-    normalized->y = vector->y / magnitude;
-    normalized->z = vector->z / magnitude;
+    for (vector3_size_t index = 0U; index < 3U; ++index) {
+        normalized->data[index] = vector->data[index] / magnitude;
+    }
 
     return VECTOR3_ERR_OK;
 }
@@ -146,7 +150,26 @@ vector3_err_t vector3_negated(vector3_t const* vector, vector3_t* negated)
         return VECTOR3_ERR_NULL;
     }
 
-    negated->x = vector->x;
+    for (vector3_size_t index = 0U; index < 3U; ++index) {
+        negated->data[index] = -vector->data[index];
+    }
+
+    return VECTOR3_ERR_OK;
+}
+
+vector3_err_t vector3_print(vector3_t const* vector)
+{
+    if (vector == NULL) {
+        return VECTOR3_ERR_NULL;
+    }
+
+    printf("[ ");
+
+    for (vector3_size_t index = 0UL; index < 3U; ++index) {
+        printf("%f ", vector->data[index]);
+    }
+
+    printf("]\n");
 
     return VECTOR3_ERR_OK;
 }

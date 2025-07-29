@@ -7,11 +7,7 @@ matrix3_err_t matrix3_fill_with_zeros(matrix3_t* matrix)
         return MATRIX3_ERR_NULL;
     }
 
-    for (matrix3_size_t row = 0U; row < 3U; ++row) {
-        for (matrix3_size_t column = 0U; column < 3U; ++column) {
-            matrix->data[row][column] = 0.0f;
-        }
-    }
+    memset(matrix->data, 0, sizeof(matrix->data));
 
     return MATRIX3_ERR_OK;
 }

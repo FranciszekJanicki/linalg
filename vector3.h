@@ -1,8 +1,10 @@
 #ifndef LINALG_VECTOR3_H
 #define LINALG_VECTOR3_H
 
+#include <stddef.h>
 #include <stdint.h>
 
+typedef size_t vector3_size_t;
 typedef float vector3_data_t;
 
 typedef enum {
@@ -12,17 +14,13 @@ typedef enum {
 } vector3_err_t;
 
 typedef struct {
-    vector3_data_t x;
-    vector3_data_t y;
-    vector3_data_t z;
+    vector3_data_t data[3U];
 } vector3_t;
 
-vector3_err_t vector3_initialize(vector3_t* vector,
-                                 vector3_data_t x,
-                                 vector3_data_t y,
-                                 vector3_data_t z);
+vector3_err_t vector3_fill_with_zeros(vector3_t* vector);
 
-vector3_err_t vector3_deinitialize(vector3_t* vector);
+vector3_err_t vector3_fill_from_array(vector3_t* vector,
+                                      vector3_data_t (*data)[3U]);
 
 vector3_err_t vector3_sum(vector3_t const* vector1,
                           vector3_t const* vector2,
@@ -51,5 +49,7 @@ vector3_err_t vector3_magnitude(vector3_t const* vector,
                                 vector3_data_t* magnitude);
 
 vector3_err_t vector3_negated(vector3_t const* vector, vector3_t* negated);
+
+vector3_err_t vector3_print(vector3_t const* vector);
 
 #endif // LINALG_VECTOR3_H

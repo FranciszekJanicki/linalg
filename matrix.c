@@ -792,11 +792,13 @@ matrix_err_t matrix_print(matrix_t const* matrix)
     }
 
     for (matrix_size_t row = 0UL; row < matrix->rows; ++row) {
+        printf("[ ");
+
         for (matrix_size_t column = 0UL; column < matrix->columns; ++column) {
             printf(matrix, "%f ", MATRIX_INDEX(matrix, row, column));
         }
 
-        printf(matrix, "\n");
+        printf(matrix, "]\n");
     }
 
     printf(matrix, "\n");
