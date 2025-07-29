@@ -210,7 +210,9 @@ matrix_err_t matrix_fill_with_zeros(matrix_t* matrix)
         return MATRIX_ERR_NULL;
     }
 
-    memset(matrix->data, 0, sizeof(matrix_data_t) * rows * columns);
+    memset(matrix->data,
+           0,
+           sizeof(matrix_data_t) * matrix->rows * matrix->columns);
 
     return MATRIX_ERR_OK;
 }
