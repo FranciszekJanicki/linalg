@@ -1,4 +1,5 @@
 #include "vector.h"
+#include <stdio.h>
 #include <string.h>
 
 static void* vector_allocate(vector_t const* vector, size_t size)
@@ -17,18 +18,6 @@ static void vector_deallocate(vector_t const* vector, void* data)
     }
 
     vector->interface.deallocate(data);
-}
-
-static void vector_vprint(vector_t const* vector, char const* format, ...)
-{
-    if (vector->interface.vprint == NULL) {
-        return;
-    }
-
-    va_list args;
-    va_start(args, format);
-    vector->interface.vprint(format, args);
-    va_end(args);
 }
 
 vector_err_t vector_initialize(vector_t* vector,
@@ -188,9 +177,7 @@ vector_err_t vector_fill_with_zeros(vector_t* vector)
         return VECTOR_ERR_NULL;
     }
 
-    vector_size_t size = vector->size;
-
-    memset(vector->data, 0, sizeof(vector_data_t) * size);
+    memset(vector->data, 0, sizeof(vector_data_t) * vector->size);
 
     return VECTOR_ERR_OK;
 }
@@ -202,9 +189,7 @@ vector_err_t vector_fill_from_array(vector_t* vector,
         return VECTOR_ERR_NULL;
     }
 
-    vector_size_t size = vector->size;
-
-    memcpy(vector->data, array, sizeof(vector_data_t) * size);
+    memcpy(vector->data, array, sizeof(vector_data_t) * vector->size);
 
     return VECTOR_ERR_OK;
 }
@@ -215,14 +200,14 @@ vector_err_t vector_copy(vector_t const* source, vector_t* destination)
         return VECTOR_ERR_NULL;
     }
 
-    vector_size_t size = source->size;
-
-    vector_err_t err = vector_resize(destination, size);
+    vector_err_t err = vector_resize(destination, vector->size);
     if (err != VECTOR_ERR_OK) {
         return err;
     }
 
-    memcpy(destination->data, source->data, sizeof(*source->data) * size);
+    memcpy(destination->data,
+           source->data,
+           sizeof(*source->data) * vector->size);
 
     return VECTOR_ERR_OK;
 }
@@ -259,14 +244,12 @@ vector_err_t vector_sum(vector_t const* vector1,
         return VECTOR_ERR_DIMENSION;
     }
 
-    vector_size_t size = vector1->size;
-
-    vector_err_t err = vector_resize(sum, size);
+    vector_err_t err = vector_resize(sum, vector1->size);
     if (err != VECTOR_ERR_OK) {
         return err;
     }
 
-    for (vector_size_t index = 0UL; index < size; ++index) {
+    for (vector_size_t index = 0UL; index < vector1->size; ++index) {
         VECTOR_INDEX(sum, index) =
             VECTOR_INDEX(vector1, index) + VECTOR_INDEX(vector2, index);
     }
@@ -286,14 +269,12 @@ vector_err_t vector_difference(vector_t const* vector1,
         return VECTOR_ERR_DIMENSION;
     }
 
-    vector_size_t size = vector1->size;
-
-    vector_err_t err = vector_resize(difference, size);
+    vector_err_t err = vector_resize(difference, vector1->size);
     if (err != VECTOR_ERR_OK) {
         return err;
     }
 
-    for (vector_size_t index = 0UL; index < size; ++index) {
+    for (vector_size_t index = 0UL; index < vector1->size; ++index) {
         VECTOR_INDEX(difference, index) =
             VECTOR_INDEX(vector1, index) - VECTOR_INDEX(vector2, index);
     }
@@ -309,14 +290,12 @@ vector_err_t vector_scale(vector_t const* vector,
         return VECTOR_ERR_NULL;
     }
 
-    vector_size_t size = vector->size;
-
-    vector_err_t err = vector_resize(scale, size);
+    vector_err_t err = vector_resize(scale, vector->size);
     if (err != VECTOR_ERR_OK) {
         return err;
     }
 
-    for (vector_size_t index = 0UL; index < size; ++index) {
+    for (vector_size_t index = 0UL; index < vector->size; ++index) {
         VECTOR_INDEX(scale, index) = VECTOR_INDEX(vector, index) * scalar;
     }
 
@@ -335,10 +314,9 @@ vector_err_t vector_dot(vector_t const* vector1,
         return VECTOR_ERR_DIMENSION;
     }
 
-    vector_size_t size = vector1->size;
-
     *dot = 0.0F;
-    for (vector_size_t index = 0UL; index < size; ++index) {
+
+    for (vector_size_t index = 0UL; index < vector1->size; ++index) {
         *dot += VECTOR_INDEX(vector1, index) * VECTOR_INDEX(vector2, index);
     }
 
@@ -380,13 +358,11 @@ vector_err_t vector_print(vector_t const* vector)
         return VECTOR_ERR_NULL;
     }
 
-    vector_size_t size = vector->size;
-
-    for (vector_size_t index = 0UL; index < size; ++index) {
-        vector_vprint(vector, "%f ", VECTOR_INDEX(vector, index));
+    for (vector_size_t index = 0UL; index < vector->size; ++index) {
+        printf(vector, "%f ", VECTOR_INDEX(vector, index));
     }
 
-    vector_vprint(vector, "\n");
+    printf(vector, "\n");
 
     return VECTOR_ERR_OK;
 }

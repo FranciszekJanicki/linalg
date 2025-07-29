@@ -4,8 +4,8 @@ target_sources(linalg PRIVATE
     matrix.c
     vector.c
     quaternion3.c
-    rotation3.c
-    translation3.c
+    matrix3.c
+    vector3.c
     transformation3.c
 )
 

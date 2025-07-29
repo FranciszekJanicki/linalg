@@ -1,4 +1,5 @@
 #include "matrix.h"
+#include <stdio.h>
 #include <string.h>
 
 static void* matrix_allocate(matrix_t const* matrix, size_t size)
@@ -17,18 +18,6 @@ static void matrix_deallocate(matrix_t const* matrix, void* data)
     }
 
     matrix->interface.deallocate(data);
-}
-
-static void matrix_vprint(matrix_t const* matrix, char const* format, ...)
-{
-    if (matrix->interface.vprint == NULL) {
-        return;
-    }
-
-    va_list args;
-    va_start(args, format);
-    matrix->interface.vprint(format, args);
-    va_end(args);
 }
 
 matrix_err_t matrix_initialize(matrix_t* matrix,
@@ -221,9 +210,6 @@ matrix_err_t matrix_fill_with_zeros(matrix_t* matrix)
         return MATRIX_ERR_NULL;
     }
 
-    matrix_size_t rows = matrix->rows;
-    matrix_size_t columns = matrix->columns;
-
     memset(matrix->data, 0, sizeof(matrix_data_t) * rows * columns);
 
     return MATRIX_ERR_OK;
@@ -237,10 +223,9 @@ matrix_err_t matrix_fill_from_array(
         return MATRIX_ERR_NULL;
     }
 
-    matrix_size_t rows = matrix->rows;
-    matrix_size_t columns = matrix->columns;
-
-    memcpy(matrix->data, array, sizeof(matrix_data_t) * rows * columns);
+    memcpy(matrix->data,
+           array,
+           sizeof(matrix_data_t) * matrix->rows * matrix->columns);
 
     return MATRIX_ERR_OK;
 }
@@ -251,17 +236,15 @@ matrix_err_t matrix_copy(matrix_t const* source, matrix_t* destination)
         return MATRIX_ERR_NULL;
     }
 
-    matrix_size_t rows = source->rows;
-    matrix_size_t columns = source->columns;
-
-    matrix_err_t err = matrix_resize(destination, rows, columns);
+    matrix_err_t err =
+        matrix_resize(destination, source->rows, source->columns);
     if (err != MATRIX_ERR_OK) {
         return err;
     }
 
     memcpy(destination->data,
            source->data,
-           sizeof(*source->data) * rows * columns);
+           sizeof(*source->data) * source->rows * source->columns);
 
     return MATRIX_ERR_OK;
 }
@@ -297,28 +280,25 @@ matrix_err_t matrix_minor(matrix_t const* matrix,
         return MATRIX_ERR_NULL;
     }
 
-    matrix_size_t rows = matrix->rows;
-    matrix_size_t columns = matrix->columns;
-
-    if (rows != columns || minor_row >= rows || minor_column >= columns) {
+    if (matrix->rows != matrix->columns || minor_row >= matrix->rows ||
+        minor_column >= matrix->columns) {
         return MATRIX_ERR_DIMENSION;
     }
 
-    matrix_err_t err = matrix_resize(minor, rows - 1UL, columns - 1UL);
+    matrix_err_t err =
+        matrix_resize(minor, matrix->rows - 1UL, matrix->columns - 1UL);
     if (err != MATRIX_ERR_OK) {
         return err;
     }
 
-    matrix_size_t cof_row = 0UL;
-
-    for (matrix_size_t row = 0UL; row < rows; ++row) {
+    for (matrix_size_t row = 0UL, cof_row = 0UL; row < matrix->rows; ++row) {
         if (row == minor_row) {
             continue;
         }
 
-        matrix_size_t cof_column = 0UL;
-
-        for (matrix_size_t column = 0UL; column < columns; ++column) {
+        for (matrix_size_t column = 0UL, cof_column = 0UL;
+             column < matrix->columns;
+             ++column) {
             if (column == minor_column) {
                 continue;
             }
@@ -341,14 +321,11 @@ matrix_err_t matrix_complement(matrix_t const* matrix, matrix_t* complement)
         return MATRIX_ERR_NULL;
     }
 
-    matrix_size_t rows = matrix->rows;
-    matrix_size_t columns = matrix->columns;
-
-    if (rows != columns) {
+    if (matrix->rows != matrix->columns) {
         return MATRIX_ERR_DIMENSION;
     }
 
-    matrix_err_t err = matrix_resize(complement, rows, columns);
+    matrix_err_t err = matrix_resize(complement, matrix->rows, matrix->columns);
     if (err != MATRIX_ERR_OK) {
         return err;
     }
@@ -359,25 +336,25 @@ matrix_err_t matrix_complement(matrix_t const* matrix, matrix_t* complement)
         return err;
     }
 
-    for (matrix_size_t row = 0UL; row < rows; ++row) {
-        for (matrix_size_t column = 0UL; column < columns; ++column) {
+    for (matrix_size_t row = 0UL; row < matrix->rows; ++row) {
+        for (matrix_size_t column = 0UL; column < matrix->columns; ++column) {
             err = matrix_minor(matrix, row, column, &minor);
             if (err != MATRIX_ERR_OK) {
                 matrix_delete(&minor);
                 return err;
             }
 
-            matrix_data_t minor_determinant;
-            err = matrix_determinant(&minor, &minor_determinant);
+            matrix_data_t minor_det;
+            err = matrix_det(&minor, &minor_det);
             if (err != MATRIX_ERR_OK) {
                 matrix_delete(&minor);
                 return err;
             }
 
             if ((row + column) & 1UL) {
-                MATRIX_INDEX(complement, row, column) = -minor_determinant;
+                MATRIX_INDEX(complement, row, column) = -minor_det;
             } else {
-                MATRIX_INDEX(complement, row, column) = minor_determinant;
+                MATRIX_INDEX(complement, row, column) = minor_det;
             }
         }
     }
@@ -391,10 +368,7 @@ matrix_err_t matrix_adjoint(matrix_t const* matrix, matrix_t* adjoint)
         return MATRIX_ERR_NULL;
     }
 
-    matrix_size_t rows = matrix->rows;
-    matrix_size_t columns = matrix->columns;
-
-    if (rows != columns) {
+    if (matrix->rows != matrix->columns) {
         return MATRIX_ERR_DIMENSION;
     }
 
@@ -409,7 +383,7 @@ matrix_err_t matrix_adjoint(matrix_t const* matrix, matrix_t* adjoint)
         return err;
     }
 
-    err = matrix_transposition(&complement, adjoint);
+    err = matrix_transpose(&complement, adjoint);
     if (err != MATRIX_ERR_OK) {
         return err;
     }
@@ -417,24 +391,20 @@ matrix_err_t matrix_adjoint(matrix_t const* matrix, matrix_t* adjoint)
     return matrix_delete(&complement);
 }
 
-matrix_err_t matrix_transposition(matrix_t const* matrix,
-                                  matrix_t* transposition)
+matrix_err_t matrix_transpose(matrix_t const* matrix, matrix_t* transpose)
 {
-    if (matrix == NULL || transposition == NULL) {
+    if (matrix == NULL || transpose == NULL) {
         return MATRIX_ERR_NULL;
     }
 
-    matrix_size_t rows = matrix->rows;
-    matrix_size_t columns = matrix->columns;
-
-    matrix_err_t err = matrix_resize(transposition, columns, rows);
+    matrix_err_t err = matrix_resize(transpose, matrix->columns, matrix->rows);
     if (err != MATRIX_ERR_OK) {
         return err;
     }
 
-    for (matrix_size_t row = 0UL; row < rows; ++row) {
-        for (matrix_size_t column = 0UL; column < columns; ++column) {
-            MATRIX_INDEX(transposition, column, row) =
+    for (matrix_size_t row = 0UL; row < matrix->rows; ++row) {
+        for (matrix_size_t column = 0UL; column < matrix->columns; ++column) {
+            MATRIX_INDEX(transpose, column, row) =
                 MATRIX_INDEX(matrix, row, column);
         }
     }
@@ -442,28 +412,23 @@ matrix_err_t matrix_transposition(matrix_t const* matrix,
     return MATRIX_ERR_OK;
 }
 
-matrix_err_t matrix_determinant(matrix_t const* matrix,
-                                matrix_data_t* determinant)
+matrix_err_t matrix_det(matrix_t const* matrix, matrix_data_t* det)
 {
-    if (matrix == NULL || determinant == NULL) {
+    if (matrix == NULL || det == NULL) {
         return MATRIX_ERR_NULL;
     }
 
-    matrix_size_t rows = matrix->rows;
-    matrix_size_t columns = matrix->columns;
-
-    if (rows != columns) {
+    if (matrix->rows != matrix->columns) {
         return MATRIX_ERR_DIMENSION;
     }
 
-    if (rows == 1UL) {
-        *determinant = MATRIX_INDEX(matrix, 0UL, 0UL);
+    if (matrix->rows == 1UL) {
+        *det = MATRIX_INDEX(matrix, 0UL, 0UL);
 
         return MATRIX_ERR_OK;
-    } else if (rows == 2UL) {
-        *determinant =
-            MATRIX_INDEX(matrix, 0UL, 0UL) * MATRIX_INDEX(matrix, 1UL, 1UL) -
-            MATRIX_INDEX(matrix, 0UL, 1UL) * MATRIX_INDEX(matrix, 1UL, 0UL);
+    } else if (matrix->rows == 2UL) {
+        *det = MATRIX_INDEX(matrix, 0UL, 0UL) * MATRIX_INDEX(matrix, 1UL, 1UL) -
+               MATRIX_INDEX(matrix, 0UL, 1UL) * MATRIX_INDEX(matrix, 1UL, 0UL);
 
         return MATRIX_ERR_OK;
     }
@@ -474,47 +439,42 @@ matrix_err_t matrix_determinant(matrix_t const* matrix,
         return err;
     }
 
-    *determinant = 0.0F;
+    *det = 0.0F;
 
-    for (matrix_size_t column = 0UL; column < columns; ++column) {
+    for (matrix_size_t column = 0UL; column < matrix->columns; ++column) {
         err = matrix_minor(matrix, 0UL, column, &minor);
         if (err != MATRIX_ERR_OK) {
             return err;
         }
 
-        matrix_data_t minor_determinant;
-        err = matrix_determinant(&minor, &minor_determinant);
+        matrix_data_t minor_det;
+        err = matrix_det(&minor, &minor_det);
         if (err != MATRIX_ERR_OK) {
             return err;
         }
 
         if (column & 1U) {
-            *determinant -=
-                MATRIX_INDEX(matrix, 0UL, column) * minor_determinant;
+            *det -= MATRIX_INDEX(matrix, 0UL, column) * minor_det;
         } else {
-            *determinant +=
-                MATRIX_INDEX(matrix, 0UL, column) * minor_determinant;
+            *det += MATRIX_INDEX(matrix, 0UL, column) * minor_det;
         }
     }
 
     return matrix_delete(&minor);
 }
 
-matrix_err_t matrix_inversion(matrix_t const* matrix, matrix_t* inversion)
+matrix_err_t matrix_inverse(matrix_t const* matrix, matrix_t* inverse)
 {
-    if (matrix == NULL || inversion == NULL) {
+    if (matrix == NULL || inverse == NULL) {
         return MATRIX_ERR_NULL;
     }
 
-    matrix_size_t rows = matrix->rows;
-    matrix_size_t columns = matrix->columns;
-
-    if (rows != columns) {
+    if (matrix->rows != matrix->columns) {
         return MATRIX_ERR_DIMENSION;
     }
 
     matrix_t adjoint;
-    matrix_err_t err = matrix_initialize(&adjoint, &inversion->interface);
+    matrix_err_t err = matrix_initialize(&adjoint, &inverse->interface);
     if (err != MATRIX_ERR_OK) {
         return err;
     }
@@ -524,17 +484,17 @@ matrix_err_t matrix_inversion(matrix_t const* matrix, matrix_t* inversion)
         return err;
     }
 
-    matrix_data_t determinant;
-    err = matrix_determinant(matrix, &determinant);
+    matrix_data_t det;
+    err = matrix_det(matrix, &det);
     if (err != MATRIX_ERR_OK) {
         return err;
     }
 
-    if (fabsf(determinant) < 1E-6F) {
+    if (fabsf(det) < 1E-6F) {
         return MATRIX_ERR_SINGULAR;
     }
 
-    err = matrix_scale(&adjoint, 1.0F / determinant, inversion);
+    err = matrix_scale(&adjoint, 1.0F / det, inverse);
     if (err != MATRIX_ERR_OK) {
         return err;
     }
@@ -549,10 +509,7 @@ matrix_err_t matrix_upper_triangular(matrix_t const* matrix,
         return MATRIX_ERR_NULL;
     }
 
-    matrix_size_t rows = matrix->rows;
-    matrix_size_t columns = matrix->columns;
-
-    if (rows != columns) {
+    if (matrix->rows != matrix->columns) {
         return MATRIX_ERR_DIMENSION;
     }
 
@@ -568,7 +525,7 @@ matrix_err_t matrix_upper_triangular(matrix_t const* matrix,
         return err;
     }
 
-    err = matrix_transposition(&lower_triangular, upper_triangular);
+    err = matrix_transpose(&lower_triangular, upper_triangular);
     if (err != MATRIX_ERR_OK) {
         return err;
     }
@@ -583,19 +540,17 @@ matrix_err_t matrix_lower_triangular(matrix_t const* matrix,
         return MATRIX_ERR_NULL;
     }
 
-    matrix_size_t rows = matrix->rows;
-    matrix_size_t columns = matrix->columns;
-
-    if (rows != columns) {
+    if (matrix->rows != matrix->columns) {
         return MATRIX_ERR_DIMENSION;
     }
 
-    matrix_err_t err = matrix_resize(lower_triangular, rows, columns);
+    matrix_err_t err =
+        matrix_resize(lower_triangular, matrix->rows, matrix->columns);
     if (err != MATRIX_ERR_OK) {
         return err;
     }
 
-    for (matrix_size_t row = 0UL; row < rows; ++row) {
+    for (matrix_size_t row = 0UL; row < matrix->rows; ++row) {
         for (matrix_size_t column = 0UL; column <= row; ++column) {
             matrix_data_t sum = 0.0F;
 
@@ -618,7 +573,7 @@ matrix_err_t matrix_lower_triangular(matrix_t const* matrix,
             }
         }
 
-        for (matrix_size_t column = row + 1; column < rows; ++column) {
+        for (matrix_size_t column = row + 1; column < matrix->rows; ++column) {
             MATRIX_INDEX(lower_triangular, row, column) = 0.0F;
         }
     }
@@ -639,16 +594,13 @@ matrix_err_t matrix_sum(matrix_t const* matrix1,
         return MATRIX_ERR_DIMENSION;
     }
 
-    matrix_size_t rows = matrix1->rows;
-    matrix_size_t columns = matrix1->columns;
-
-    matrix_err_t err = matrix_resize(sum, rows, columns);
+    matrix_err_t err = matrix_resize(sum, matrix1->rows, matrix1->columns);
     if (err != MATRIX_ERR_OK) {
         return err;
     }
 
-    for (matrix_size_t row = 0UL; row < rows; ++row) {
-        for (matrix_size_t column = 0UL; column < columns; ++column) {
+    for (matrix_size_t row = 0UL; row < matrix1->rows; ++row) {
+        for (matrix_size_t column = 0UL; column < matrix2->columns; ++column) {
             MATRIX_INDEX(sum, row, column) =
                 MATRIX_INDEX(matrix1, row, column) +
                 MATRIX_INDEX(matrix2, row, column);
@@ -671,16 +623,14 @@ matrix_err_t matrix_difference(matrix_t const* matrix1,
         return MATRIX_ERR_DIMENSION;
     }
 
-    matrix_size_t rows = matrix1->rows;
-    matrix_size_t columns = matrix1->columns;
-
-    matrix_err_t err = matrix_resize(difference, rows, columns);
+    matrix_err_t err =
+        matrix_resize(difference, matrix1->rows, matrix1->columns);
     if (err != MATRIX_ERR_OK) {
         return err;
     }
 
-    for (matrix_size_t row = 0UL; row < rows; ++row) {
-        for (matrix_size_t column = 0UL; column < columns; ++column) {
+    for (matrix_size_t row = 0UL; row < matrix1->rows; ++row) {
+        for (matrix_size_t column = 0UL; column < matrix1->columns; ++column) {
             MATRIX_INDEX(difference, row, column) =
                 MATRIX_INDEX(matrix1, row, column) -
                 MATRIX_INDEX(matrix2, row, column);
@@ -698,16 +648,13 @@ matrix_err_t matrix_scale(matrix_t const* matrix,
         return MATRIX_ERR_NULL;
     }
 
-    matrix_size_t rows = matrix->rows;
-    matrix_size_t columns = matrix->columns;
-
-    matrix_err_t err = matrix_resize(scale, rows, columns);
+    matrix_err_t err = matrix_resize(scale, matrix->rows, matrix->columns);
     if (err != MATRIX_ERR_OK) {
         return err;
     }
 
-    for (matrix_size_t row = 0UL; row < rows; ++row) {
-        for (matrix_size_t column = 0UL; column < columns; ++column) {
+    for (matrix_size_t row = 0UL; row < matrix->rows; ++row) {
+        for (matrix_size_t column = 0UL; column < matrix->columns; ++column) {
             MATRIX_INDEX(scale, row, column) =
                 scalar * MATRIX_INDEX(matrix, row, column);
         }
@@ -724,26 +671,22 @@ matrix_err_t matrix_product(matrix_t const* matrix1,
         return MATRIX_ERR_NULL;
     }
 
-    matrix_size_t rows1 = matrix1->rows;
-    matrix_size_t columns1 = matrix1->columns;
-
-    matrix_size_t rows2 = matrix2->rows;
-    matrix_size_t columns2 = matrix2->columns;
-
-    if (columns1 != rows2) {
+    if (matrix1->columns != matrix2->rows) {
         return MATRIX_ERR_DIMENSION;
     }
 
-    matrix_err_t err = matrix_resize(product, rows1, columns2);
+    matrix_err_t err = matrix_resize(product, matrix1->rows, matrix2->columns);
     if (err != MATRIX_ERR_OK) {
         return err;
     }
 
-    for (matrix_size_t row1 = 0UL; row1 < rows1; ++row1) {
-        for (matrix_size_t column2 = 0UL; column2 < columns2; ++column2) {
+    for (matrix_size_t row1 = 0UL; row1 < matrix1->rows; ++row1) {
+        for (matrix_size_t column2 = 0UL; column2 < matrix2->columns;
+             ++column2) {
             matrix_data_t sum = 0.0F;
 
-            for (matrix_size_t row2_column1 = 0UL; row2_column1 < columns1;
+            for (matrix_size_t row2_column1 = 0UL;
+                 row2_column1 < matrix1->columns;
                  ++row2_column1) {
                 sum += MATRIX_INDEX(matrix1, row1, row2_column1) *
                        MATRIX_INDEX(matrix2, row2_column1, column2);
@@ -764,13 +707,13 @@ matrix_err_t matrix_division(matrix_t const* matrix1,
         return MATRIX_ERR_NULL;
     }
 
-    matrix_t matrix2_inversion;
-    matrix_err_t err = matrix_inversion(matrix2, &matrix2_inversion);
+    matrix_t matrix2_inverse;
+    matrix_err_t err = matrix_inverse(matrix2, &matrix2_inverse);
     if (err != MATRIX_ERR_OK) {
         return err;
     }
 
-    return matrix_product(matrix1, &matrix2_inversion, division);
+    return matrix_product(matrix1, &matrix2_inverse, division);
 }
 
 matrix_err_t matrix_power(matrix_t const* matrix,
@@ -802,16 +745,15 @@ matrix_err_t matrix_trace(matrix_t const* matrix, matrix_data_t* trace)
         return MATRIX_ERR_NULL;
     }
 
-    matrix_size_t rows = matrix->rows;
-    matrix_size_t columns = matrix->columns;
-
     *trace = 0.0F;
 
-    for (matrix_size_t row = 0UL; row < rows; ++row) {
-        for (matrix_size_t column = 0UL; column < columns; ++column) {
-            if (row == column) {
-                *trace += MATRIX_INDEX(matrix, row, column);
+    for (matrix_size_t row = 0UL; row < matrix->rows; ++row) {
+        for (matrix_size_t column = 0UL; column < matrix->columns; ++column) {
+            if (row != column) {
+                continue;
             }
+
+            *trace += MATRIX_INDEX(matrix, row, column);
         }
     }
 
@@ -851,13 +793,13 @@ matrix_err_t matrix_print(matrix_t const* matrix)
 
     for (matrix_size_t row = 0UL; row < matrix->rows; ++row) {
         for (matrix_size_t column = 0UL; column < matrix->columns; ++column) {
-            matrix_vprint(matrix, "%f ", MATRIX_INDEX(matrix, row, column));
+            printf(matrix, "%f ", MATRIX_INDEX(matrix, row, column));
         }
 
-        matrix_vprint(matrix, "\n");
+        printf(matrix, "\n");
     }
 
-    matrix_vprint(matrix, "\n");
+    printf(matrix, "\n");
 
     return MATRIX_ERR_OK;
 }

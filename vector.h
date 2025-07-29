@@ -20,10 +20,8 @@ typedef enum {
 
 typedef void* (*vector_allocate_t)(size_t);
 typedef void (*vector_deallocate_t)(void*);
-typedef int (*vector_vprint_t)(char const*, va_list);
 
 typedef struct {
-    vector_vprint_t vprint;
     vector_allocate_t allocate;
     vector_deallocate_t deallocate;
 } vector_interface_t;

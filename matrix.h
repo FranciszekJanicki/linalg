@@ -24,10 +24,8 @@ typedef size_t matrix_size_t;
 
 typedef void* (*matrix_allocate_t)(size_t);
 typedef void (*matrix_deallocate_t)(void*);
-typedef int (*matrix_vprint_t)(char const*, va_list);
 
 typedef struct {
-    matrix_vprint_t vprint;
     matrix_allocate_t allocate;
     matrix_deallocate_t deallocate;
 } matrix_interface_t;
@@ -87,21 +85,19 @@ matrix_err_t matrix_copy(matrix_t const* source, matrix_t* destination);
 matrix_err_t matrix_move(matrix_t* source, matrix_t* destination);
 
 matrix_err_t matrix_minor(matrix_t const* matrix,
-                          size_t row,
-                          size_t column,
+                          size_t minor_row,
+                          size_t minor_column,
                           matrix_t* minor);
 
 matrix_err_t matrix_complement(matrix_t const* matrix, matrix_t* complement);
 
 matrix_err_t matrix_adjoint(matrix_t const* matrix, matrix_t* adjoint);
 
-matrix_err_t matrix_transposition(matrix_t const* matrix,
-                                  matrix_t* transposition);
+matrix_err_t matrix_transpose(matrix_t const* matrix, matrix_t* transpose);
 
-matrix_err_t matrix_determinant(matrix_t const* matrix,
-                                matrix_data_t* determinant);
+matrix_err_t matrix_det(matrix_t const* matrix, matrix_data_t* det);
 
-matrix_err_t matrix_inversion(matrix_t const* matrix, matrix_t* inversion);
+matrix_err_t matrix_inverse(matrix_t const* matrix, matrix_t* inverse);
 
 matrix_err_t matrix_upper_triangular(matrix_t const* matrix,
                                      matrix_t* upper_triangular);
