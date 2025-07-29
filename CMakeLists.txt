@@ -1,14 +1,19 @@
-add_library(matrix STATIC)
+add_library(linalg STATIC)
 
-target_sources(matrix PRIVATE 
-    "matrix.c"
+target_sources(linalg PRIVATE 
+    matrix.c
+    vector.c
+    quaternion3.c
+    rotation3.c
+    translation3.c
+    transformation3.c
 )
 
-target_include_directories(matrix PUBLIC
+target_include_directories(linalg PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-target_compile_options(matrix PUBLIC
+target_compile_options(linalg PUBLIC
     -std=c23
     -Wall
     -Wextra
