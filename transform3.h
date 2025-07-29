@@ -5,8 +5,6 @@
 #include "vector3.h"
 #include <stdint.h>
 
-typedef float transform3_data_t;
-
 typedef enum {
     TRANSFORM3_ERR_OK = 0,
     TRANSFORM3_ERR_FAIL,

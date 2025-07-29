@@ -2,11 +2,22 @@
 #include <math.h>
 #include <stdio.h>
 
-quaternion3_err_t quaternion3_initialize(quaternion3_t* quaternion,
-                                         quaternion3_data_t w,
-                                         quaternion3_data_t x,
-                                         quaternion3_data_t y,
-                                         quaternion3_data_t z)
+quaternion3_err_t quaternion3_fill_with_zeros(quaternion3_t* quaternion)
+{
+    if (quaternion == NULL) {
+        return QUATERNION3_ERR_NULL;
+    }
+
+    memset(quaternion, 0, sizeof(*quaternion));
+
+    return QUATERNION3_ERR_OK;
+}
+
+quaternion3_err_t quaternion3_fill_with_elements(quaternion3_t* quaternion,
+                                                 quaternion3_data_t w,
+                                                 quaternion3_data_t x,
+                                                 quaternion3_data_t y,
+                                                 quaternion3_data_t z)
 {
     if (quaternion == NULL) {
         return QUATERNION3_ERR_NULL;
@@ -16,20 +27,6 @@ quaternion3_err_t quaternion3_initialize(quaternion3_t* quaternion,
     quaternion->x = x;
     quaternion->y = y;
     quaternion->z = z;
-
-    return QUATERNION3_ERR_OK;
-}
-
-quaternion3_err_t quaternion3_deinitialize(quaternion3_t* quaternion)
-{
-    if (quaternion == NULL) {
-        return QUATERNION3_ERR_NULL;
-    }
-
-    quaternion->w = 0.0F;
-    quaternion->x = 0.0F;
-    quaternion->y = 0.0F;
-    quaternion->z = 0.0F;
 
     return QUATERNION3_ERR_OK;
 }

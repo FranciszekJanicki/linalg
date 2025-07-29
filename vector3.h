@@ -4,6 +4,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#define VECTOR3_INDEX(VECTOR, INDEX) ((VECTOR)->data[(INDEX)])
+
 typedef size_t vector3_size_t;
 typedef float vector3_data_t;
 

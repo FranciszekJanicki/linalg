@@ -1,5 +1,6 @@
 #include "matrix3.h"
 #include <stdio.h>
+#include <string.h>
 
 matrix3_err_t matrix3_fill_with_zeros(matrix3_t* matrix)
 {

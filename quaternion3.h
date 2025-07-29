@@ -18,13 +18,13 @@ typedef struct {
     quaternion3_data_t z;
 } quaternion3_t;
 
-quaternion3_err_t quaternion3_initialize(quaternion3_t* quaternion,
-                                         quaternion3_data_t w,
-                                         quaternion3_data_t x,
-                                         quaternion3_data_t y,
-                                         quaternion3_data_t z);
+quaternion3_err_t quaternion3_fill_with_zeros(quaternion3_t* quaternion);
 
-quaternion3_err_t quaternion3_deinitialize(quaternion3_t* quaternion);
+quaternion3_err_t quaternion3_fill_with_elements(quaternion3_t* quaternion,
+                                                 quaternion3_data_t w,
+                                                 quaternion3_data_t x,
+                                                 quaternion3_data_t y,
+                                                 quaternion3_data_t z);
 
 quaternion3_err_t quaternion3_sum(quaternion3_t const* quaternion1,
                                   quaternion3_t const* quaternion2,
