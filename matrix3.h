@@ -49,6 +49,9 @@ matrix3_err_t matrix3_upper_triangular(matrix3_t const* matrix,
 matrix3_err_t matrix3_lower_triangular(matrix3_t const* matrix,
                                        matrix3_t* lower_triangular);
 
+matrix3_err_t matrix3_row_echelon_form(matrix3_t const* matrix,
+                                       matrix3_t* row_echelon_form);
+
 matrix3_err_t matrix3_sum(matrix3_t const* matrix1,
                           matrix3_t const* matrix2,
                           matrix3_t* sum);

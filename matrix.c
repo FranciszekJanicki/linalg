@@ -571,8 +571,57 @@ matrix_err_t matrix_lower_triangular(matrix_t const* matrix,
             }
         }
 
-        for (matrix_size_t column = row + 1U; column < matrix->rows; ++column) {
+        for (matrix_size_t column = row + 1UL; column < matrix->rows;
+             ++column) {
             MATRIX_INDEX(lower_triangular, row, column) = 0.0F;
+        }
+    }
+
+    return MATRIX_ERR_OK;
+}
+
+matrix_err_t matrix_row_echelon_form(matrix_t const* matrix,
+                                     matrix_t* row_echelon_form)
+{
+    if (matrix == NULL || row_echelon_form == NULL) {
+        return MATRIX_ERR_NULL;
+    }
+
+    matrix_err_t err = matrix_copy(matrix, row_echelon_form);
+    if (err != MATRIX_ERR_OK) {
+        return err;
+    }
+
+    for (matrix_size_t pivot = 0UL; pivot < 3UL; ++pivot) {
+        matrix_size_t max_row = pivot;
+        for (matrix_size_t row = pivot + 1UL; row < 3UL; ++row) {
+            if (fabsf(MATRIX_INDEX(row_echelon_form, row, pivot)) >
+                fabsf(MATRIX_INDEX(row_echelon_form, max_row, pivot))) {
+                max_row = row;
+            }
+        }
+
+        if (fabsf(MATRIX_INDEX(row_echelon_form, max_row, pivot)) < 1E-6F) {
+            continue;
+        }
+
+        if (max_row != pivot) {
+            for (matrix_size_t column = 0UL; column < 3UL; ++column) {
+                matrix_data_t temp =
+                    MATRIX_INDEX(row_echelon_form, pivot, column);
+                MATRIX_INDEX(row_echelon_form, pivot, column) =
+                    MATRIX_INDEX(row_echelon_form, max_row, column);
+                MATRIX_INDEX(row_echelon_form, max_row, column) = temp;
+            }
+        }
+
+        for (matrix_size_t row = pivot + 1UL; row < 3UL; ++row) {
+            matrix_data_t factor = MATRIX_INDEX(row_echelon_form, row, pivot) /
+                                   MATRIX_INDEX(row_echelon_form, pivot, pivot);
+            for (matrix_size_t col = pivot; col < 3UL; ++col) {
+                MATRIX_INDEX(row_echelon_form, row, col) -=
+                    factor * MATRIX_INDEX(row_echelon_form, pivot, col);
+            }
         }
     }
 
@@ -720,16 +769,32 @@ matrix_err_t matrix_power(matrix_t const* matrix,
         return MATRIX_ERR_NULL;
     }
 
-    matrix_err_t err = matrix_copy(matrix, power);
+    if (matrix->rows != matrix->columns) {
+        return MATRIX_ERR_DIMENSION;
+    }
+
+    matrix_err_t err =
+        matrix_create_with_zeros(power, matrix->rows, matrix->columns);
     if (err != MATRIX_ERR_OK) {
         return err;
     }
 
-    for (matrix_size_t i = 0UL; i < exponent - 1UL; ++i) {
-        err = matrix_product(matrix, power, power);
+    for (matrix_size_t index = 0UL; index < matrix->rows; ++index) {
+        MATRIX_INDEX(power, index, index) = 1.0F;
+    }
+
+    if (exponent == 0U) {
+        return MATRIX_ERR_OK;
+    }
+
+    matrix_t temp;
+    for (matrix_size_t index = 0UL; index < exponent - 1UL; ++index) {
+        err = matrix_product(matrix, power, &temp);
         if (err != MATRIX_ERR_OK) {
             return err;
         }
+
+        *power = temp;
     }
 
     return MATRIX_ERR_OK;
@@ -741,16 +806,13 @@ matrix_err_t matrix_trace(matrix_t const* matrix, matrix_data_t* trace)
         return MATRIX_ERR_NULL;
     }
 
+    if (matrix->rows != matrix->columns) {
+        return MATRIX_ERR_DIMENSION;
+    }
+
     *trace = 0.0F;
-
-    for (matrix_size_t row = 0UL; row < matrix->rows; ++row) {
-        for (matrix_size_t column = 0UL; column < matrix->columns; ++column) {
-            if (row != column) {
-                continue;
-            }
-
-            *trace += MATRIX_INDEX(matrix, row, column);
-        }
+    for (matrix_size_t index = 0UL; index < matrix->rows; ++index) {
+        *trace += MATRIX_INDEX(matrix, index, index);
     }
 
     return MATRIX_ERR_OK;
@@ -762,7 +824,26 @@ matrix_err_t matrix_rank(matrix_t const* matrix, matrix_size_t* rank)
         return MATRIX_ERR_NULL;
     }
 
+    matrix_t row_echelon_form;
+    matrix_err_t err = matrix_initialize(&row_echelon_form, &matrix->interface);
+    if (err != MATRIX_ERR_OK) {
+        return err;
+    }
+
+    err = matrix_row_echelon_form(matrix, &row_echelon_form);
+    if (err != MATRIX_ERR_OK) {
+        return err;
+    }
+
     *rank = 0UL;
+    for (matrix_size_t row = 0UL; row < 3UL; ++row) {
+        for (matrix_size_t column = 0UL; column < 3UL; ++column) {
+            if (fabsf(MATRIX_INDEX(&row_echelon_form, row, column)) > 1E-6F) {
+                (*rank)++;
+                break;
+            }
+        }
+    }
 
     return MATRIX_ERR_OK;
 }
@@ -774,9 +855,6 @@ matrix_err_t matrix_eigvals(matrix_t const* matrix,
     if (matrix == NULL || eigvals == NULL || eigvals_num == NULL) {
         return MATRIX_ERR_NULL;
     }
-
-    *eigvals = NULL;
-    *eigvals_num = 0UL;
 
     return MATRIX_ERR_OK;
 }

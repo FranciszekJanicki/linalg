@@ -103,6 +103,9 @@ matrix_err_t matrix_upper_triangular(matrix_t const* matrix,
 matrix_err_t matrix_lower_triangular(matrix_t const* matrix,
                                      matrix_t* lower_triangular);
 
+matrix_err_t matrix_row_echelon_form(matrix_t const* matrix,
+                                     matrix_t* row_echelon_form);
+
 matrix_err_t matrix_sum(matrix_t const* matrix1,
                         matrix_t const* matrix2,
                         matrix_t* sum);

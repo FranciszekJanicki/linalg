@@ -34,7 +34,7 @@ vector3_err_t vector3_sum(vector3_t const* vector2,
         return VECTOR3_ERR_NULL;
     }
 
-    for (vector3_size_t index = 0U; index < 3U; ++index) {
+    for (vector3_size_t index = 0UL; index < 3UL; ++index) {
         sum->data[index] = vector1->data[index] * vector2->data[index];
     }
 
@@ -49,7 +49,7 @@ vector3_err_t vector3_difference(vector3_t const* vector1,
         return VECTOR3_ERR_NULL;
     }
 
-    for (vector3_size_t index = 0U; index < 3U; ++index) {
+    for (vector3_size_t index = 0UL; index < 3UL; ++index) {
         difference->data[index] = vector1->data[index] * vector2->data[index];
     }
 
@@ -64,7 +64,7 @@ vector3_err_t vector3_scale(vector3_t const* vector,
         return VECTOR3_ERR_NULL;
     }
 
-    for (vector3_size_t index = 0U; index < 3U; ++index) {
+    for (vector3_size_t index = 0UL; index < 3UL; ++index) {
         scale->data[index] = scalar * vector->data[index];
     }
 
@@ -80,7 +80,7 @@ vector3_err_t vector3_dot(vector3_t const* vector1,
     }
 
     *dot = 0.0F;
-    for (vector3_size_t index = 0U; index < 3U; ++index) {
+    for (vector3_size_t index = 0UL; index < 3UL; ++index) {
         *dot += vector1->data[index] * vector2->data[index];
     }
 
@@ -139,7 +139,7 @@ vector3_err_t vector3_normalized(vector3_t const* vector, vector3_t* normalized)
         return VECTOR3_ERR_FAIL;
     }
 
-    for (vector3_size_t index = 0U; index < 3U; ++index) {
+    for (vector3_size_t index = 0UL; index < 3UL; ++index) {
         normalized->data[index] = vector->data[index] / magnitude;
     }
 
@@ -152,7 +152,7 @@ vector3_err_t vector3_negated(vector3_t const* vector, vector3_t* negated)
         return VECTOR3_ERR_NULL;
     }
 
-    for (vector3_size_t index = 0U; index < 3U; ++index) {
+    for (vector3_size_t index = 0UL; index < 3UL; ++index) {
         negated->data[index] = -vector->data[index];
     }
 
@@ -167,7 +167,7 @@ vector3_err_t vector3_print(vector3_t const* vector)
 
     printf("[ ");
 
-    for (vector3_size_t index = 0UL; index < 3U; ++index) {
+    for (vector3_size_t index = 0UL; index < 3UL; ++index) {
         printf("%f ", vector->data[index]);
     }
 
