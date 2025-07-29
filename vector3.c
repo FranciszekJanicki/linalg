@@ -1,5 +1,7 @@
 #include "vector3.h"
 #include <math.h>
+#include <stdio.h>
+#include <string.h>
 
 vector3_err_t vector3_fill_with_zeros(vector3_t* vector)
 {

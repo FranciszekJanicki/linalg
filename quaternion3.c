@@ -1,6 +1,7 @@
 #include "quaternion3.h"
 #include <math.h>
 #include <stdio.h>
+#include <string.h>
 
 quaternion3_err_t quaternion3_fill_with_zeros(quaternion3_t* quaternion)
 {

@@ -200,14 +200,14 @@ vector_err_t vector_copy(vector_t const* source, vector_t* destination)
         return VECTOR_ERR_NULL;
     }
 
-    vector_err_t err = vector_resize(destination, vector->size);
+    vector_err_t err = vector_resize(destination, source->size);
     if (err != VECTOR_ERR_OK) {
         return err;
     }
 
     memcpy(destination->data,
            source->data,
-           sizeof(*source->data) * vector->size);
+           sizeof(*source->data) * source->size);
 
     return VECTOR_ERR_OK;
 }

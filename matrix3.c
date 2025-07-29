@@ -174,7 +174,7 @@ matrix3_err_t matrix3_inverse(matrix3_t const* matrix, matrix3_t* inverse)
     }
 
     matrix3_t adjoint;
-    matrix3_err_t err = matrix3_adjoint(matrix, &adjoint);
+    err = matrix3_adjoint(matrix, &adjoint);
     if (err != MATRIX3_ERR_OK) {
         return MATRIX3_ERR_FAIL;
     }
