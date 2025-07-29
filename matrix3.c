@@ -1,4 +1,5 @@
 #include "matrix3.h"
+#include <math.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -14,7 +15,7 @@ matrix3_err_t matrix3_fill_with_zeros(matrix3_t* matrix)
 }
 
 matrix3_err_t matrix3_fill_with_array(matrix3_t* matrix,
-                                      matrix3_data_t (*array)[3U][3U])
+                                      const matrix3_data_t (*array)[3U][3U])
 {
     if (matrix == NULL || array == NULL) {
         return MATRIX3_ERR_NULL;
@@ -23,6 +24,60 @@ matrix3_err_t matrix3_fill_with_array(matrix3_t* matrix,
     for (matrix3_size_t row = 0U; row < 3U; ++row) {
         for (matrix3_size_t column = 0U; column < 3U; ++column) {
             matrix->data[row][column] = (*array)[row][column];
+        }
+    }
+
+    return MATRIX3_ERR_OK;
+}
+
+matrix3_err_t matrix3_upper_triangular(matrix3_t const* matrix,
+                                       matrix3_t* upper_triangular)
+{
+    if (matrix == NULL || upper_triangular == NULL) {
+        return MATRIX3_ERR_NULL;
+    }
+
+    matrix3_t lower_triangular;
+    matrix3_err_t err = matrix3_lower_triangular(matrix, &lower_triangular);
+    if (err != MATRIX3_ERR_OK) {
+        return err;
+    }
+
+    return matrix3_transpose(&lower_triangular, upper_triangular);
+}
+
+matrix3_err_t matrix3_lower_triangular(matrix3_t const* matrix,
+                                       matrix3_t* lower_triangular)
+{
+    if (matrix == NULL || lower_triangular == NULL) {
+        return MATRIX3_ERR_NULL;
+    }
+
+    for (matrix3_size_t row = 0UL; row < 3U; ++row) {
+        for (matrix3_size_t column = 0UL; column <= row; ++column) {
+            matrix3_data_t sum = 0.0F;
+
+            for (matrix3_size_t lower = 0UL; lower < column; ++lower) {
+                sum += lower_triangular->data[row][lower] *
+                       lower_triangular->data[column][lower];
+            }
+
+            if (row == column) {
+                matrix3_data_t val = matrix->data[row][row] - sum;
+                if (val <= 0.0F) {
+                    return MATRIX3_ERR_FAIL;
+                }
+
+                lower_triangular->data[row][column] = sqrtf(val);
+            } else {
+                lower_triangular->data[row][column] =
+                    (1.0F / lower_triangular->data[column][column]) *
+                    (matrix->data[row][column] - sum);
+            }
+        }
+
+        for (matrix3_size_t column = row + 1U; column < 3U; ++column) {
+            lower_triangular->data[row][column] = 0.0F;
         }
     }
 
@@ -94,9 +149,9 @@ matrix3_err_t matrix3_product(matrix3_t const* matrix1,
         for (matrix3_size_t column = 0U; column < 3U; ++column) {
             product->data[row][column] = 0.0f;
 
-            for (matrix3_size_t k = 0U; k < 3U; ++k) {
+            for (matrix3_size_t common = 0U; common < 3U; ++common) {
                 product->data[row][column] +=
-                    matrix1->data[row][k] * matrix2->data[k][column];
+                    matrix1->data[row][common] * matrix2->data[common][column];
             }
         }
     }
@@ -179,6 +234,10 @@ matrix3_err_t matrix3_inverse(matrix3_t const* matrix, matrix3_t* inverse)
         return MATRIX3_ERR_FAIL;
     }
 
+    if (fabsf(det) < 1E-6F) {
+        return MATRIX3_ERR_SINGULAR;
+    }
+
     err = matrix3_scale(&adjoint, 1.0F / det, inverse);
     if (err != MATRIX3_ERR_OK) {
         return MATRIX3_ERR_FAIL;
@@ -235,11 +294,11 @@ matrix3_err_t matrix3_complement(matrix3_t const* matrix, matrix3_t* complement)
                 return MATRIX3_ERR_FAIL;
             }
 
-            matrix3_data_t det_minor = minor.data[0U][0U] * minor.data[1U][1U] -
+            matrix3_data_t minor_det = minor.data[0U][0U] * minor.data[1U][1U] -
                                        minor.data[0U][1U] * minor.data[1U][0U];
 
             complement->data[row][column] =
-                (((row + column) & 1U) ? -1.0F : 1.0F) * det_minor;
+                (((row + column) & 1U) ? -1.0F : 1.0F) * minor_det;
         }
     }
 

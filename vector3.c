@@ -15,7 +15,7 @@ vector3_err_t vector3_fill_with_zeros(vector3_t* vector)
 }
 
 vector3_err_t vector3_fill_from_array(vector3_t* vector,
-                                      vector3_data_t (*array)[3U])
+                                      const vector3_data_t (*array)[3U])
 {
     if (vector == NULL || array == NULL) {
         return VECTOR3_ERR_NULL;

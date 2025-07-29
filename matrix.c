@@ -99,10 +99,11 @@ matrix_err_t matrix_create_with_zeros(matrix_t* matrix,
     return matrix_fill_with_zeros(matrix);
 }
 
-matrix_err_t matrix_create_from_array(matrix_t* matrix,
-                                      matrix_size_t rows,
-                                      matrix_size_t columns,
-                                      matrix_data_t (*array)[rows][columns])
+matrix_err_t matrix_create_from_array(
+    matrix_t* matrix,
+    matrix_size_t rows,
+    matrix_size_t columns,
+    const matrix_data_t (*array)[rows][columns])
 {
     if (matrix == NULL || array == NULL) {
         return MATRIX_ERR_NULL;
@@ -187,10 +188,11 @@ matrix_err_t matrix_resize_with_zeros(matrix_t* matrix,
     return matrix_fill_with_zeros(matrix);
 }
 
-matrix_err_t matrix_resize_from_array(matrix_t* matrix,
-                                      matrix_size_t rows,
-                                      matrix_size_t columns,
-                                      matrix_data_t (*array)[rows][columns])
+matrix_err_t matrix_resize_from_array(
+    matrix_t* matrix,
+    matrix_size_t rows,
+    matrix_size_t columns,
+    const matrix_data_t (*array)[rows][columns])
 {
     if (matrix == NULL || array == NULL) {
         return MATRIX_ERR_NULL;
@@ -219,7 +221,7 @@ matrix_err_t matrix_fill_with_zeros(matrix_t* matrix)
 
 matrix_err_t matrix_fill_from_array(
     matrix_t* matrix,
-    matrix_data_t (*array)[matrix->rows][matrix->columns])
+    const matrix_data_t (*array)[matrix->rows][matrix->columns])
 {
     if (matrix == NULL || array == NULL) {
         return MATRIX_ERR_NULL;
@@ -353,11 +355,8 @@ matrix_err_t matrix_complement(matrix_t const* matrix, matrix_t* complement)
                 return err;
             }
 
-            if ((row + column) & 1UL) {
-                MATRIX_INDEX(complement, row, column) = -minor_det;
-            } else {
-                MATRIX_INDEX(complement, row, column) = minor_det;
-            }
+            MATRIX_INDEX(complement, row, column) =
+                (((row + column) & 1UL) ? -1.0F : 1.0F) * minor_det;
         }
     }
 
@@ -455,11 +454,8 @@ matrix_err_t matrix_det(matrix_t const* matrix, matrix_data_t* det)
             return err;
         }
 
-        if (column & 1U) {
-            *det -= MATRIX_INDEX(matrix, 0UL, column) * minor_det;
-        } else {
-            *det += MATRIX_INDEX(matrix, 0UL, column) * minor_det;
-        }
+        *det += ((column & 1U) ? -1.0F : 1.0F) *
+                MATRIX_INDEX(matrix, 0UL, column) * minor_det;
     }
 
     return matrix_delete(&minor);
@@ -575,7 +571,7 @@ matrix_err_t matrix_lower_triangular(matrix_t const* matrix,
             }
         }
 
-        for (matrix_size_t column = row + 1; column < matrix->rows; ++column) {
+        for (matrix_size_t column = row + 1U; column < matrix->rows; ++column) {
             MATRIX_INDEX(lower_triangular, row, column) = 0.0F;
         }
     }
@@ -682,19 +678,17 @@ matrix_err_t matrix_product(matrix_t const* matrix1,
         return err;
     }
 
-    for (matrix_size_t row1 = 0UL; row1 < matrix1->rows; ++row1) {
-        for (matrix_size_t column2 = 0UL; column2 < matrix2->columns;
-             ++column2) {
+    for (matrix_size_t row = 0UL; row < matrix1->rows; ++row) {
+        for (matrix_size_t column = 0UL; column < matrix2->columns; ++column) {
             matrix_data_t sum = 0.0F;
 
-            for (matrix_size_t row2_column1 = 0UL;
-                 row2_column1 < matrix1->columns;
-                 ++row2_column1) {
-                sum += MATRIX_INDEX(matrix1, row1, row2_column1) *
-                       MATRIX_INDEX(matrix2, row2_column1, column2);
+            for (matrix_size_t common = 0UL; common < matrix1->columns;
+                 ++common) {
+                sum += MATRIX_INDEX(matrix1, row, common) *
+                       MATRIX_INDEX(matrix2, common, column);
             }
 
-            MATRIX_INDEX(product, row1, column2) = sum;
+            MATRIX_INDEX(product, row, column) = sum;
         }
     }
 

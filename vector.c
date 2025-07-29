@@ -1,4 +1,5 @@
 #include "vector.h"
+#include <math.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -86,7 +87,7 @@ vector_err_t vector_create_with_zeros(vector_t* vector, vector_size_t size)
 
 vector_err_t vector_create_from_array(vector_t* vector,
                                       vector_size_t size,
-                                      vector_data_t (*array)[size])
+                                      const vector_data_t (*array)[size])
 {
     if (vector == NULL || array == NULL) {
         return VECTOR_ERR_NULL;
@@ -157,7 +158,7 @@ vector_err_t vector_resize_with_zeros(vector_t* vector, vector_size_t size)
 
 vector_err_t vector_resize_from_array(vector_t* vector,
                                       vector_size_t size,
-                                      vector_data_t (*array)[size])
+                                      const vector_data_t (*array)[size])
 {
     if (vector == NULL || array == NULL) {
         return VECTOR_ERR_NULL;
@@ -183,7 +184,7 @@ vector_err_t vector_fill_with_zeros(vector_t* vector)
 }
 
 vector_err_t vector_fill_from_array(vector_t* vector,
-                                    vector_data_t (*array)[vector->size])
+                                    const vector_data_t (*array)[vector->size])
 {
     if (vector == NULL || array == NULL) {
         return VECTOR_ERR_NULL;

@@ -15,6 +15,7 @@ typedef enum {
     MATRIX3_ERR_OK = 0,
     MATRIX3_ERR_FAIL,
     MATRIX3_ERR_NULL,
+    MATRIX3_ERR_SINGULAR,
 } matrix3_err_t;
 
 typedef struct {
@@ -24,7 +25,7 @@ typedef struct {
 matrix3_err_t matrix3_fill_with_zeros(matrix3_t* matrix);
 
 matrix3_err_t matrix3_fill_with_array(matrix3_t* matrix,
-                                      matrix3_data_t (*array)[3U][3U]);
+                                      const matrix3_data_t (*array)[3U][3U]);
 
 matrix3_err_t matrix3_minor(matrix3_t const* matrix,
                             matrix3_size_t minor_row,

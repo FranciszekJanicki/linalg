@@ -42,10 +42,6 @@ matrix_err_t matrix_initialize(matrix_t* matrix,
 
 matrix_err_t matrix_deinitialize(matrix_t* matrix);
 
-matrix_size_t matrix_rows(matrix_t const* matrix);
-
-matrix_size_t matrix_columns(matrix_t const* matrix);
-
 matrix_err_t matrix_create(matrix_t* matrix,
                            matrix_size_t rows,
                            matrix_size_t columns);
@@ -54,10 +50,11 @@ matrix_err_t matrix_create_with_zeros(matrix_t* matrix,
                                       matrix_size_t rows,
                                       matrix_size_t columns);
 
-matrix_err_t matrix_create_from_array(matrix_t* matrix,
-                                      matrix_size_t rows,
-                                      matrix_size_t columns,
-                                      matrix_data_t (*array)[rows][columns]);
+matrix_err_t matrix_create_from_array(
+    matrix_t* matrix,
+    matrix_size_t rows,
+    matrix_size_t columns,
+    const matrix_data_t (*array)[rows][columns]);
 
 matrix_err_t matrix_delete(matrix_t* matrix);
 
@@ -69,16 +66,17 @@ matrix_err_t matrix_resize_with_zeros(matrix_t* matrix,
                                       matrix_size_t rows,
                                       matrix_size_t columns);
 
-matrix_err_t matrix_resize_from_array(matrix_t* matrix,
-                                      matrix_size_t rows,
-                                      matrix_size_t columns,
-                                      matrix_data_t (*array)[rows][columns]);
+matrix_err_t matrix_resize_from_array(
+    matrix_t* matrix,
+    matrix_size_t rows,
+    matrix_size_t columns,
+    const matrix_data_t (*array)[rows][columns]);
 
 matrix_err_t matrix_fill_with_zeros(matrix_t* matrix);
 
 matrix_err_t matrix_fill_from_array(
     matrix_t* matrix,
-    matrix_data_t (*array)[matrix->rows][matrix->columns]);
+    const matrix_data_t (*array)[matrix->rows][matrix->columns]);
 
 matrix_err_t matrix_copy(matrix_t const* source, matrix_t* destination);
 
