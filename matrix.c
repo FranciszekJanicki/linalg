@@ -795,13 +795,13 @@ matrix_err_t matrix_print(matrix_t const* matrix)
         printf("[ ");
 
         for (matrix_size_t column = 0UL; column < matrix->columns; ++column) {
-            printf(matrix, "%f ", MATRIX_INDEX(matrix, row, column));
+            printf("%f ", MATRIX_INDEX(matrix, row, column));
         }
 
-        printf(matrix, "]\n");
+        printf("]\n");
     }
 
-    printf(matrix, "\n");
+    printf("\n");
 
     return MATRIX_ERR_OK;
 }
