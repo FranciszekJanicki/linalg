@@ -70,7 +70,7 @@ vector_err_t vector_create(vector_t* vector, vector_size_t size)
         return VECTOR_ERR_NULL;
     }
 
-    vector_elem_t* data = vector_allocate(vector, sizeof(vector_elem_t) * size);
+    vector_data_t* data = vector_allocate(vector, sizeof(vector_data_t) * size);
     if (data == NULL) {
         return VECTOR_ERR_ALLOC;
     }
@@ -79,22 +79,6 @@ vector_err_t vector_create(vector_t* vector, vector_size_t size)
     vector->size = size;
 
     return VECTOR_ERR_OK;
-}
-
-vector_err_t vector_create_with_elem(vector_t* vector,
-                                     vector_size_t size,
-                                     vector_elem_t elem)
-{
-    if (vector == NULL) {
-        return VECTOR_ERR_NULL;
-    }
-
-    vector_err_t err = vector_create(vector, size);
-    if (err != VECTOR_ERR_OK) {
-        return err;
-    }
-
-    return vector_fill_with_elem(vector, elem);
 }
 
 vector_err_t vector_create_with_zeros(vector_t* vector, vector_size_t size)
@@ -113,7 +97,7 @@ vector_err_t vector_create_with_zeros(vector_t* vector, vector_size_t size)
 
 vector_err_t vector_create_from_array(vector_t* vector,
                                       vector_size_t size,
-                                      vector_elem_t (*array)[size])
+                                      vector_data_t (*array)[size])
 {
     if (vector == NULL || array == NULL) {
         return VECTOR_ERR_NULL;
@@ -153,7 +137,7 @@ vector_err_t vector_resize(vector_t* vector, vector_size_t size)
         return VECTOR_ERR_OK;
     }
 
-    vector_elem_t* data = vector_allocate(vector, sizeof(vector_elem_t) * size);
+    vector_data_t* data = vector_allocate(vector, sizeof(vector_data_t) * size);
     if (data == NULL) {
         return VECTOR_ERR_ALLOC;
     }
@@ -166,22 +150,6 @@ vector_err_t vector_resize(vector_t* vector, vector_size_t size)
     vector->size = size;
 
     return VECTOR_ERR_OK;
-}
-
-vector_err_t vector_resize_with_elem(vector_t* vector,
-                                     vector_size_t size,
-                                     vector_elem_t elem)
-{
-    if (vector == NULL) {
-        return VECTOR_ERR_NULL;
-    }
-
-    vector_err_t err = vector_resize(vector, size);
-    if (err != VECTOR_ERR_OK) {
-        return err;
-    }
-
-    return vector_fill_with_elem(vector, elem);
 }
 
 vector_err_t vector_resize_with_zeros(vector_t* vector, vector_size_t size)
@@ -200,7 +168,7 @@ vector_err_t vector_resize_with_zeros(vector_t* vector, vector_size_t size)
 
 vector_err_t vector_resize_from_array(vector_t* vector,
                                       vector_size_t size,
-                                      vector_elem_t (*array)[size])
+                                      vector_data_t (*array)[size])
 {
     if (vector == NULL || array == NULL) {
         return VECTOR_ERR_NULL;
@@ -214,21 +182,6 @@ vector_err_t vector_resize_from_array(vector_t* vector,
     return vector_fill_from_array(vector, array);
 }
 
-vector_err_t vector_fill_with_elem(vector_t* vector, vector_elem_t elem)
-{
-    if (vector == NULL) {
-        return VECTOR_ERR_NULL;
-    }
-
-    vector_size_t size = vector->size;
-
-    for (vector_size_t index = 0UL; index < size; ++index) {
-        vector->data[index] = elem;
-    }
-
-    return VECTOR_ERR_OK;
-}
-
 vector_err_t vector_fill_with_zeros(vector_t* vector)
 {
     if (vector == NULL) {
@@ -237,13 +190,13 @@ vector_err_t vector_fill_with_zeros(vector_t* vector)
 
     vector_size_t size = vector->size;
 
-    memset(vector->data, 0, sizeof(vector_elem_t) * size);
+    memset(vector->data, 0, sizeof(vector_data_t) * size);
 
     return VECTOR_ERR_OK;
 }
 
 vector_err_t vector_fill_from_array(vector_t* vector,
-                                    vector_elem_t (*array)[vector->size])
+                                    vector_data_t (*array)[vector->size])
 {
     if (vector == NULL || array == NULL) {
         return VECTOR_ERR_NULL;
@@ -251,7 +204,7 @@ vector_err_t vector_fill_from_array(vector_t* vector,
 
     vector_size_t size = vector->size;
 
-    memcpy(vector->data, array, sizeof(vector_elem_t) * size);
+    memcpy(vector->data, array, sizeof(vector_data_t) * size);
 
     return VECTOR_ERR_OK;
 }
@@ -349,7 +302,7 @@ vector_err_t vector_difference(vector_t const* vector1,
 }
 
 vector_err_t vector_scale(vector_t const* vector,
-                          vector_elem_t scalar,
+                          vector_data_t scalar,
                           vector_t* scale)
 {
     if (vector == NULL || scale == NULL) {
@@ -370,11 +323,11 @@ vector_err_t vector_scale(vector_t const* vector,
     return VECTOR_ERR_OK;
 }
 
-vector_err_t vector_product(vector_t const* vector1,
-                            vector_t const* vector2,
-                            vector_elem_t* product)
+vector_err_t vector_dot(vector_t const* vector1,
+                        vector_t const* vector2,
+                        vector_data_t* dot)
 {
-    if (vector1 == NULL || vector2 == NULL || product == NULL) {
+    if (vector1 == NULL || vector2 == NULL || dot == NULL) {
         return VECTOR_ERR_NULL;
     }
 
@@ -384,11 +337,39 @@ vector_err_t vector_product(vector_t const* vector1,
 
     vector_size_t size = vector1->size;
 
-    *product = 0.0F;
-
+    *dot = 0.0F;
     for (vector_size_t index = 0UL; index < size; ++index) {
-        *product += VECTOR_INDEX(vector1, index) * VECTOR_INDEX(vector2, index);
+        *dot += VECTOR_INDEX(vector1, index) * VECTOR_INDEX(vector2, index);
     }
+
+    return VECTOR_ERR_OK;
+}
+
+vector_err_t vector_cross(vector_t const* vector1,
+                          vector_t const* vector2,
+                          vector_t* cross)
+{
+    if (vector1 == NULL || vector2 == NULL || cross == NULL) {
+    }
+
+    if (vector1->size != 3UL || vector2->size != 3UL) {
+        return VECTOR_ERR_DIMENSION;
+    }
+
+    vector_err_t err = vector_resize(cross, 3UL);
+    if (err != VECTOR_ERR_OK) {
+        return err;
+    }
+
+    VECTOR_INDEX(cross, 0) =
+        VECTOR_INDEX(vector1, 1) * VECTOR_INDEX(vector2, 2) -
+        VECTOR_INDEX(vector1, 2) * VECTOR_INDEX(vector2, 1);
+    VECTOR_INDEX(cross, 1) =
+        VECTOR_INDEX(vector1, 2) * VECTOR_INDEX(vector2, 0) -
+        VECTOR_INDEX(vector1, 0) * VECTOR_INDEX(vector2, 2);
+    VECTOR_INDEX(cross, 2) =
+        VECTOR_INDEX(vector1, 0) * VECTOR_INDEX(vector2, 1) -
+        VECTOR_INDEX(vector1, 1) * VECTOR_INDEX(vector2, 0);
 
     return VECTOR_ERR_OK;
 }

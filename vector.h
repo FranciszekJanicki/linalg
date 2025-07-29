@@ -7,7 +7,7 @@
 
 #define VECTOR_INDEX(VECTOR, INDEX) ((VECTOR)->data[(INDEX)])
 
-typedef float vector_elem_t;
+typedef float vector_data_t;
 typedef size_t vector_size_t;
 
 typedef enum {
@@ -29,7 +29,7 @@ typedef struct {
 } vector_interface_t;
 
 typedef struct {
-    vector_elem_t* data;
+    vector_data_t* data;
     vector_size_t size;
     vector_interface_t interface;
 } vector_t;
@@ -43,36 +43,25 @@ vector_size_t vector_size(vector_t const* vector);
 
 vector_err_t vector_create(vector_t* vector, vector_size_t size);
 
-vector_err_t vector_create_with_elem(vector_t* vector,
-                                     vector_size_t size,
-                                     vector_elem_t elem);
-
 vector_err_t vector_create_with_zeros(vector_t* vector, vector_size_t size);
 
 vector_err_t vector_create_from_array(vector_t* vector,
                                       vector_size_t size,
-                                      vector_elem_t (*array)[size]);
+                                      vector_data_t (*array)[size]);
 
 vector_err_t vector_delete(vector_t* vector);
 
 vector_err_t vector_resize(vector_t* vector, vector_size_t size);
 
-vector_err_t vector_resize_with_elem(vector_t* vector,
-                                     vector_size_t size,
-                                     vector_elem_t elem);
-
 vector_err_t vector_resize_with_zeros(vector_t* vector, vector_size_t size);
 
 vector_err_t vector_resize_from_array(vector_t* vector,
                                       vector_size_t size,
-                                      vector_elem_t (*array)[size]);
-
-vector_err_t vector_fill_with_elem(vector_t* vector, vector_elem_t elem);
-
+                                      vector_data_t (*array)[size]);
 vector_err_t vector_fill_with_zeros(vector_t* vector);
 
 vector_err_t vector_fill_from_array(vector_t* vector,
-                                    vector_elem_t (*array)[vector->size]);
+                                    vector_data_t (*array)[vector->size]);
 
 vector_err_t vector_copy(vector_t const* source, vector_t* destination);
 
@@ -87,12 +76,16 @@ vector_err_t vector_difference(vector_t const* vector1,
                                vector_t* difference);
 
 vector_err_t vector_scale(vector_t const* vector,
-                          vector_elem_t scalar,
+                          vector_data_t scalar,
                           vector_t* scale);
 
-vector_err_t vector_product(vector_t const* vector1,
-                            vector_t const* vector2,
-                            vector_elem_t* product);
+vector_err_t vector_dot(vector_t const* vector1,
+                        vector_t const* vector2,
+                        vector_data_t* dot);
+
+vector_err_t vector_cross(vector_t const* vector1,
+                          vector_t const* vector2,
+                          vector_t* cross);
 
 vector_err_t vector_print(vector_t const* vector);
 

@@ -19,7 +19,7 @@ typedef enum {
     MATRIX_ERR_DIMENSION,
 } matrix_err_t;
 
-typedef float matrix_elem_t;
+typedef float matrix_data_t;
 typedef size_t matrix_size_t;
 
 typedef void* (*matrix_allocate_t)(size_t);
@@ -33,7 +33,7 @@ typedef struct {
 } matrix_interface_t;
 
 typedef struct {
-    matrix_elem_t* data;
+    matrix_data_t* data;
     matrix_size_t rows;
     matrix_size_t columns;
     matrix_interface_t interface;
@@ -52,13 +52,6 @@ matrix_err_t matrix_create(matrix_t* matrix,
                            matrix_size_t rows,
                            matrix_size_t columns);
 
-matrix_err_t matrix_create_eye(matrix_t* matrix, matrix_size_t dimensions);
-
-matrix_err_t matrix_create_with_elem(matrix_t* matrix,
-                                     matrix_size_t rows,
-                                     matrix_size_t columns,
-                                     matrix_elem_t elem);
-
 matrix_err_t matrix_create_with_zeros(matrix_t* matrix,
                                       matrix_size_t rows,
                                       matrix_size_t columns);
@@ -66,20 +59,13 @@ matrix_err_t matrix_create_with_zeros(matrix_t* matrix,
 matrix_err_t matrix_create_from_array(matrix_t* matrix,
                                       matrix_size_t rows,
                                       matrix_size_t columns,
-                                      matrix_elem_t (*array)[rows][columns]);
+                                      matrix_data_t (*array)[rows][columns]);
 
 matrix_err_t matrix_delete(matrix_t* matrix);
 
 matrix_err_t matrix_resize(matrix_t* matrix,
                            matrix_size_t rows,
                            matrix_size_t columns);
-
-matrix_err_t matrix_resize_eye(matrix_t* matrix, matrix_size_t dimensions);
-
-matrix_err_t matrix_resize_with_elem(matrix_t* matrix,
-                                     matrix_size_t rows,
-                                     matrix_size_t columns,
-                                     matrix_elem_t elem);
 
 matrix_err_t matrix_resize_with_zeros(matrix_t* matrix,
                                       matrix_size_t rows,
@@ -88,17 +74,13 @@ matrix_err_t matrix_resize_with_zeros(matrix_t* matrix,
 matrix_err_t matrix_resize_from_array(matrix_t* matrix,
                                       matrix_size_t rows,
                                       matrix_size_t columns,
-                                      matrix_elem_t (*array)[rows][columns]);
-
-matrix_err_t matrix_fill_eye(matrix_t* matrix);
-
-matrix_err_t matrix_fill_with_elem(matrix_t* matrix, matrix_elem_t elem);
+                                      matrix_data_t (*array)[rows][columns]);
 
 matrix_err_t matrix_fill_with_zeros(matrix_t* matrix);
 
 matrix_err_t matrix_fill_from_array(
     matrix_t* matrix,
-    matrix_elem_t (*array)[matrix->rows][matrix->columns]);
+    matrix_data_t (*array)[matrix->rows][matrix->columns]);
 
 matrix_err_t matrix_copy(matrix_t const* source, matrix_t* destination);
 
@@ -117,7 +99,7 @@ matrix_err_t matrix_transposition(matrix_t const* matrix,
                                   matrix_t* transposition);
 
 matrix_err_t matrix_determinant(matrix_t const* matrix,
-                                matrix_elem_t* determinant);
+                                matrix_data_t* determinant);
 
 matrix_err_t matrix_inversion(matrix_t const* matrix, matrix_t* inversion);
 
@@ -136,7 +118,7 @@ matrix_err_t matrix_difference(matrix_t const* matrix1,
                                matrix_t* difference);
 
 matrix_err_t matrix_scale(matrix_t const* matrix,
-                          matrix_elem_t scalar,
+                          matrix_data_t scalar,
                           matrix_t* scale);
 
 matrix_err_t matrix_product(matrix_t const* matrix1,
@@ -151,10 +133,12 @@ matrix_err_t matrix_power(matrix_t const* matrix,
                           matrix_size_t exponent,
                           matrix_t* power);
 
+matrix_err_t matrix_trace(matrix_t const* matrix, matrix_data_t* trace);
+
 matrix_err_t matrix_rank(matrix_t const* matrix, matrix_size_t* rank);
 
 matrix_err_t matrix_eigvals(matrix_t const* matrix,
-                            matrix_elem_t** eigvals,
+                            matrix_data_t** eigvals,
                             matrix_size_t* eigvals_num);
 
 matrix_err_t matrix_print(matrix_t const* matrix);

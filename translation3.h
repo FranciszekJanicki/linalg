@@ -12,32 +12,40 @@ typedef enum {
 } translation3_err_t;
 
 typedef struct {
-    translation3_data_t x_data;
-    translation3_data_t y_data;
-    translation3_data_t z_data;
+    translation3_data_t x;
+    translation3_data_t y;
+    translation3_data_t z;
 } translation3_t;
 
-translation3_err_t translation3_initialize(translation3_t* translation3,
+translation3_err_t translation3_initialize(translation3_t* vector,
                                            translation3_data_t x,
                                            translation3_data_t y,
                                            translation3_data_t z);
 
-translation3_err_t translation3_deinitialize(translation3_t* translation3);
+translation3_err_t translation3_sum(translation3_t const* left,
+                                    translation3_t const* right,
+                                    translation3_t* result);
 
-translation3_err_t translation3_sum(translation3_t const* translation3_1,
-                                    translation3_t const* translation3_2,
-                                    translation3_t* sum);
+translation3_err_t translation3_difference(translation3_t const* left,
+                                           translation3_t const* right,
+                                           translation3_t* result);
 
-translation3_err_t translation3_difference(translation3_t const* translation3_1,
-                                           translation3_t const* translation3_2,
-                                           translation3_t* difference);
-
-translation3_err_t translation3_product(translation3_t const* translation3_1,
-                                        translation3_t const* translation3_2,
-                                        translation3_t* product);
-
-translation3_err_t translation3_scale(translation3_t const* translation3_1,
+translation3_err_t translation3_scale(translation3_t const* vector,
                                       translation3_data_t scalar,
-                                      translation3_t* scale);
+                                      translation3_t* result);
+
+translation3_err_t translation3_dot(translation3_t const* left,
+                                    translation3_t const* right,
+                                    translation3_data_t* result);
+
+translation3_err_t translation3_cross(translation3_t const* left,
+                                      translation3_t const* right,
+                                      translation3_t* result);
+
+translation3_err_t translation3_normalized(translation3_t const* vector,
+                                           translation3_t* result);
+
+translation3_err_t translation3_magnitude(translation3_t const* vector,
+                                          translation3_data_t* magnitude);
 
 #endif // LINALG_TRANSLATION3_H
