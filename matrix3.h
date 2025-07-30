@@ -11,6 +11,8 @@
 typedef float matrix3_data_t;
 typedef size_t matrix3_size_t;
 
+typedef void (*matrix3_print_t)(char const*, ...);
+
 typedef enum {
     MATRIX3_ERR_OK = 0,
     MATRIX3_ERR_FAIL,
@@ -83,6 +85,6 @@ matrix3_err_t matrix3_rank(matrix3_t const* matrix, matrix3_size_t* rank);
 matrix3_err_t matrix3_eigvals(matrix3_t const* matrix,
                               matrix3_data_t (*eigvals)[3U]);
 
-matrix3_err_t matrix3_print(matrix3_t const* matrix);
+matrix3_err_t matrix3_print(matrix3_t const* matrix, matrix3_print_t print);
 
 #endif // LINALG_MATRIX3_H

@@ -1,7 +1,6 @@
 #ifndef LINALG_VECTOR_H
 #define LINALG_VECTOR_H
 
-#include <stdarg.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -20,20 +19,21 @@ typedef enum {
 
 typedef void* (*vector_allocate_t)(size_t);
 typedef void (*vector_deallocate_t)(void*);
+typedef int (*vector_print_t)(char const*, ...);
 
 typedef struct {
     vector_allocate_t allocate;
     vector_deallocate_t deallocate;
-} vector_interface_t;
+} vector_allocator_t;
 
 typedef struct {
     vector_data_t* data;
     vector_size_t size;
-    vector_interface_t interface;
+    vector_allocator_t allocator;
 } vector_t;
 
 vector_err_t vector_initialize(vector_t* vector,
-                               vector_interface_t const* interface);
+                               vector_allocator_t const* allocator);
 
 vector_err_t vector_deinitialize(vector_t* vector);
 
@@ -84,6 +84,6 @@ vector_err_t vector_cross(vector_t const* vector1,
                           vector_t const* vector2,
                           vector_t* cross);
 
-vector_err_t vector_print(vector_t const* vector);
+vector_err_t vector_print(vector_t const* vector, vector_print_t print);
 
 #endif // LINALG_VECTOR_H

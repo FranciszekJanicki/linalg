@@ -2,8 +2,6 @@
 #define LINALG_MATRIX_H
 
 #include "math.h"
-#include <assert.h>
-#include <stdarg.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -24,21 +22,22 @@ typedef size_t matrix_size_t;
 
 typedef void* (*matrix_allocate_t)(size_t);
 typedef void (*matrix_deallocate_t)(void*);
+typedef int (*matrix_print_t)(char const*, ...);
 
 typedef struct {
     matrix_allocate_t allocate;
     matrix_deallocate_t deallocate;
-} matrix_interface_t;
+} matrix_allocator_t;
 
 typedef struct {
     matrix_data_t* data;
     matrix_size_t rows;
     matrix_size_t columns;
-    matrix_interface_t interface;
+    matrix_allocator_t allocator;
 } matrix_t;
 
 matrix_err_t matrix_initialize(matrix_t* matrix,
-                               matrix_interface_t const* interface);
+                               matrix_allocator_t const* allocator);
 
 matrix_err_t matrix_deinitialize(matrix_t* matrix);
 
@@ -74,7 +73,7 @@ matrix_err_t matrix_resize_with_array(
 
 matrix_err_t matrix_fill_with_zeros(matrix_t* matrix);
 
-matrix_err_t matrix_fill_from_array(
+matrix_err_t matrix_fill_with_array(
     matrix_t* matrix,
     const matrix_data_t (*array)[matrix->rows][matrix->columns]);
 
@@ -138,6 +137,6 @@ matrix_err_t matrix_eigvals(matrix_t const* matrix,
                             matrix_data_t** eigvals,
                             matrix_size_t* eigvals_num);
 
-matrix_err_t matrix_print(matrix_t const* matrix);
+matrix_err_t matrix_print(matrix_t const* matrix, matrix_print_t print);
 
 #endif // LINALG_MATRIX_H

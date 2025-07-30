@@ -4,31 +4,31 @@
 
 static void* matrix_allocate(matrix_t const* matrix, size_t size)
 {
-    if (matrix->interface.allocate == NULL) {
+    if (matrix->allocator.allocate == NULL) {
         return NULL;
     }
 
-    return matrix->interface.allocate(size);
+    return matrix->allocator.allocate(size);
 }
 
 static void matrix_deallocate(matrix_t const* matrix, void* data)
 {
-    if (matrix->interface.deallocate == NULL) {
+    if (matrix->allocator.deallocate == NULL) {
         return;
     }
 
-    matrix->interface.deallocate(data);
+    matrix->allocator.deallocate(data);
 }
 
 matrix_err_t matrix_initialize(matrix_t* matrix,
-                               matrix_interface_t const* interface)
+                               matrix_allocator_t const* allocator)
 {
-    if (matrix == NULL || interface == NULL) {
+    if (matrix == NULL || allocator == NULL) {
         return MATRIX_ERR_NULL;
     }
 
     memset(matrix, 0, sizeof(*matrix));
-    memcpy(&matrix->interface, interface, sizeof(*interface));
+    memcpy(&matrix->allocator, allocator, sizeof(*allocator));
 
     return MATRIX_ERR_OK;
 }
@@ -317,7 +317,7 @@ matrix_err_t matrix_complement(matrix_t const* matrix, matrix_t* complement)
     }
 
     matrix_t minor;
-    err = matrix_initialize(&minor, &complement->interface);
+    err = matrix_initialize(&minor, &complement->allocator);
     if (err != MATRIX_ERR_OK) {
         return err;
     }
@@ -356,7 +356,7 @@ matrix_err_t matrix_adjoint(matrix_t const* matrix, matrix_t* adjoint)
     }
 
     matrix_t complement;
-    matrix_err_t err = matrix_initialize(&complement, &adjoint->interface);
+    matrix_err_t err = matrix_initialize(&complement, &adjoint->allocator);
     if (err != MATRIX_ERR_OK) {
         return err;
     }
@@ -417,7 +417,7 @@ matrix_err_t matrix_det(matrix_t const* matrix, matrix_data_t* det)
     }
 
     matrix_t minor;
-    matrix_err_t err = matrix_initialize(&minor, &matrix->interface);
+    matrix_err_t err = matrix_initialize(&minor, &matrix->allocator);
     if (err != MATRIX_ERR_OK) {
         return err;
     }
@@ -454,7 +454,7 @@ matrix_err_t matrix_inverse(matrix_t const* matrix, matrix_t* inverse)
     }
 
     matrix_t adjoint;
-    matrix_err_t err = matrix_initialize(&adjoint, &inverse->interface);
+    matrix_err_t err = matrix_initialize(&adjoint, &inverse->allocator);
     if (err != MATRIX_ERR_OK) {
         return err;
     }
@@ -495,7 +495,7 @@ matrix_err_t matrix_upper_triangular(matrix_t const* matrix,
 
     matrix_t lower_triangular;
     matrix_err_t err =
-        matrix_initialize(&lower_triangular, &upper_triangular->interface);
+        matrix_initialize(&lower_triangular, &upper_triangular->allocator);
     if (err != MATRIX_ERR_OK) {
         return err;
     }
@@ -807,7 +807,7 @@ matrix_err_t matrix_rank(matrix_t const* matrix, matrix_size_t* rank)
     }
 
     matrix_t row_echelon_form;
-    matrix_err_t err = matrix_initialize(&row_echelon_form, &matrix->interface);
+    matrix_err_t err = matrix_initialize(&row_echelon_form, &matrix->allocator);
     if (err != MATRIX_ERR_OK) {
         return err;
     }
@@ -841,23 +841,23 @@ matrix_err_t matrix_eigvals(matrix_t const* matrix,
     return MATRIX_ERR_OK;
 }
 
-matrix_err_t matrix_print(matrix_t const* matrix)
+matrix_err_t matrix_print(matrix_t const* matrix, matrix_print_t print)
 {
-    if (matrix == NULL) {
+    if (matrix == NULL || print == NULL) {
         return MATRIX_ERR_NULL;
     }
 
     for (matrix_size_t row = 0UL; row < matrix->rows; ++row) {
-        printf("[ ");
+        print("[ ");
 
         for (matrix_size_t column = 0UL; column < matrix->columns; ++column) {
-            printf("%f ", MATRIX_INDEX(matrix, row, column));
+            print("%f ", MATRIX_INDEX(matrix, row, column));
         }
 
-        printf("]\n");
+        print("]\n");
     }
 
-    printf("\n");
+    print("\n");
 
     return MATRIX_ERR_OK;
 }

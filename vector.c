@@ -5,31 +5,31 @@
 
 static void* vector_allocate(vector_t const* vector, size_t size)
 {
-    if (vector->interface.allocate == NULL) {
+    if (vector->allocator.allocate == NULL) {
         return NULL;
     }
 
-    return vector->interface.allocate(size);
+    return vector->allocator.allocate(size);
 }
 
 static void vector_deallocate(vector_t const* vector, void* data)
 {
-    if (vector->interface.deallocate == NULL) {
+    if (vector->allocator.deallocate == NULL) {
         return;
     }
 
-    vector->interface.deallocate(data);
+    vector->allocator.deallocate(data);
 }
 
 vector_err_t vector_initialize(vector_t* vector,
-                               vector_interface_t const* interface)
+                               vector_allocator_t const* allocator)
 {
-    if (vector == NULL || interface == NULL) {
+    if (vector == NULL || allocator == NULL) {
         return VECTOR_ERR_NULL;
     }
 
     memset(vector, 0, sizeof(*vector));
-    memcpy(&vector->interface, interface, sizeof(*interface));
+    memcpy(&vector->allocator, allocator, sizeof(*allocator));
 
     return VECTOR_ERR_OK;
 }
@@ -353,19 +353,19 @@ vector_err_t vector_cross(vector_t const* vector1,
     return VECTOR_ERR_OK;
 }
 
-vector_err_t vector_print(vector_t const* vector)
+vector_err_t vector_print(vector_t const* vector, vector_print_t print)
 {
     if (vector == NULL) {
         return VECTOR_ERR_NULL;
     }
 
-    printf("[ ");
+    print("[ ");
 
     for (vector_size_t index = 0UL; index < vector->size; ++index) {
-        printf("%f ", VECTOR_INDEX(vector, index));
+        print("%f ", VECTOR_INDEX(vector, index));
     }
 
-    printf("]\n");
+    print("]\n\n");
 
     return VECTOR_ERR_OK;
 }
