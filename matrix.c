@@ -840,7 +840,9 @@ matrix_err_t matrix_eigvals(matrix_t const* matrix,
     return MATRIX_ERR_OK;
 }
 
-matrix_err_t matrix_print(matrix_t const* matrix, matrix_print_t print, char const* endline)
+matrix_err_t matrix_print(matrix_t const* matrix,
+                          matrix_print_t print,
+                          char const* endline)
 {
     if (matrix == NULL || print == NULL || endline == NULL) {
         return MATRIX_ERR_NULL;
@@ -853,7 +855,7 @@ matrix_err_t matrix_print(matrix_t const* matrix, matrix_print_t print, char con
             print("%f ", MATRIX_INDEX(matrix, row, column));
         }
 
-        print("]%endline");
+        print("]%s", endline);
     }
 
     return MATRIX_ERR_OK;

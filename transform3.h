@@ -36,6 +36,7 @@ transform3_err_t transform3_vector_transformation(transform3_t const* transform,
                                                   vector3_t* transformation);
 
 transform3_err_t transform3_print(transform3_t const* transform,
-                                  transform3_print_t print);
+                                  transform3_print_t print,
+                                  char const* endline);
 
 #endif // LINALG_TRANSFORM3_H

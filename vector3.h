@@ -9,7 +9,7 @@
 typedef size_t vector3_size_t;
 typedef float vector3_data_t;
 
-typedef void (*vector3_print_t)(char const*, ...);
+typedef int (*vector3_print_t)(char const*, ...);
 
 typedef enum {
     VECTOR3_ERR_OK = 0,
@@ -54,6 +54,8 @@ vector3_err_t vector3_magnitude(vector3_t const* vector,
 
 vector3_err_t vector3_negated(vector3_t const* vector, vector3_t* negated);
 
-vector3_err_t vector3_print(vector3_t const* vector, vector3_print_t print, char const* endline);
+vector3_err_t vector3_print(vector3_t const* vector,
+                            vector3_print_t print,
+                            char const* endline);
 
 #endif // LINALG_VECTOR3_H

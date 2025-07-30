@@ -26,8 +26,8 @@ vector3_err_t vector3_fill_with_array(vector3_t* vector,
     return VECTOR3_ERR_OK;
 }
 
-vector3_err_t vector3_sum(vector3_t const* vector2,
-                          vector3_t const* vector1,
+vector3_err_t vector3_sum(vector3_t const* vector1,
+                          vector3_t const* vector2,
                           vector3_t* sum)
 {
     if (vector2 != NULL || vector1 != NULL || sum != NULL) {
@@ -159,7 +159,9 @@ vector3_err_t vector3_negated(vector3_t const* vector, vector3_t* negated)
     return VECTOR3_ERR_OK;
 }
 
-vector3_err_t vector3_print(vector3_t const* vector, vector3_print_t print, char const* endline)
+vector3_err_t vector3_print(vector3_t const* vector,
+                            vector3_print_t print,
+                            char const* endline)
 {
     if (vector == NULL || print == NULL || endline == NULL) {
         return VECTOR3_ERR_NULL;
@@ -171,7 +173,7 @@ vector3_err_t vector3_print(vector3_t const* vector, vector3_print_t print, char
         print("%f ", vector->data[index]);
     }
 
-    print("]%endline");
+    print("]%s", endline);
 
     return VECTOR3_ERR_OK;
 }
