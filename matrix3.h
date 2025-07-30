@@ -6,6 +6,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define MATRIX3_INDEX(MATRIX, ROW, COLUMN) ((MATRIX)->data[(ROW)][(COLUMN)])
 
 typedef float matrix3_data_t;
@@ -88,5 +92,9 @@ matrix3_err_t matrix3_eigvals(matrix3_t const* matrix,
 matrix3_err_t matrix3_print(matrix3_t const* matrix,
                             matrix3_print_t print,
                             char const* endline);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // LINALG_MATRIX3_H

@@ -4,6 +4,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define VECTOR_INDEX(VECTOR, INDEX) ((VECTOR)->data[(INDEX)])
 
 typedef float vector_data_t;
@@ -87,5 +91,9 @@ vector_err_t vector_cross(vector_t const* vector1,
 vector_err_t vector_print(vector_t const* vector,
                           vector_print_t print,
                           char const* endline);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // LINALG_VECTOR_H

@@ -4,6 +4,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define VECTOR3_INDEX(VECTOR, INDEX) ((VECTOR)->data[(INDEX)])
 
 typedef size_t vector3_size_t;
@@ -57,5 +61,9 @@ vector3_err_t vector3_negated(vector3_t const* vector, vector3_t* negated);
 vector3_err_t vector3_print(vector3_t const* vector,
                             vector3_print_t print,
                             char const* endline);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // LINALG_VECTOR3_H

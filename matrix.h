@@ -5,6 +5,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define MATRIX_INDEX(MATRIX, ROW, COLUMN) \
     ((MATRIX)->data[(ROW) * (MATRIX)->columns + (COLUMN)])
 
@@ -140,5 +144,9 @@ matrix_err_t matrix_eigvals(matrix_t const* matrix,
 matrix_err_t matrix_print(matrix_t const* matrix,
                           matrix_print_t print,
                           char const* endline);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // LINALG_MATRIX_H

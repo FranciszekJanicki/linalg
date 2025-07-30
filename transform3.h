@@ -5,6 +5,10 @@
 #include "vector3.h"
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef enum {
     TRANSFORM3_ERR_OK = 0,
     TRANSFORM3_ERR_FAIL,
@@ -38,5 +42,9 @@ transform3_err_t transform3_vector_transformation(transform3_t const* transform,
 transform3_err_t transform3_print(transform3_t const* transform,
                                   transform3_print_t print,
                                   char const* endline);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // LINALG_TRANSFORM3_H

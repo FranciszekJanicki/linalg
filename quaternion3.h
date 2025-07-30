@@ -3,6 +3,10 @@
 
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef float quaternion3_data_t;
 
 typedef enum {
@@ -63,5 +67,9 @@ quaternion3_err_t quaternion3_dot(quaternion3_t const* quaternion1,
 quaternion3_err_t quaternion3_print(quaternion3_t const* quaternion,
                                     quaternion3_print_t print,
                                     char const* endline);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // LINALG_QUATERNION3_H
