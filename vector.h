@@ -41,7 +41,7 @@ vector_err_t vector_create(vector_t* vector, vector_size_t size);
 
 vector_err_t vector_create_with_zeros(vector_t* vector, vector_size_t size);
 
-vector_err_t vector_create_from_array(vector_t* vector,
+vector_err_t vector_create_with_array(vector_t* vector,
                                       vector_size_t size,
                                       const vector_data_t (*array)[size]);
 
@@ -51,13 +51,13 @@ vector_err_t vector_resize(vector_t* vector, vector_size_t size);
 
 vector_err_t vector_resize_with_zeros(vector_t* vector, vector_size_t size);
 
-vector_err_t vector_resize_from_array(vector_t* vector,
+vector_err_t vector_resize_with_array(vector_t* vector,
                                       vector_size_t size,
                                       const vector_data_t (*array)[size]);
 
 vector_err_t vector_fill_with_zeros(vector_t* vector);
 
-vector_err_t vector_fill_from_array(vector_t* vector,
+vector_err_t vector_fill_with_array(vector_t* vector,
                                     const vector_data_t (*array)[vector->size]);
 
 vector_err_t vector_copy(vector_t const* source, vector_t* destination);

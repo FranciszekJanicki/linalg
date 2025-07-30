@@ -50,7 +50,7 @@ matrix_err_t matrix_create_with_zeros(matrix_t* matrix,
                                       matrix_size_t rows,
                                       matrix_size_t columns);
 
-matrix_err_t matrix_create_from_array(
+matrix_err_t matrix_create_with_array(
     matrix_t* matrix,
     matrix_size_t rows,
     matrix_size_t columns,
@@ -66,7 +66,7 @@ matrix_err_t matrix_resize_with_zeros(matrix_t* matrix,
                                       matrix_size_t rows,
                                       matrix_size_t columns);
 
-matrix_err_t matrix_resize_from_array(
+matrix_err_t matrix_resize_with_array(
     matrix_t* matrix,
     matrix_size_t rows,
     matrix_size_t columns,

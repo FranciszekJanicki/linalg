@@ -85,7 +85,7 @@ vector_err_t vector_create_with_zeros(vector_t* vector, vector_size_t size)
     return vector_fill_with_zeros(vector);
 }
 
-vector_err_t vector_create_from_array(vector_t* vector,
+vector_err_t vector_create_with_array(vector_t* vector,
                                       vector_size_t size,
                                       const vector_data_t (*array)[size])
 {
@@ -98,7 +98,7 @@ vector_err_t vector_create_from_array(vector_t* vector,
         return err;
     }
 
-    return vector_fill_from_array(vector, array);
+    return vector_fill_with_array(vector, array);
 }
 
 vector_err_t vector_delete(vector_t* vector)
@@ -156,7 +156,7 @@ vector_err_t vector_resize_with_zeros(vector_t* vector, vector_size_t size)
     return vector_fill_with_zeros(vector);
 }
 
-vector_err_t vector_resize_from_array(vector_t* vector,
+vector_err_t vector_resize_with_array(vector_t* vector,
                                       vector_size_t size,
                                       const vector_data_t (*array)[size])
 {
@@ -169,7 +169,7 @@ vector_err_t vector_resize_from_array(vector_t* vector,
         return err;
     }
 
-    return vector_fill_from_array(vector, array);
+    return vector_fill_with_array(vector, array);
 }
 
 vector_err_t vector_fill_with_zeros(vector_t* vector)
@@ -183,7 +183,7 @@ vector_err_t vector_fill_with_zeros(vector_t* vector)
     return VECTOR_ERR_OK;
 }
 
-vector_err_t vector_fill_from_array(vector_t* vector,
+vector_err_t vector_fill_with_array(vector_t* vector,
                                     const vector_data_t (*array)[vector->size])
 {
     if (vector == NULL || array == NULL) {

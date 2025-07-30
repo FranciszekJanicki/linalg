@@ -21,7 +21,7 @@ typedef struct {
 
 vector3_err_t vector3_fill_with_zeros(vector3_t* vector);
 
-vector3_err_t vector3_fill_from_array(vector3_t* vector,
+vector3_err_t vector3_fill_with_array(vector3_t* vector,
                                       const vector3_data_t (*data)[3U]);
 
 vector3_err_t vector3_sum(vector3_t const* vector1,
