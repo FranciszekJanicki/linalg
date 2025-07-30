@@ -84,6 +84,6 @@ vector_err_t vector_cross(vector_t const* vector1,
                           vector_t const* vector2,
                           vector_t* cross);
 
-vector_err_t vector_print(vector_t const* vector, vector_print_t print);
+vector_err_t vector_print(vector_t const* vector, vector_print_t print, char const* endline);
 
 #endif // LINALG_VECTOR_H

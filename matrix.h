@@ -137,6 +137,6 @@ matrix_err_t matrix_eigvals(matrix_t const* matrix,
                             matrix_data_t** eigvals,
                             matrix_size_t* eigvals_num);
 
-matrix_err_t matrix_print(matrix_t const* matrix, matrix_print_t print);
+matrix_err_t matrix_print(matrix_t const* matrix, matrix_print_t print, char const* endline);
 
 #endif // LINALG_MATRIX_H

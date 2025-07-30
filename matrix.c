@@ -423,7 +423,6 @@ matrix_err_t matrix_det(matrix_t const* matrix, matrix_data_t* det)
     }
 
     *det = 0.0F;
-
     for (matrix_size_t column = 0UL; column < matrix->columns; ++column) {
         err = matrix_minor(matrix, 0UL, column, &minor);
         if (err != MATRIX_ERR_OK) {
@@ -841,9 +840,9 @@ matrix_err_t matrix_eigvals(matrix_t const* matrix,
     return MATRIX_ERR_OK;
 }
 
-matrix_err_t matrix_print(matrix_t const* matrix, matrix_print_t print)
+matrix_err_t matrix_print(matrix_t const* matrix, matrix_print_t print, char const* endline)
 {
-    if (matrix == NULL || print == NULL) {
+    if (matrix == NULL || print == NULL || endline == NULL) {
         return MATRIX_ERR_NULL;
     }
 
@@ -854,10 +853,8 @@ matrix_err_t matrix_print(matrix_t const* matrix, matrix_print_t print)
             print("%f ", MATRIX_INDEX(matrix, row, column));
         }
 
-        print("]\n");
+        print("]%endline");
     }
-
-    print("\n");
 
     return MATRIX_ERR_OK;
 }

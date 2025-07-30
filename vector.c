@@ -353,9 +353,9 @@ vector_err_t vector_cross(vector_t const* vector1,
     return VECTOR_ERR_OK;
 }
 
-vector_err_t vector_print(vector_t const* vector, vector_print_t print)
+vector_err_t vector_print(vector_t const* vector, vector_print_t print, char const* endline)
 {
-    if (vector == NULL) {
+    if (vector == NULL || endline == NULL) {
         return VECTOR_ERR_NULL;
     }
 
@@ -365,7 +365,7 @@ vector_err_t vector_print(vector_t const* vector, vector_print_t print)
         print("%f ", VECTOR_INDEX(vector, index));
     }
 
-    print("]\n\n");
+    print("]%endline");
 
     return VECTOR_ERR_OK;
 }

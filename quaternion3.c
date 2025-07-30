@@ -201,13 +201,13 @@ quaternion3_err_t quaternion3_dot(quaternion3_t const* quaternion1,
 }
 
 quaternion3_err_t quaternion3_print(quaternion3_t const* quaternion,
-                                    quaternion3_print_t print)
+                                    quaternion3_print_t print, char const* endline)
 {
-    if (quaternion == NULL || print == NULL) {
+    if (quaternion == NULL || print == NULL || endline == NULL) {
         return QUATERNION3_ERR_NULL;
     }
 
-    print("[ w: %f, x: %f, y: %f, z: %f ]\n\n",
+    print("[ w: %f, x: %f, y: %f, z: %f ]%endline",
           quaternion->w,
           quaternion->x,
           quaternion->y,

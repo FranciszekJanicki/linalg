@@ -54,6 +54,6 @@ vector3_err_t vector3_magnitude(vector3_t const* vector,
 
 vector3_err_t vector3_negated(vector3_t const* vector, vector3_t* negated);
 
-vector3_err_t vector3_print(vector3_t const* vector, vector3_print_t print);
+vector3_err_t vector3_print(vector3_t const* vector, vector3_print_t print, char const* endline);
 
 #endif // LINALG_VECTOR3_H

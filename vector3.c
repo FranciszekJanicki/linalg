@@ -159,9 +159,9 @@ vector3_err_t vector3_negated(vector3_t const* vector, vector3_t* negated)
     return VECTOR3_ERR_OK;
 }
 
-vector3_err_t vector3_print(vector3_t const* vector, vector3_print_t print)
+vector3_err_t vector3_print(vector3_t const* vector, vector3_print_t print, char const* endline)
 {
-    if (vector == NULL || print == NULL) {
+    if (vector == NULL || print == NULL || endline == NULL) {
         return VECTOR3_ERR_NULL;
     }
 
@@ -171,7 +171,7 @@ vector3_err_t vector3_print(vector3_t const* vector, vector3_print_t print)
         print("%f ", vector->data[index]);
     }
 
-    print("]\n\n");
+    print("]%endline");
 
     return VECTOR3_ERR_OK;
 }

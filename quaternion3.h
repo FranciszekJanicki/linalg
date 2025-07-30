@@ -61,6 +61,6 @@ quaternion3_err_t quaternion3_dot(quaternion3_t const* quaternion1,
                                   quaternion3_data_t* dot);
 
 quaternion3_err_t quaternion3_print(quaternion3_t const* quaternion,
-                                    quaternion3_print_t print);
+                                    quaternion3_print_t print, char const* endline);
 
 #endif // LINALG_QUATERNION3_H

@@ -469,9 +469,9 @@ matrix3_err_t matrix3_eigvals(matrix3_t const* matrix,
     return MATRIX3_ERR_OK;
 }
 
-matrix3_err_t matrix3_print(matrix3_t const* matrix, matrix3_print_t print)
+matrix3_err_t matrix3_print(matrix3_t const* matrix, matrix3_print_t print, char const* endline)
 {
-    if (matrix == NULL || print == NULL) {
+    if (matrix == NULL || print == NULL || endline == NULL) {
         return MATRIX3_ERR_NULL;
     }
 
@@ -482,7 +482,7 @@ matrix3_err_t matrix3_print(matrix3_t const* matrix, matrix3_print_t print)
             print("%f ", matrix->data[row][column]);
         }
 
-        print("]\n");
+        print("]%endline");
     }
 
     print("\n");
