@@ -1,7 +1,6 @@
 #ifndef LINALG_MATRIX3_H
 #define LINALG_MATRIX3_H
 
-#include "quaternion3.h"
 #include "vector3.h"
 #include <stddef.h>
 #include <stdint.h>
@@ -86,6 +85,12 @@ matrix3_err_t matrix3_rank(matrix3_t const* matrix, matrix3_size_t* rank);
 
 matrix3_err_t matrix3_eigvals(matrix3_t const* matrix,
                               matrix3_data_t (*eigvals)[3U]);
+
+#include "matrix3.h"
+
+matrix3_err_t matrix3_vector_product(matrix3_t const* matrix,
+                                     vector3_t const* vector,
+                                     vector3_t* product);
 
 matrix3_err_t matrix3_print(matrix3_t const* matrix, char const* endline);
 

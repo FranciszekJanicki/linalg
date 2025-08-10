@@ -20,11 +20,12 @@ typedef struct {
     vector3_t translation;
 } transform3_t;
 
-transform3_err_t transform3_initialize(transform3_t* transform,
-                                       matrix3_t const* matrix,
-                                       vector3_t const* vector);
+transform3_err_t transform3_fill_with_arrays(
+    transform3_t* transform,
+    const matrix3_data_t (*rotation_array)[3U][3U],
+    const vector3_data_t (*translation_array)[3U]);
 
-transform3_err_t transform3_deinitialize(transform3_t* transform);
+transform3_err_t transform3_fill_with_zeros(transform3_t* transform);
 
 transform3_err_t transform3_compose(transform3_t const* transform1,
                                     transform3_t const* transform2,

@@ -469,6 +469,25 @@ matrix3_err_t matrix3_eigvals(matrix3_t const* matrix,
     return MATRIX3_ERR_OK;
 }
 
+matrix3_err_t matrix3_vector_product(matrix3_t const* matrix,
+                                     vector3_t const* vector,
+                                     vector3_t* product)
+{
+    if (matrix == NULL || vector == NULL || product == NULL) {
+        return MATRIX3_ERR_NULL;
+    }
+
+    for (matrix3_size_t row = 0U; row < 3U; ++row) {
+        product->data[row] = 0.0F;
+        for (matrix3_size_t column = 0U; column < 3U; ++column) {
+            product->data[row] +=
+                matrix->data[row][column] * vector->data[column];
+        }
+    }
+
+    return MATRIX3_ERR_OK;
+}
+
 matrix3_err_t matrix3_print(matrix3_t const* matrix, char const* endline)
 {
     if (matrix == NULL || endline == NULL) {
