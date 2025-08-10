@@ -24,11 +24,11 @@ typedef enum {
 typedef float matrix_data_t;
 typedef size_t matrix_size_t;
 
-typedef void* (*matrix_allocate_t)(size_t);
-typedef void (*matrix_deallocate_t)(void*);
-typedef int (*matrix_print_t)(char const*, ...);
+typedef matrix_data_t* (*matrix_allocate_t)(void*, matrix_size_t);
+typedef void (*matrix_deallocate_t)(void*, matrix_data_t*);
 
 typedef struct {
+    void* user;
     matrix_allocate_t allocate;
     matrix_deallocate_t deallocate;
 } matrix_allocator_t;
@@ -141,9 +141,7 @@ matrix_err_t matrix_eigvals(matrix_t const* matrix,
                             matrix_data_t** eigvals,
                             matrix_size_t* eigvals_num);
 
-matrix_err_t matrix_print(matrix_t const* matrix,
-                          matrix_print_t print,
-                          char const* endline);
+matrix_err_t matrix_print(matrix_t const* matrix, char const* endline);
 
 #ifdef __cplusplus
 }

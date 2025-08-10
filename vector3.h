@@ -13,8 +13,6 @@ extern "C" {
 typedef size_t vector3_size_t;
 typedef float vector3_data_t;
 
-typedef int (*vector3_print_t)(char const*, ...);
-
 typedef enum {
     VECTOR3_ERR_OK = 0,
     VECTOR3_ERR_FAIL,
@@ -58,9 +56,7 @@ vector3_err_t vector3_magnitude(vector3_t const* vector,
 
 vector3_err_t vector3_negated(vector3_t const* vector, vector3_t* negated);
 
-vector3_err_t vector3_print(vector3_t const* vector,
-                            vector3_print_t print,
-                            char const* endline);
+vector3_err_t vector3_print(vector3_t const* vector, char const* endline);
 
 #ifdef __cplusplus
 }

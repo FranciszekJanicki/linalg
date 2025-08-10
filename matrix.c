@@ -2,22 +2,23 @@
 #include <stdio.h>
 #include <string.h>
 
-static void* matrix_allocate(matrix_t const* matrix, size_t size)
+static matrix_data_t* matrix_allocate(matrix_t const* matrix,
+                                      matrix_size_t size)
 {
     if (matrix->allocator.allocate == NULL) {
         return NULL;
     }
 
-    return matrix->allocator.allocate(size);
+    return matrix->allocator.allocate(matrix->allocator.user, size);
 }
 
-static void matrix_deallocate(matrix_t const* matrix, void* data)
+static void matrix_deallocate(matrix_t const* matrix, matrix_data_t* data)
 {
     if (matrix->allocator.deallocate == NULL) {
         return;
     }
 
-    matrix->allocator.deallocate(data);
+    matrix->allocator.deallocate(matrix->allocator.user, data);
 }
 
 matrix_err_t matrix_initialize(matrix_t* matrix,
@@ -840,22 +841,20 @@ matrix_err_t matrix_eigvals(matrix_t const* matrix,
     return MATRIX_ERR_OK;
 }
 
-matrix_err_t matrix_print(matrix_t const* matrix,
-                          matrix_print_t print,
-                          char const* endline)
+matrix_err_t matrix_print(matrix_t const* matrix, char const* endline)
 {
-    if (matrix == NULL || print == NULL || endline == NULL) {
+    if (matrix == NULL || endline == NULL) {
         return MATRIX_ERR_NULL;
     }
 
     for (matrix_size_t row = 0UL; row < matrix->rows; ++row) {
-        print("[ ");
+        printf("[ ");
 
         for (matrix_size_t column = 0UL; column < matrix->columns; ++column) {
-            print("%f ", MATRIX_INDEX(matrix, row, column));
+            printf("%f ", MATRIX_INDEX(matrix, row, column));
         }
 
-        print("]%s", endline);
+        printf("]%s", endline);
     }
 
     return MATRIX_ERR_OK;

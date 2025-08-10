@@ -469,22 +469,20 @@ matrix3_err_t matrix3_eigvals(matrix3_t const* matrix,
     return MATRIX3_ERR_OK;
 }
 
-matrix3_err_t matrix3_print(matrix3_t const* matrix,
-                            matrix3_print_t print,
-                            char const* endline)
+matrix3_err_t matrix3_print(matrix3_t const* matrix, char const* endline)
 {
-    if (matrix == NULL || print == NULL || endline == NULL) {
+    if (matrix == NULL || endline == NULL) {
         return MATRIX3_ERR_NULL;
     }
 
     for (matrix3_size_t row = 0UL; row < 3UL; ++row) {
-        print("[ ");
+        printf("[ ");
 
         for (matrix3_size_t column = 0UL; column < 3UL; ++column) {
-            print("%f ", matrix->data[row][column]);
+            printf("%f ", matrix->data[row][column]);
         }
 
-        print("]%s", endline);
+        printf("]%s", endline);
     }
 
     return MATRIX3_ERR_OK;

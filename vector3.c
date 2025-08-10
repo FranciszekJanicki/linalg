@@ -159,21 +159,19 @@ vector3_err_t vector3_negated(vector3_t const* vector, vector3_t* negated)
     return VECTOR3_ERR_OK;
 }
 
-vector3_err_t vector3_print(vector3_t const* vector,
-                            vector3_print_t print,
-                            char const* endline)
+vector3_err_t vector3_print(vector3_t const* vector, char const* endline)
 {
-    if (vector == NULL || print == NULL || endline == NULL) {
+    if (vector == NULL || endline == NULL) {
         return VECTOR3_ERR_NULL;
     }
 
-    print("[ ");
+    printf("[ ");
 
     for (vector3_size_t index = 0UL; index < 3UL; ++index) {
-        print("%f ", vector->data[index]);
+        printf("%f ", vector->data[index]);
     }
 
-    print("]%s", endline);
+    printf("]%s", endline);
 
     return VECTOR3_ERR_OK;
 }

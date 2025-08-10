@@ -7,7 +7,6 @@ target_sources(linalg PRIVATE
     matrix3.c
     vector3.c
     transform3.c
-    allocator.c
 )
 
 target_include_directories(linalg PUBLIC

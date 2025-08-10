@@ -21,9 +21,8 @@ typedef enum {
     VECTOR_ERR_ALLOC,
 } vector_err_t;
 
-typedef void* (*vector_allocate_t)(size_t);
-typedef void (*vector_deallocate_t)(void*);
-typedef int (*vector_print_t)(char const*, ...);
+typedef vector_data_t* (*vector_allocate_t)(vector_size_t);
+typedef void (*vector_deallocate_t)(vector_data_t*);
 
 typedef struct {
     vector_allocate_t allocate;
@@ -88,9 +87,7 @@ vector_err_t vector_cross(vector_t const* vector1,
                           vector_t const* vector2,
                           vector_t* cross);
 
-vector_err_t vector_print(vector_t const* vector,
-                          vector_print_t print,
-                          char const* endline);
+vector_err_t vector_print(vector_t const* vector, char const* endline);
 
 #ifdef __cplusplus
 }

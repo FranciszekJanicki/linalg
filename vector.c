@@ -3,7 +3,8 @@
 #include <stdio.h>
 #include <string.h>
 
-static void* vector_allocate(vector_t const* vector, size_t size)
+static vector_data_t* vector_allocate(vector_t const* vector,
+                                      vector_size_t size)
 {
     if (vector->allocator.allocate == NULL) {
         return NULL;
@@ -12,7 +13,7 @@ static void* vector_allocate(vector_t const* vector, size_t size)
     return vector->allocator.allocate(size);
 }
 
-static void vector_deallocate(vector_t const* vector, void* data)
+static void vector_deallocate(vector_t const* vector, vector_data_t* data)
 {
     if (vector->allocator.deallocate == NULL) {
         return;
@@ -353,21 +354,19 @@ vector_err_t vector_cross(vector_t const* vector1,
     return VECTOR_ERR_OK;
 }
 
-vector_err_t vector_print(vector_t const* vector,
-                          vector_print_t print,
-                          char const* endline)
+vector_err_t vector_print(vector_t const* vector, char const* endline)
 {
     if (vector == NULL || endline == NULL) {
         return VECTOR_ERR_NULL;
     }
 
-    print("[ ");
+    printf("[ ");
 
     for (vector_size_t index = 0UL; index < vector->size; ++index) {
-        print("%f ", VECTOR_INDEX(vector, index));
+        printf("%f ", VECTOR_INDEX(vector, index));
     }
 
-    print("]%s", endline);
+    printf("]%s", endline);
 
     return VECTOR_ERR_OK;
 }

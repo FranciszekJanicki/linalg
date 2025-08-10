@@ -15,8 +15,6 @@ typedef enum {
     QUATERNION3_ERR_NULL,
 } quaternion3_err_t;
 
-typedef int (*quaternion3_print_t)(char const*, ...);
-
 typedef struct {
     quaternion3_data_t w;
     quaternion3_data_t x;
@@ -63,10 +61,6 @@ quaternion3_err_t quaternion3_magnitude(quaternion3_t const* quaternion,
 quaternion3_err_t quaternion3_dot(quaternion3_t const* quaternion1,
                                   quaternion3_t const* quaternion2,
                                   quaternion3_data_t* dot);
-
-quaternion3_err_t quaternion3_print(quaternion3_t const* quaternion,
-                                    quaternion3_print_t print,
-                                    char const* endline);
 
 #ifdef __cplusplus
 }
