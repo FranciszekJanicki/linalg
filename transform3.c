@@ -61,14 +61,14 @@ transform3_err_t transform3_compose(transform3_t const* transform1,
     if (matrix3_vector_product(&transform1->rotation,
                                &transform2->translation,
                                &rotated_translation) != MATRIX3_ERR_OK) {
-        return TRANSFORM3_ERR_FAIL;
+       return TRANSFORM3_ERR_FAIL;
     }
 
     vector3_t composed_translation;
     if (vector3_sum(&transform1->translation,
                     &rotated_translation,
                     &composed_translation) != VECTOR3_ERR_OK) {
-        return TRANSFORM3_ERR_FAIL;
+       return TRANSFORM3_ERR_FAIL;
     }
 
     compose->rotation = rotated_rotation;

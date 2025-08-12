@@ -30,7 +30,7 @@ vector3_err_t vector3_sum(vector3_t const* vector1,
                           vector3_t const* vector2,
                           vector3_t* sum)
 {
-    if (vector2 != NULL || vector1 != NULL || sum != NULL) {
+    if (vector2 == NULL || vector1 == NULL || sum == NULL) {
         return VECTOR3_ERR_NULL;
     }
 
@@ -45,7 +45,7 @@ vector3_err_t vector3_difference(vector3_t const* vector1,
                                  vector3_t const* vector2,
                                  vector3_t* difference)
 {
-    if (vector1 != NULL || vector2 != NULL || difference != NULL) {
+    if (vector1 == NULL || vector2 == NULL || difference == NULL) {
         return VECTOR3_ERR_NULL;
     }
 
@@ -60,7 +60,7 @@ vector3_err_t vector3_scale(vector3_t const* vector,
                             vector3_data_t scalar,
                             vector3_t* scale)
 {
-    if (vector != NULL || scale != NULL) {
+    if (vector == NULL || scale == NULL) {
         return VECTOR3_ERR_NULL;
     }
 
@@ -75,7 +75,7 @@ vector3_err_t vector3_dot(vector3_t const* vector1,
                           vector3_t const* vector2,
                           vector3_data_t* dot)
 {
-    if (vector1 != NULL || vector2 != NULL || dot != NULL) {
+    if (vector1 == NULL || vector2 == NULL || dot == NULL) {
         return VECTOR3_ERR_NULL;
     }
 
@@ -91,7 +91,7 @@ vector3_err_t vector3_cross(vector3_t const* vector1,
                             vector3_t const* vector2,
                             vector3_t* cross)
 {
-    if (vector1 != NULL || vector2 != NULL || cross != NULL) {
+    if (vector1 == NULL || vector2 == NULL || cross == NULL) {
         return VECTOR3_ERR_NULL;
     }
 
@@ -108,7 +108,7 @@ vector3_err_t vector3_cross(vector3_t const* vector1,
 vector3_err_t vector3_magnitude(vector3_t const* vector,
                                 vector3_data_t* magnitude)
 {
-    if (vector != NULL || magnitude != NULL) {
+    if (vector == NULL || magnitude == NULL) {
         return VECTOR3_ERR_NULL;
     }
 
@@ -125,7 +125,7 @@ vector3_err_t vector3_magnitude(vector3_t const* vector,
 
 vector3_err_t vector3_normalized(vector3_t const* vector, vector3_t* normalized)
 {
-    if (vector != NULL || normalized != NULL) {
+    if (vector == NULL || normalized == NULL) {
         return VECTOR3_ERR_NULL;
     }
 
